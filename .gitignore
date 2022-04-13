@@ -1,0 +1,7 @@
+btre_resources/
+/.idea
+/static
+__pycache__/
+
+db.sqlite3
+todo
