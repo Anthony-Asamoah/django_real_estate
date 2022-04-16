@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+import os.path
 from pathlib import Path
 from os import path
 
@@ -25,7 +25,10 @@ SECRET_KEY = 'django-insecure-_iglq=-m9w1(*ied5_*h8#1r)ldd=euqcw8(f#zl$d%7*x+h46
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+	'localhost',
+	'127.0.0.1',
+]
 
 # Application definition
 
@@ -79,8 +82,12 @@ WSGI_APPLICATION = 'real_estate.wsgi.application'
 
 DATABASES = {
 	'default': {
-		'ENGINE': 'django.db.backends.sqlite3',
-		'NAME': BASE_DIR / 'db.sqlite3',
+		'ENGINE': 'django.db.backends.postgresql_psycopg2',
+		'NAME': 'django_real_estate_btre',
+		'USER': 'postgres',
+		'PASSWORD': 'admin1234',
+		'HOST': 'localhost',
+		'PORT': 5000
 	}
 }
 
@@ -126,3 +133,8 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# media config
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = 'media/'

@@ -2,6 +2,6 @@ btre_resources/
 /.idea
 /static
 __pycache__/
-
+/migrations/
 db.sqlite3
 todo
