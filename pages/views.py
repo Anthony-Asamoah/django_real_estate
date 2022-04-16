@@ -13,7 +13,7 @@ def index(request):
 
 def about(request):
 	context = {
-		'page_title': 'about',
+		'page_title': 'About',
 	}
 
 	return render(request, 'pages/about.html', context)
