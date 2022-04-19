@@ -1,10 +1,10 @@
 from django.contrib import admin
-from listings.models import listing
+from listings.models import Listing
 
 # Register your models here.
 
 
-@admin.register(listing)
+@admin.register(Listing)
 class listingAdmin(admin.ModelAdmin):
 	list_display = [
 		'id',
