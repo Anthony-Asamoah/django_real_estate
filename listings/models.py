@@ -6,7 +6,7 @@ from realtors.models import realtor
 # Create your models here.
 
 
-class listing(models.Model):
+class Listing(models.Model):
 	realtor = models.ForeignKey(realtor, on_delete=models.DO_NOTHING, default='')
 	title = models.CharField(max_length=200, default='')
 	address = models.CharField(max_length=200, default='')
