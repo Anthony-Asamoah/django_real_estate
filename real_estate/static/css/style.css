@@ -72,6 +72,12 @@ img {
 .listing-preview a {
   position: relative; }
 
+.realtor-photo {
+  height: 350px;
+  width: 350px;
+  object-fit: cover;
+}
+
 @media (max-width: 991px) {
   #showcase {
     padding-top: 4rem; }
