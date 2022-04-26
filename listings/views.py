@@ -16,7 +16,6 @@ def index(request):
 	paged_listing = paginator.get_page(page)
 
 	context = {
-		'page_title': 'Listings',
 		'query': paged_listing,
 	}
 	return render(request, 'listings/listings.html', context)
@@ -26,7 +25,6 @@ def listing(request, listing_id):
 	query = get_object_or_404(Listing, pk=listing_id)
 
 	context = {
-		'page_title': 'Listing',
 		'listing': query
 	}
 	return render(request, 'listings/listing.html', context)
@@ -36,7 +34,6 @@ def search(request):
 	query = search_result(request.GET)
 
 	context = {
-		'page_title': 'Search',
 		'listing': query,
 		'price_choices': price_choices,
 		'bedroom_choices': bedroom_choices,

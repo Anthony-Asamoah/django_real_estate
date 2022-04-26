@@ -1,5 +1,54 @@
 {% extends 'base.html' %}
 
+{% block title %}
+ | Register
+{% endblock %}
+
 {% block content %}
-<h1>signup works</h1>
+    <section id="register" class="bg-light py-5">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-6 mx-auto">
+              <div class="card">
+                <div class="card-header bg-primary text-white">
+                  <h4>
+                    <i class="fas fa-user-plus"></i> Register</h4>
+                </div>
+                <div class="card-body">
+                <!-- Alerts -->
+                {% include 'partials/_alerts.html' %}
+                    <form action="{% url 'accounts:register' %}" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                          <label for="first_name">First Name</label>
+                          <input type="text" id="first_name" name="first_name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="last_name">Last Name</label>
+                          <input type="text" id="last_name" name="last_name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="username">Username</label>
+                          <input type="text" id="username" name="username" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="email">Email</label>
+                          <input type="email" id="email" name="email" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="password2">Password</label>
+                          <input type="password" id="password2" name="password" class="form-control" minlength="6" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="password">Confirm Password</label>
+                          <input type="password" id='password' name="password2" class="form-control" minlength="6" required>
+                        </div>
+                        <input type="submit" value="Register" class="btn btn-secondary btn-block">
+                    </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </section>
 {% endblock %}
