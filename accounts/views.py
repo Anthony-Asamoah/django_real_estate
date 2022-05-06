@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import auth, messages
 from .validation import validator
 from .authentication import authenticate
+from contacts.models import Contact
 
 # Create your views here.
 
@@ -29,4 +30,6 @@ def logout(request):
 
 
 def dashboard(request):
-	return render(request, 'accounts/dashboard.html')
+	user_contacts = Contact.objects.order_by('-timestamp').filter(user_id=request.user.id)
+
+	return render(request, 'accounts/dashboard.html', {'contacts': user_contacts})

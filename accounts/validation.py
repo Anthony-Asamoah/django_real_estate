@@ -32,7 +32,8 @@ def validator(request):
 		last_name=last_name,
 		email=email,
 		username=username,
-		date_joined=timezone.now()
+		date_joined=timezone.now(),
+		password=password
 	)
 	new_user.save()
 

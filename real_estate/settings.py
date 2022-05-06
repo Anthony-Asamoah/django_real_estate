@@ -47,7 +47,8 @@ INSTALLED_APPS = [
 	'pages',
 	'listings',
 	'realtors',
-	'accounts'
+	'accounts',
+	'contacts'
 ]
 
 MIDDLEWARE = [
@@ -147,3 +148,13 @@ MEDIA_URL = 'media/'
 MESSAGE_TAGS = {
 	messages.ERROR: 'danger',
 }
+
+
+# email config
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'anthonyasamoah48@gmail.com'
+EMAIL_HOST_PASSWORD = 'fdjwsuscxzbhrpnc'
+EMAIL_USE_TLS = True
+
