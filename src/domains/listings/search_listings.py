@@ -1,4 +1,4 @@
-from listings.models import Listing
+from domains.listings.models import Listing
 
 
 def search_result(GET):

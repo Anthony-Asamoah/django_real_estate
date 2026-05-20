@@ -42,11 +42,11 @@ INSTALLED_APPS = [
 	'django.contrib.humanize',
 
 	# My apps
-	'pages',
-	'listings',
-	'realtors',
-	'accounts',
-	'contacts'
+	'domains.pages',
+	'domains.listings',
+	'domains.realtors',
+	'domains.accounts',
+	'domains.contacts'
 ]
 
 MIDDLEWARE = [
@@ -59,7 +59,7 @@ MIDDLEWARE = [
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'real_estate.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
 	{
@@ -78,7 +78,7 @@ TEMPLATES = [
 	},
 ]
 
-WSGI_APPLICATION = 'real_estate.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
@@ -127,9 +127,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = path.join(BASE_DIR, 'static')
+STATIC_ROOT = path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
-	path.join(BASE_DIR, 'real_estate/static'),
+	path.join(BASE_DIR, 'static'),
 ]
 
 # Default primary key field type

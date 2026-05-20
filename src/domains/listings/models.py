@@ -1,7 +1,7 @@
 import pendulum
 
 from django.db import models
-from realtors.models import realtor
+from domains.realtors.models import realtor
 
 # Create your models here.
 

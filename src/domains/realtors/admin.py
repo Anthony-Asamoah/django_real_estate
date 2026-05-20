@@ -1,5 +1,5 @@
 from django.contrib import admin
-from realtors.models import realtor
+from domains.realtors.models import realtor
 
 # Register your models here.
 

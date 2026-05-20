@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import auth, messages
 from .validation import validator
 from .authentication import authenticate
-from contacts.models import Contact
+from domains.contacts.models import Contact
 
 # Create your views here.
 

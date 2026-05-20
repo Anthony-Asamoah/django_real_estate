@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponse
-from listings.models import Listing
-from realtors.models import realtor
-from listings.choices import price_choices, bedroom_choices, state_choices
+from domains.listings.models import Listing
+from domains.realtors.models import realtor
+from domains.listings.choices import price_choices, bedroom_choices, state_choices
 
 
 # Create your views here.
