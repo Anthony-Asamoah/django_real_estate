@@ -1,0 +1,6 @@
+django
+psycopg2-binary
+pendulum
+inflect
+python-decouple
+Pillow
