@@ -1,4 +1,4 @@
-from datetime import datetime
+import pendulum
 from django.shortcuts import render, HttpResponse
 from django.contrib import messages
 from django.shortcuts import redirect
@@ -33,7 +33,7 @@ def contact(request):
 			email=email,
 			phone=request.POST['phone'],
 			message=request.POST['message'],
-			timestamp=datetime.now()
+			timestamp=pendulum.now()
 		)
 		new_contact.save()
 

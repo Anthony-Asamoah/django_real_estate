@@ -1,5 +1,5 @@
 from django.db import models
-from datetime import datetime
+import pendulum
 
 # Create your models here.
 
@@ -11,7 +11,7 @@ class Contact(models.Model):
 	phone = models.CharField(max_length=15, blank=False)
 	email = models.CharField(max_length=100, blank=False)
 	message = models.TextField(blank=False)
-	timestamp = models.DateTimeField(default=datetime.now())
+	timestamp = models.DateTimeField(default=pendulum.now)
 	user_id = models.IntegerField(blank=False)
 
 	def __str__(self):
