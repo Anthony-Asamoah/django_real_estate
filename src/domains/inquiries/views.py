@@ -1,13 +1,16 @@
 import pendulum
 from django.contrib import messages
-from django.core.mail import send_mail
-from django.shortcuts import HttpResponse
-from django.shortcuts import redirect
+from django.core.mail import EmailMultiAlternatives
+from django.shortcuts import HttpResponse, redirect
+from django.template.loader import render_to_string
+from wagtail.models import Site
 
-from .models import ProjectInquiry, GeneralInquiry
+from .models import GeneralInquiry, ProjectInquiry, EmailSettings
 
 
-# Create your views here.
+def _get_email_settings(request):
+    site = Site.find_for_request(request)
+    return EmailSettings.for_site(site)
 
 
 def contact(request):
@@ -36,16 +39,27 @@ def contact(request):
         )
         new_contact.save()
 
-        send_mail(
-            'Real Estate Listing Inquiry',
-            f'You have one new inquiry for {listing}.\n kindly sign in to find out more info.',
-            'anthonyasamoah48@gmail.com',
-            [email, ],
-            fail_silently=False
-        )
+        settings = _get_email_settings(request)
+        subject = settings.project_inquiry_subject
+        intro = settings.project_inquiry_intro.format(project=listing)
+        site_name = settings.site.site_name
+
+        html_body = render_to_string('emails/project_inquiry.html', {
+            'subject': subject,
+            'intro': intro,
+            'site_name': site_name,
+            'project': listing,
+            'name': new_contact.name,
+            'email': new_contact.email,
+            'phone': new_contact.phone,
+            'message': new_contact.message,
+        })
+
+        msg = EmailMultiAlternatives(subject, intro, 'anthonyasamoah48@gmail.com', [email])
+        msg.attach_alternative(html_body, 'text/html')
+        msg.send(fail_silently=False)
 
         messages.success(request, 'Your inquiry has been received. We will get back to you shortly.')
-
         return redirect('projects:projects')
 
     return HttpResponse('request: GET')
@@ -71,13 +85,25 @@ def general_inquiry(request):
         inquiry.save()
 
         if email:
-            send_mail(
-                'New Inquiry',
-                f'New inquiry from {inquiry.name} ({inquiry.email or inquiry.phone}).\nService: {inquiry.service or "General"}\n\n{inquiry.message}',
-                'anthonyasamoah48@gmail.com',
-                [email],
-                fail_silently=True,
-            )
+            settings = _get_email_settings(request)
+            subject = settings.general_inquiry_subject
+            intro = settings.general_inquiry_intro.format(name=inquiry.name)
+            site_name = settings.site.site_name
+
+            html_body = render_to_string('emails/general_inquiry.html', {
+                'subject': subject,
+                'intro': intro,
+                'site_name': site_name,
+                'name': inquiry.name,
+                'email': inquiry.email,
+                'phone': inquiry.phone,
+                'service': inquiry.service,
+                'message': inquiry.message,
+            })
+
+            msg = EmailMultiAlternatives(subject, intro, 'anthonyasamoah48@gmail.com', [email])
+            msg.attach_alternative(html_body, 'text/html')
+            msg.send(fail_silently=True)
 
         messages.success(request, 'Thank you! We will be in touch shortly.')
         return redirect('/contact/')

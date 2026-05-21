@@ -1,6 +1,7 @@
 import pendulum
 from django.db import models
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
+from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
 from wagtail.snippets.models import register_snippet
 
 
@@ -72,3 +73,39 @@ class GeneralInquiry(models.Model):
         ordering = ['-timestamp']
         verbose_name = 'General Inquiry'
         verbose_name_plural = 'General Inquiries'
+
+
+@register_setting
+class EmailSettings(BaseSiteSetting):
+    project_inquiry_subject = models.CharField(
+        max_length=200,
+        default='Thank you for your inquiry',
+        help_text='Subject line for project inquiry confirmation emails',
+    )
+    project_inquiry_intro = models.TextField(
+        default='Thank you for reaching out about {project}. We have received your inquiry and will be in touch shortly.',
+        help_text='Intro paragraph. Use {project} to insert the project name.',
+    )
+    general_inquiry_subject = models.CharField(
+        max_length=200,
+        default='We received your message',
+        help_text='Subject line for general contact form confirmation emails',
+    )
+    general_inquiry_intro = models.TextField(
+        default='Thank you for contacting us, {name}. We have received your message and will be in touch shortly.',
+        help_text='Intro paragraph. Use {name} to insert the sender\'s name.',
+    )
+
+    panels = [
+        MultiFieldPanel(
+            [FieldPanel('project_inquiry_subject'), FieldPanel('project_inquiry_intro')],
+            heading='Project Inquiry Email',
+        ),
+        MultiFieldPanel(
+            [FieldPanel('general_inquiry_subject'), FieldPanel('general_inquiry_intro')],
+            heading='General Inquiry Email',
+        ),
+    ]
+
+    class Meta:
+        verbose_name = 'Email Settings'
