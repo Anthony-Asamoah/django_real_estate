@@ -1,0 +1,14 @@
+{% extends "wagtailadmin/login.html" %}
+{% load static %}
+
+{% block branding_favicon %}
+  <link rel="shortcut icon" href="{% static 'img/logo.png' %}">
+{% endblock %}
+
+{% block branding_login %}Sign in to {{ SITE_NAME }} CMS{% endblock %}
+
+{% block branding_logo %}
+  <div class="login-logo" style="text-align: center;">
+    <img src="{% static 'img/logo.png' %}" alt="Logo" style="max-height: 80px; width: auto;">
+  </div>
+{% endblock %}

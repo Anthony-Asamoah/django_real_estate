@@ -31,7 +31,7 @@ def seed_pages():
     from domains.pages.models import (
         HomePage, AboutPage,
         ServicesIndexPage, ServiceDetailPage,
-        ProjectsIndexPage, ProjectDetailPage,
+        ProjectsIndexPage,
         ContactPage, BrandingSettings,
     )
 
@@ -369,76 +369,6 @@ def seed_pages():
         projects_index.save_revision().publish()
         created += 1
         print(f'  Created ProjectsIndexPage: {projects_index.title}')
-
-        # Sample project stubs (no images — editors will fill in)
-        sample_projects = [
-            {
-                'title': '4-Bedroom Residential Build — Kumasi',
-                'slug': 'residential-build-kumasi',
-                'location': 'Kumasi, Ashanti Region',
-                'service_slug': 'construction',
-                'hero_subtext': 'Full construction from foundation to finishing, delivered on time.',
-                'body_text': (
-                    '<p>A complete four-bedroom residential build delivered over eight months. '
-                    'We handled full construction from foundation to finishing, including plumbing, '
-                    'electrical, and interior fit-out.</p>'
-                ),
-            },
-            {
-                'title': 'Commercial Roofing Replacement — Accra',
-                'slug': 'commercial-roofing-accra',
-                'location': 'Accra, Greater Accra',
-                'service_slug': 'roofing',
-                'hero_subtext': 'Full roof replacement for a commercial warehouse in Greater Accra.',
-                'body_text': (
-                    '<p>Full roof replacement for a commercial warehouse. The project involved '
-                    'removing the existing deteriorated roofing, structural repairs to the trusses, '
-                    'and installation of long-span aluminium roofing sheets.</p>'
-                ),
-            },
-            {
-                'title': 'Borehole Installation — Farm Estate, Brong-Ahafo',
-                'slug': 'borehole-brong-ahafo',
-                'location': 'Brong-Ahafo Region',
-                'service_slug': 'borehole',
-                'hero_subtext': 'Site survey, drilling, and pump installation for a large agricultural estate.',
-                'body_text': (
-                    '<p>Site survey, 80-metre borehole drilling, casing, development, and submersible '
-                    'pump installation for a large agricultural estate. The borehole now supplies '
-                    'irrigation and domestic water to the property.</p>'
-                ),
-            },
-        ]
-
-        construction_page = ServiceDetailPage.objects.filter(slug='construction').first()
-        roofing_page = ServiceDetailPage.objects.filter(slug='roofing').first()
-        borehole_page = ServiceDetailPage.objects.filter(slug='borehole').first()
-        service_map = {
-            'construction': construction_page,
-            'roofing': roofing_page,
-            'borehole': borehole_page,
-        }
-
-        for proj in sample_projects:
-            project_page = ProjectDetailPage(
-                title=proj['title'],
-                slug=proj['slug'],
-                location=proj['location'],
-                service=service_map.get(proj['service_slug']),
-                body=[
-                    ('hero_banner', {
-                        'heading': proj['title'],
-                        'subtext': proj['hero_subtext'],
-                        'overlay_color': 'black',
-                        'overlay_opacity': '0.55',
-                    }),
-                    ('rich_text', proj['body_text']),
-                ],
-            )
-            projects_index.add_child(instance=project_page)
-            project_page.save_revision().publish()
-            created += 1
-            print(f'  Created ProjectDetailPage: {project_page.title}')
     else:
         print('  Skipped (exists): ProjectsIndexPage')
 
