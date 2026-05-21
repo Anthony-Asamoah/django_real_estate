@@ -11,6 +11,6 @@ urlpatterns = [
     path('documents/', include(wagtaildocs_urls)),
     path('projects/', include('domains.projects.urls')),
     path('', include('domains.accounts.urls')),
-    path('', include('domains.contacts.urls')),
+    path('', include('domains.inquiries.urls')),
     path('', include(wagtail_urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

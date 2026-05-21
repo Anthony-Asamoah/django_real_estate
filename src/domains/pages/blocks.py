@@ -41,6 +41,27 @@ class ServiceCardBlock(StructBlock):
 class ServicesRowBlock(StructBlock):
     heading = CharBlock(required=False)
     services = ListBlock(ServiceCardBlock())
+    overlay_color = ChoiceBlock(
+        choices=[
+            ('black', 'Black'),
+            ('brand-primary', 'Brand Primary'),
+            ('brand-secondary', 'Brand Secondary'),
+        ],
+        default='brand-secondary',
+        required=False,
+        help_text='Tint colour of the overlay',
+    )
+    overlay_opacity = ChoiceBlock(
+        choices=[
+            ('0.3', 'Light (30%)'),
+            ('0.5', 'Medium (50%)'),
+            ('0.65', 'Dark (65%)'),
+            ('0.85', 'Very Dark (85%)'),
+        ],
+        default='0.65',
+        required=False,
+        help_text='Opacity of the overlay',
+    )
 
     class Meta:
         icon = 'list-ul'
@@ -71,6 +92,27 @@ class HeroSlideshowBlock(StructBlock):
     heading = CharBlock()
     subtext = TextBlock(required=False)
     slides = ListBlock(HeroSlideBlock(), min_num=3, help_text='Add at least 3 slides')
+    overlay_color = ChoiceBlock(
+        choices=[
+            ('black', 'Black'),
+            ('brand-primary', 'Brand Primary'),
+            ('brand-secondary', 'Brand Secondary'),
+        ],
+        default='black',
+        required=False,
+        help_text='Tint colour of the overlay',
+    )
+    overlay_opacity = ChoiceBlock(
+        choices=[
+            ('0.3', 'Light (30%)'),
+            ('0.5', 'Medium (50%)'),
+            ('0.65', 'Dark (65%)'),
+            ('0.85', 'Very Dark (85%)'),
+        ],
+        default='0.5',
+        required=False,
+        help_text='Opacity of the overlay',
+    )
     transition_type = ChoiceBlock(
         choices=[('slide', 'Slide'), ('fade', 'Fade')],
         default='slide',
@@ -95,6 +137,27 @@ class HeroBannerBlock(StructBlock):
     heading = CharBlock()
     subtext = TextBlock(required=False)
     image = ImageChooserBlock(required=False, help_text='Override the default hero background image')
+    overlay_color = ChoiceBlock(
+        choices=[
+            ('black', 'Black'),
+            ('brand-primary', 'Brand Primary'),
+            ('brand-secondary', 'Brand Secondary'),
+        ],
+        default='black',
+        required=False,
+        help_text='Tint colour of the overlay',
+    )
+    overlay_opacity = ChoiceBlock(
+        choices=[
+            ('0.3', 'Light (30%)'),
+            ('0.5', 'Medium (50%)'),
+            ('0.65', 'Dark (65%)'),
+            ('0.85', 'Very Dark (85%)'),
+        ],
+        default='0.55',
+        required=False,
+        help_text='Opacity of the overlay',
+    )
 
     class Meta:
         icon = 'title'

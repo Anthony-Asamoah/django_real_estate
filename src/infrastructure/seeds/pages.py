@@ -74,12 +74,16 @@ def seed_pages():
                             'caption': '',
                         },
                     ],
+                    'overlay_color': 'black',
+                    'overlay_opacity': '0.5',
                     'transition_type': 'fade',
                     'interval': 5000,
                     'animation_speed': 800,
                 }),
                 ('services_row', {
                     'heading': 'What We Do',
+                    'overlay_color': 'brand-secondary',
+                    'overlay_opacity': '0.65',
                     'services': [
                         {
                             'icon': 'fa-map',
@@ -134,6 +138,8 @@ def seed_pages():
         ('hero_banner', {
             'heading': 'About Us',
             'subtext': 'Building trust, one project at a time.',
+            'overlay_color': 'black',
+            'overlay_opacity': '0.55',
         }),
         ('about_intro', {
             'heading': 'We Build More Than Structures',
@@ -188,6 +194,8 @@ def seed_pages():
                 ('hero_banner', {
                     'heading': 'Our Services',
                     'subtext': 'Everything you need — handled by one trusted team.',
+                    'overlay_color': 'black',
+                    'overlay_opacity': '0.55',
                 }),
             ],
         )
@@ -314,6 +322,8 @@ def seed_pages():
                     ('hero_banner', {
                         'heading': svc['hero_heading'],
                         'subtext': svc['hero_subtext'],
+                        'overlay_color': 'black',
+                        'overlay_opacity': '0.55',
                     }),
                     ('rich_text', svc['body_text']),
                     ('process_steps', {
@@ -344,6 +354,8 @@ def seed_pages():
                 ('hero_banner', {
                     'heading': 'Our Projects',
                     'subtext': 'A selection of work we are proud of.',
+                    'overlay_color': 'black',
+                    'overlay_opacity': '0.55',
                 }),
                 ('cta_banner', {
                     'heading': 'Have a Project in Mind?',
@@ -417,6 +429,8 @@ def seed_pages():
                     ('hero_banner', {
                         'heading': proj['title'],
                         'subtext': proj['hero_subtext'],
+                        'overlay_color': 'black',
+                        'overlay_opacity': '0.55',
                     }),
                     ('rich_text', proj['body_text']),
                 ],
@@ -437,6 +451,8 @@ def seed_pages():
                 ('hero_banner', {
                     'heading': 'Contact Us',
                     'subtext': 'We are ready to help — reach out today.',
+                    'overlay_color': 'black',
+                    'overlay_opacity': '0.55',
                 }),
             ],
         )

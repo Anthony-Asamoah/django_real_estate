@@ -5,7 +5,7 @@ from wagtail.snippets.models import register_snippet
 
 
 @register_snippet
-class Contact(models.Model):
+class ProjectInquiry(models.Model):
     listing = models.CharField(max_length=200)
     listing_id = models.IntegerField()
     name = models.CharField(max_length=100, blank=False)
@@ -34,13 +34,16 @@ class Contact(models.Model):
         return f'{self.name} — {self.listing}'
 
     class Meta:
+        db_table = 'contacts_contact'
         ordering = ['-timestamp']
+        verbose_name = 'Project Inquiry'
+        verbose_name_plural = 'Project Inquiries'
 
 
 @register_snippet
 class GeneralInquiry(models.Model):
     name = models.CharField(max_length=100)
-    email = models.CharField(max_length=100)
+    email = models.CharField(max_length=100, blank=True)
     phone = models.CharField(max_length=20, blank=True)
     service = models.CharField(
         max_length=200,
@@ -65,6 +68,7 @@ class GeneralInquiry(models.Model):
         return f'{self.name} — {self.service or "general"}'
 
     class Meta:
+        db_table = 'contacts_generalinquiry'
         ordering = ['-timestamp']
         verbose_name = 'General Inquiry'
         verbose_name_plural = 'General Inquiries'

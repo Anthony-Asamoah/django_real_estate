@@ -21,7 +21,7 @@
         <!-- Contact Form -->
         <div class="col-md-7 mb-5">
           <h3 class="text-primary mb-4">Send Us a Message</h3>
-          <form action="{% url 'contact:general_inquiry' %}" method="post">
+          <form action="{% url 'inquiry:general_inquiry' %}" method="post" id="contactForm">
             {% csrf_token %}
             <div class="form-group">
               <label>Full Name</label>
@@ -30,13 +30,14 @@
             <div class="form-row">
               <div class="form-group col-md-6">
                 <label>Email Address</label>
-                <input type="email" name="email" class="form-control" required>
+                <input type="email" name="email" id="contactEmail" class="form-control">
               </div>
               <div class="form-group col-md-6">
                 <label>Phone Number</label>
-                <input type="tel" name="phone" class="form-control">
+                <input type="tel" name="phone" id="contactPhone" class="form-control">
               </div>
             </div>
+            <small class="form-text text-muted mb-3">Please provide at least an email address or phone number.</small>
             <div class="form-group">
               <label>Service of Interest</label>
               <select name="service" class="form-control">
@@ -134,4 +135,17 @@
     {% endif %}
   {% endfor %}
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.getElementById('contactForm').addEventListener('submit', function(e) {
+    var email = document.getElementById('contactEmail').value.trim();
+    var phone = document.getElementById('contactPhone').value.trim();
+    if (!email && !phone) {
+      e.preventDefault();
+      alert('Please provide at least an email address or phone number.');
+    }
+  });
+</script>
 {% endblock %}

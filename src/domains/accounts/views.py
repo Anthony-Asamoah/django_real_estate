@@ -1,7 +1,7 @@
 from django.contrib import auth, messages
 from django.shortcuts import render, redirect
 
-from domains.contacts.models import Contact
+from domains.inquiries.models import ProjectInquiry
 from .authentication import authenticate
 from .validation import validator
 
@@ -29,6 +29,6 @@ def logout(request):
 
 
 def dashboard(request):
-    user_contacts = Contact.objects.order_by('-timestamp').filter(user_id=request.user.id)
+    user_contacts = ProjectInquiry.objects.order_by('-timestamp').filter(user_id=request.user.id)
 
     return render(request, 'accounts/dashboard.html', {'contacts': user_contacts})

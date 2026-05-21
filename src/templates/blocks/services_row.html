@@ -1,6 +1,7 @@
 <!-- Services -->
-<section id="services" class="py-5 bg-secondary text-white">
-  <div class="container">
+<section id="services" class="py-5 text-white">
+  <div class="overlay-{{ value.overlay_color|default:'brand-secondary' }}" style="position:absolute;inset:0;opacity:{{ value.overlay_opacity|default:'0.65' }};pointer-events:none;"></div>
+  <div class="container" style="position:relative;z-index:1;">
     <div class="row text-center">
       {% for service in value.services %}
         <div class="col-md-4">

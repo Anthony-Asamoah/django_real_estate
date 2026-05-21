@@ -2,6 +2,7 @@
 {% if value.image %}{% image value.image width-1920 as hero_img %}{% endif %}
 <!-- Inner Page Hero -->
 <section id="showcase-inner" class="py-5 text-white text-center"{% if value.image %} style="background-image: url('{{ hero_img.url }}');"{% endif %}>
+  <div class="overlay-{{ value.overlay_color|default:'black' }}" style="position:absolute;inset:0;opacity:{{ value.overlay_opacity|default:'0.55' }};pointer-events:none;"></div>
   <div class="container" style="position: relative; z-index: 1;">
     <div class="row">
       <div class="col-md-12">

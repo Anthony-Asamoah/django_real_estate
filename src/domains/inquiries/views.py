@@ -4,7 +4,7 @@ from django.core.mail import send_mail
 from django.shortcuts import HttpResponse
 from django.shortcuts import redirect
 
-from .models import Contact, GeneralInquiry
+from .models import ProjectInquiry, GeneralInquiry
 
 
 # Create your views here.
@@ -19,12 +19,12 @@ def contact(request):
 
         if request.user.is_authenticated:
             user_id = request.user.id
-            contacted = Contact.objects.filter(listing_id=listing_id, user_id=user_id)
+            contacted = ProjectInquiry.objects.filter(listing_id=listing_id, user_id=user_id)
             if contacted:
                 messages.error(request, 'You have already inquired about this project.')
                 return redirect('projects:projects')
 
-        new_contact = Contact(
+        new_contact = ProjectInquiry(
             user_id=user_id,
             listing_id=listing_id,
             listing=listing,
@@ -53,23 +53,31 @@ def contact(request):
 
 def general_inquiry(request):
     if request.method == 'POST':
+        email = request.POST.get('email', '').strip()
+        phone = request.POST.get('phone', '').strip()
+
+        if not email and not phone:
+            messages.error(request, 'Please provide at least an email address or phone number.')
+            return redirect('/contact/')
+
         inquiry = GeneralInquiry(
             name=request.POST.get('name', ''),
-            email=request.POST.get('email', ''),
-            phone=request.POST.get('phone', ''),
+            email=email,
+            phone=phone,
             service=request.POST.get('service', ''),
             message=request.POST.get('message', ''),
             timestamp=pendulum.now(),
         )
         inquiry.save()
 
-        send_mail(
-            'New Inquiry',
-            f'New inquiry from {inquiry.name} ({inquiry.email}).\nService: {inquiry.service or "General"}\n\n{inquiry.message}',
-            'anthonyasamoah48@gmail.com',
-            [inquiry.email],
-            fail_silently=True,
-        )
+        if email:
+            send_mail(
+                'New Inquiry',
+                f'New inquiry from {inquiry.name} ({inquiry.email or inquiry.phone}).\nService: {inquiry.service or "General"}\n\n{inquiry.message}',
+                'anthonyasamoah48@gmail.com',
+                [email],
+                fail_silently=True,
+            )
 
         messages.success(request, 'Thank you! We will be in touch shortly.')
         return redirect('/contact/')

@@ -66,7 +66,7 @@ INSTALLED_APPS = [
     'domains.employees',
     'domains.projects',
     'domains.accounts',
-    'domains.contacts',
+    'domains.inquiries',
 ]
 
 MIDDLEWARE = [
