@@ -5,7 +5,44 @@
   <link rel="shortcut icon" href="{% static 'img/logo.png' %}">
 {% endblock %}
 
-{% block branding_login %}Sign in to {{ SITE_NAME }} CMS{% endblock %}
+{% block branding_login %}
+<span id="login-label">Log into</span><br />{{ SITE_NAME }}<br />CMS
+<style>
+  #login-label {
+    display: inline-block;
+    transition: opacity 0.6s ease;
+  }
+  #login-label.fade-out {
+    opacity: 0;
+  }
+</style>
+<script>
+  (function () {
+    var labels = [
+      "Log into",
+      "Sign in to",
+      "Access",
+      "Enter",
+      "Connect to",
+      "Jump into",
+      "Open",
+      "Step into",
+      "Unlock",
+      "Welcome to"
+    ];
+    var el = document.getElementById("login-label");
+    var i = 0;
+    setInterval(function () {
+      el.classList.add("fade-out");
+      setTimeout(function () {
+        i = (i + 1) % labels.length;
+        el.textContent = labels[i];
+        el.classList.remove("fade-out");
+      }, 600);
+    }, 2400);
+  })();
+</script>
+{% endblock %}
 
 {% block branding_logo %}
   <div class="login-logo" style="text-align: center;">
