@@ -1,6 +1,6 @@
 import pendulum
-from domains.realtors.models import realtor
 from domains.listings.models import Listing
+from domains.realtors.models import realtor
 
 LISTINGS = [
     {

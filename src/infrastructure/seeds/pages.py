@@ -1,10 +1,38 @@
+from pathlib import Path
+
+from django.core.files import File
+from wagtail.images.models import Image as WagtailImage
+
+MEDIA_DIR = Path(__file__).parent / 'media'
+_image_cache: dict[str, WagtailImage] = {}
+
+
+def _img(filename: str) -> WagtailImage | None:
+    if filename in _image_cache:
+        return _image_cache[filename]
+    title = filename.rsplit('.', 1)[0].replace('-', ' ').title()
+    existing = WagtailImage.objects.filter(title=title).first()
+    if existing:
+        _image_cache[filename] = existing
+        return existing
+    path = MEDIA_DIR / filename
+    if not path.exists():
+        print(f'  Warning: {filename} not found in seeds/media — skipping image')
+        return None
+    with open(path, 'rb') as f:
+        img = WagtailImage(title=title)
+        img.file.save(filename, File(f), save=True)
+    _image_cache[filename] = img
+    return img
+
+
 def seed_pages():
     from wagtail.models import Page, Site
     from domains.pages.models import (
         HomePage, AboutPage,
         ServicesIndexPage, ServiceDetailPage,
         ProjectsIndexPage, ProjectDetailPage,
-        ContactPage,
+        ContactPage, BrandingSettings,
     )
 
     created = 0
@@ -19,13 +47,36 @@ def seed_pages():
         home = HomePage(
             title='Home',
             slug='home',
+            show_featured_projects=True,
+            featured_projects_heading='Featured Work',
             body=[
-                ('hero', {
+                ('hero_slideshow', {
                     'heading': 'Building Your Vision, From the Ground Up',
                     'subtext': (
                         'Land. Construction. Roofing. Borehole. Property Sales. '
                         'We handle every stage of the build — so you don\'t have to.'
                     ),
+                    'slides': [
+                        {
+                            'image': _img('house-1.jpg'),
+                            'caption': 'Quality homes built to last',
+                        },
+                        {
+                            'image': _img('construction.jpg'),
+                            'caption': 'Professional construction services',
+                        },
+                        {
+                            'image': _img('building.jpg'),
+                            'caption': 'Commercial & residential projects',
+                        },
+                        {
+                            'image': _img('house-2.jpg'),
+                            'caption': '',
+                        },
+                    ],
+                    'transition_type': 'fade',
+                    'interval': 5000,
+                    'animation_speed': 800,
                 }),
                 ('services_row', {
                     'heading': 'What We Do',
@@ -158,10 +209,14 @@ def seed_pages():
                     '<p>We also list plots for sale from our portfolio of pre-vetted land across the region.</p>'
                 ),
                 'steps': [
-                    {'step_number': '01', 'title': 'Site Identification', 'body': 'We match you with plots that fit your size, location, and budget requirements.'},
-                    {'step_number': '02', 'title': 'Due Diligence', 'body': 'Full title search, encumbrance checks, and land use verification.'},
-                    {'step_number': '03', 'title': 'Valuation & Negotiation', 'body': 'Independent valuation and expert negotiation to protect your investment.'},
-                    {'step_number': '04', 'title': 'Transfer & Documentation', 'body': 'We manage the full legal transfer and land registration process.'},
+                    {'step_number': '01', 'title': 'Site Identification',
+                     'body': 'We match you with plots that fit your size, location, and budget requirements.'},
+                    {'step_number': '02', 'title': 'Due Diligence',
+                     'body': 'Full title search, encumbrance checks, and land use verification.'},
+                    {'step_number': '03', 'title': 'Valuation & Negotiation',
+                     'body': 'Independent valuation and expert negotiation to protect your investment.'},
+                    {'step_number': '04', 'title': 'Transfer & Documentation',
+                     'body': 'We manage the full legal transfer and land registration process.'},
                 ],
             },
             {
@@ -176,10 +231,14 @@ def seed_pages():
                     '<p>Every project is managed end-to-end with transparent milestones and no hidden costs.</p>'
                 ),
                 'steps': [
-                    {'step_number': '01', 'title': 'Design & Planning', 'body': 'We work with your architect or connect you with ours to finalise plans and permits.'},
-                    {'step_number': '02', 'title': 'Foundation & Structure', 'body': 'Solid foundations using certified materials and experienced structural teams.'},
-                    {'step_number': '03', 'title': 'Build & Finishing', 'body': 'Full construction including masonry, plastering, tiling, and all interior finishes.'},
-                    {'step_number': '04', 'title': 'Handover', 'body': 'Final inspection, snag resolution, and formal handover with full documentation.'},
+                    {'step_number': '01', 'title': 'Design & Planning',
+                     'body': 'We work with your architect or connect you with ours to finalise plans and permits.'},
+                    {'step_number': '02', 'title': 'Foundation & Structure',
+                     'body': 'Solid foundations using certified materials and experienced structural teams.'},
+                    {'step_number': '03', 'title': 'Build & Finishing',
+                     'body': 'Full construction including masonry, plastering, tiling, and all interior finishes.'},
+                    {'step_number': '04', 'title': 'Handover',
+                     'body': 'Final inspection, snag resolution, and formal handover with full documentation.'},
                 ],
             },
             {
@@ -193,10 +252,14 @@ def seed_pages():
                     'or urgent leak repairs, our roofing team responds quickly with lasting solutions.</p>'
                 ),
                 'steps': [
-                    {'step_number': '01', 'title': 'Assessment', 'body': 'Thorough roof inspection to identify damage, structural issues, or design requirements.'},
-                    {'step_number': '02', 'title': 'Material Selection', 'body': 'We recommend the right roofing system for your structure, climate, and budget.'},
-                    {'step_number': '03', 'title': 'Installation', 'body': 'Professional installation by certified roofers with full site safety measures.'},
-                    {'step_number': '04', 'title': 'Warranty & Maintenance', 'body': 'All installations come with a workmanship warranty and optional maintenance plans.'},
+                    {'step_number': '01', 'title': 'Assessment',
+                     'body': 'Thorough roof inspection to identify damage, structural issues, or design requirements.'},
+                    {'step_number': '02', 'title': 'Material Selection',
+                     'body': 'We recommend the right roofing system for your structure, climate, and budget.'},
+                    {'step_number': '03', 'title': 'Installation',
+                     'body': 'Professional installation by certified roofers with full site safety measures.'},
+                    {'step_number': '04', 'title': 'Warranty & Maintenance',
+                     'body': 'All installations come with a workmanship warranty and optional maintenance plans.'},
                 ],
             },
             {
@@ -210,10 +273,14 @@ def seed_pages():
                     'ensure we drill in the right location every time, minimising dry holes and cost overruns.</p>'
                 ),
                 'steps': [
-                    {'step_number': '01', 'title': 'Hydrogeological Survey', 'body': 'Site survey to identify the best drilling location and estimate expected yield.'},
-                    {'step_number': '02', 'title': 'Drilling', 'body': 'Precision drilling using modern equipment to reach the water table safely.'},
-                    {'step_number': '03', 'title': 'Casing & Development', 'body': 'Borehole cased, developed, and tested for sustainable yield and water quality.'},
-                    {'step_number': '04', 'title': 'Pump Installation', 'body': 'Submersible pump fitted and connected to your storage or distribution system.'},
+                    {'step_number': '01', 'title': 'Hydrogeological Survey',
+                     'body': 'Site survey to identify the best drilling location and estimate expected yield.'},
+                    {'step_number': '02', 'title': 'Drilling',
+                     'body': 'Precision drilling using modern equipment to reach the water table safely.'},
+                    {'step_number': '03', 'title': 'Casing & Development',
+                     'body': 'Borehole cased, developed, and tested for sustainable yield and water quality.'},
+                    {'step_number': '04', 'title': 'Pump Installation',
+                     'body': 'Submersible pump fitted and connected to your storage or distribution system.'},
                 ],
             },
             {
@@ -227,10 +294,14 @@ def seed_pages():
                     'ready for immediate occupation. Browse our current listings for available homes.</p>'
                 ),
                 'steps': [
-                    {'step_number': '01', 'title': 'Browse Listings', 'body': 'View our portfolio of completed properties available for sale.'},
-                    {'step_number': '02', 'title': 'Site Visit', 'body': 'Schedule a viewing — our team will walk you through every detail.'},
-                    {'step_number': '03', 'title': 'Offer & Agreement', 'body': 'We handle the sale agreement, valuation, and legal documentation.'},
-                    {'step_number': '04', 'title': 'Keys in Hand', 'body': 'Smooth transfer of ownership — you move in, we follow up.'},
+                    {'step_number': '01', 'title': 'Browse Listings',
+                     'body': 'View our portfolio of completed properties available for sale.'},
+                    {'step_number': '02', 'title': 'Site Visit',
+                     'body': 'Schedule a viewing — our team will walk you through every detail.'},
+                    {'step_number': '03', 'title': 'Offer & Agreement',
+                     'body': 'We handle the sale agreement, valuation, and legal documentation.'},
+                    {'step_number': '04', 'title': 'Keys in Hand',
+                     'body': 'Smooth transfer of ownership — you move in, we follow up.'},
                 ],
             },
         ]
@@ -392,5 +463,17 @@ def seed_pages():
             print('  Created Site record.')
         else:
             print('  Updated Site record.')
+
+    # BrandingSettings — tied to the default site (BaseSiteSetting)
+    default_site = Site.objects.filter(is_default_site=True).first()
+    if default_site:
+        branding, _ = BrandingSettings.objects.get_or_create(site=default_site)
+        branding.site_name = 'Numira Real Estate'
+        branding.phone = '0247737950'
+        branding.email = 'sumailainusah5@gmail.com'
+        branding.instagram_url = 'https://www.instagram.com/numiralreal/'
+        branding.tiktok_url = 'https://www.tiktok.com/@numiral.real.estat'
+        branding.save()
+        print('  Updated BrandingSettings.')
 
     return created

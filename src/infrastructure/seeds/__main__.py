@@ -10,16 +10,16 @@ django.setup()
 
 
 def run():
-    from .realtors import seed_realtors
-    from .listings import seed_listings
+    from .employees import seed_employees
+    from .projects import seed_projects
     from .testimonials import seed_testimonials
     from .pages import seed_pages
 
-    print('Seeding realtors...')
-    r = seed_realtors()
+    print('Seeding employees...')
+    e = seed_employees()
 
-    print('Seeding listings...')
-    l = seed_listings()
+    print('Seeding projects...')
+    pr = seed_projects()
 
     print('Seeding testimonials...')
     t = seed_testimonials()
@@ -27,7 +27,7 @@ def run():
     print('Seeding pages...')
     p = seed_pages()
 
-    print(f'\nDone. Created {r} realtor(s), {l} listing(s), {t} testimonial(s), and {p} page(s).')
+    print(f'\nDone. Created {e} employee(s), {pr} project(s), {t} testimonial(s), and {p} page(s).')
 
 
 run()

@@ -1,72 +1,90 @@
 {% extends 'base.html' %}
 
-{% load humanize wagtailcore_tags %}
+{% load humanize wagtailcore_tags wagtailimages_tags %}
 
 {% block title %} | Home{% endblock %}
 
 {% block content %}
 
   {% for block in page.body %}
-    {% if block.block_type == 'hero' %}
+    {% if block.block_type == 'hero' or block.block_type == 'hero_slideshow' %}
       {% include_block block %}
     {% endif %}
   {% endfor %}
 
-  <!-- Latest Listings -->
-  <section id="listings" class="py-5">
+  {% if page.show_featured_projects %}
+  <!-- Featured Work -->
+  <section id="projects" class="py-5">
     <div class="container">
       {% include 'partials/_alerts.html' %}
-      <h3 class="text-center mb-3">Latest Listings</h3>
+      <div class="d-flex align-items-center justify-content-between mb-4">
+        <h3 class="mb-0">{{ page.featured_projects_heading|default:"Featured Work" }}</h3>
+        <a href="{% url 'projects:projects' %}" class="btn btn-outline-primary btn-sm">
+          See All Projects <i class="fas fa-arrow-right ml-1"></i>
+        </a>
+      </div>
       <div class="row">
-        {% for item in listing %}
-          <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card listing-preview">
-              <img class="card-img-top" src="{{ item.photo_main.url }}" alt="">
-              <div class="card-img-overlay">
-                <h2>
-                  <span class="badge badge-secondary text-white">${{ item.price|intcomma }}</span>
-                </h2>
+        {% for item in featured_projects %}
+          <div class="col-md-6 col-lg-4 mb-4 d-flex">
+            <div class="card w-100" style="border:none;box-shadow:0 2px 12px rgba(0,0,0,.08);border-radius:10px;overflow:hidden;">
+
+              <div style="position:relative;height:220px;overflow:hidden;background:#e9ecef;">
+                {% if item.photo_main %}
+                  {% image item.photo_main fill-600x440 as card_img %}
+                  <img src="{{ card_img.url }}" alt="{{ item.title }}"
+                       style="width:100%;height:100%;object-fit:cover;display:block;">
+                {% else %}
+                  <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#dee2e6,#ced4da);">
+                    <i class="fas fa-hard-hat" style="font-size:3rem;color:#adb5bd;"></i>
+                  </div>
+                {% endif %}
+                <div style="position:absolute;top:12px;left:12px;">
+                  <span class="badge badge-secondary text-white" style="font-size:.85rem;padding:6px 10px;">
+                    ${{ item.price|intcomma }}
+                  </span>
+                </div>
+                {% if item.service %}
+                  <div style="position:absolute;top:12px;right:12px;">
+                    <span class="badge badge-info" style="font-size:.75rem;">{{ item.service.title }}</span>
+                  </div>
+                {% endif %}
               </div>
-              <div class="card-body">
-                <div class="listing-heading text-center">
-                  <h4 class="text-primary">{{ item.title }}</h4>
-                  <p>
-                    <i class="fas fa-map-marker text-secondary"></i> {{ item.city }} {{ item.state_or_region }},
-                    {{ item.zipcode }}
-                  </p>
-                </div>
-                <hr>
-                <div class="row py-2 text-secondary">
-                  <div class="col-6"><i class="fas fa-th-large"></i> Sqft: {{ item.sqft }}</div>
-                  <div class="col-6"><i class="fas fa-car"></i> Garage: {{ item.garage }}</div>
-                </div>
-                <div class="row py-2 text-secondary">
-                  <div class="col-6"><i class="fas fa-bed"></i> Bedrooms: {{ item.bedrooms }}</div>
-                  <div class="col-6"><i class="fas fa-bath"></i> Bathrooms: {{ item.bathrooms }}</div>
-                </div>
-                <hr>
-                <div class="row py-2 text-secondary">
-                  <div class="col-6"><i class="fas fa-user"></i> {{ item.realtor }}</div>
-                </div>
-                <div class="row text-secondary pb-2">
-                  <div class="col-6"><i class="fas fa-clock"></i> {{ item.listing_date|timesince }}</div>
-                </div>
-                <hr>
-                <a href="{% url 'listings:listing' item.id %}" class="btn btn-primary btn-block">More Info</a>
+
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title text-primary mb-1">{{ item.title }}</h5>
+                <p class="text-muted small mb-2">
+                  <i class="fas fa-map-marker-alt"></i>
+                  {{ item.city }}{% if item.state_or_region %} {{ item.state_or_region }}{% endif %}
+                </p>
+                {% if item.sqft or item.bedrooms %}
+                  <div class="d-flex text-secondary small mb-2" style="gap:1rem;">
+                    {% if item.sqft %}<span><i class="fas fa-th-large"></i> {{ item.sqft }} sqft</span>{% endif %}
+                    {% if item.bedrooms %}<span><i class="fas fa-bed"></i> {{ item.bedrooms }} bed</span>{% endif %}
+                  </div>
+                {% endif %}
+                {% if item.employee %}
+                  <p class="text-secondary small mb-2"><i class="fas fa-user"></i> {{ item.employee }}</p>
+                {% endif %}
+                <p class="text-muted small mb-3" style="flex-grow:1;">
+                  <i class="fas fa-clock"></i> {{ item.project_date|timesince }} ago
+                </p>
+                <a href="{% url 'projects:project' item.id %}" class="btn btn-primary btn-block mt-auto">More Info</a>
               </div>
+
             </div>
           </div>
         {% empty %}
-          <div class="col-md-12">
-            <p>No Listings Available</p>
+          <div class="col-md-12 text-center text-muted py-5">
+            <p>No projects available yet.</p>
           </div>
         {% endfor %}
       </div>
     </div>
   </section>
+  {% endif %}
 
   {% for block in page.body %}
-    {% if block.block_type != 'hero' %}
+    {% if block.block_type != 'hero' and block.block_type != 'hero_slideshow' %}
       {% include_block block %}
     {% endif %}
   {% endfor %}

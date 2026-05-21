@@ -57,7 +57,7 @@
     <h2 class="display-4">We Work For You</h2>
     <h4>Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem velit aperiam, unde aliquid at similique!</h4>
     <hr>
-    <a href="{% url 'listings:listings' %}" class="btn btn-secondary text-white btn-lg">View Our Featured Listings</a>
+    <a href="{% url 'projects:projects' %}" class="btn btn-secondary text-white btn-lg">View Our Featured Listings</a>
   </section>
 
   <!-- Team -->
@@ -65,7 +65,7 @@
     <div class="container">
       <h2 class="text-center">Our Team</h2>
       <div class="row text-center">
-          {% for staff in realtor %}
+          {% for staff in employees %}
             <div class="col-md-4">
               <img src="{{ staff.photo.url }}" alt="" class="rounded-circle mb-3 realtor-photo">
               <h4>{{ staff.name }}</h4>

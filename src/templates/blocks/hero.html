@@ -1,57 +1,58 @@
-{% load humanize %}
-
-<!-- Showcase -->
+<!-- Hero -->
 <section id="showcase">
-  <div class="container text-center">
-    <div class="home-search p-5">
-      <div class="overlay p-5">
-        <h1 class="display-4 mb-4">{{ value.heading }}</h1>
-        {% if value.subtext %}
-          <p class="lead">{{ value.subtext }}</p>
-        {% endif %}
-        <div class="search">
-          <form action="{% url 'listings:search' %}">
-            <!-- Form Row 1 -->
-            <div class="form-row">
-              <div class="col-md-4 mb-3">
-                <label class="sr-only">Keywords</label>
-                <input type="text" name="keywords" class="form-control" placeholder="Keyword (Pool, Garage, etc)">
+  <div class="d-flex align-items-center justify-content-center" style="min-height:650px;flex-direction:column;position:relative;">
+    <div class="text-center text-white mb-4" style="position:relative;z-index:2;">
+      <h1 class="display-4 font-weight-bold">{{ value.heading }}</h1>
+      {% if value.subtext %}
+        <p class="lead mb-0">{{ value.subtext }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Floating filter card -->
+    <div class="container" style="position:relative;z-index:2;">
+      <div class="card border-0 shadow-lg mx-auto" style="max-width:860px;border-radius:12px;overflow:visible;">
+        <div class="card-body p-4">
+          <form method="get" action="{% url 'projects:projects' %}">
+            <div class="form-row align-items-end">
+
+              <div class="col-md-4 mb-3 mb-md-0">
+                <label class="small font-weight-bold text-muted mb-1 text-uppercase" style="font-size:.7rem;letter-spacing:.06em;">Keyword</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text bg-white border-right-0"><i class="fas fa-search text-muted" style="font-size:.85rem;"></i></span>
+                  </div>
+                  <input type="text" name="q" class="form-control border-left-0 pl-0" placeholder="Search projects…" style="border-radius:0 6px 6px 0;">
+                </div>
               </div>
-              <div class="col-md-4 mb-3">
-                <label class="sr-only">City</label>
-                <input type="text" name="city" class="form-control" placeholder="City">
-              </div>
-              <div class="col-md-4 mb-3">
-                <label class="sr-only">State</label>
-                <select name="state" class="form-control">
-                  <option selected="true" disabled="disabled">State (All)</option>
-                  {% for key, val in state_choices.items %}
-                    <option value="{{ key }}">{{ val }}</option>
+
+              <div class="col-md-3 mb-3 mb-md-0">
+                <label class="small font-weight-bold text-muted mb-1 text-uppercase" style="font-size:.7rem;letter-spacing:.06em;">Service</label>
+                <select name="service" class="form-control" style="border-radius:6px;">
+                  <option value="">All Services</option>
+                  {% for svc in service_pages %}
+                    <option value="{{ svc.id }}">{{ svc.title }}</option>
                   {% endfor %}
                 </select>
               </div>
+
+              <div class="col-md-3 mb-3 mb-md-0">
+                <label class="small font-weight-bold text-muted mb-1 text-uppercase" style="font-size:.7rem;letter-spacing:.06em;">Status</label>
+                <select name="status" class="form-control" style="border-radius:6px;">
+                  <option value="all">All Projects</option>
+                  <option value="past">Past Works</option>
+                  <option value="active">Active</option>
+                  <option value="completed">Completed</option>
+                  <option value="in_progress">In Progress</option>
+                </select>
+              </div>
+
+              <div class="col-md-2 mb-0">
+                <button type="submit" class="btn btn-secondary btn-block" style="border-radius:6px;font-weight:600;letter-spacing:.03em;">
+                  <i class="fas fa-search mr-1"></i> Explore
+                </button>
+              </div>
+
             </div>
-            <!-- Form Row 2 -->
-            <div class="form-row">
-              <div class="col-md-6 mb-3">
-                <label class="sr-only">Bedrooms</label>
-                <select name="bedrooms" class="form-control">
-                  <option selected="true" disabled="disabled">Bedrooms (All)</option>
-                  {% for key, val in bedroom_choices.items %}
-                    <option value="{{ key }}">{{ val }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-              <div class="col-md-6 mb-3">
-                <select name="price" class="form-control">
-                  <option selected="true" disabled="disabled">Max Price (Any)</option>
-                  {% for key, val in price_choices.items %}
-                    <option value="{{ key }}">{{ val|intcomma }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-            </div>
-            <button class="btn btn-secondary btn-block mt-4" type="submit">Submit form</button>
           </form>
         </div>
       </div>

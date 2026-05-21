@@ -1,0 +1,348 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load static wagtailimages_tags %}
+
+{% block title %} | Projects{% endblock %}
+
+{% block content %}
+
+  <!-- Breadcrumb -->
+  <section id="bc" class="mt-3">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
+          <li class="breadcrumb-item active">Projects</li>
+        </ol>
+      </nav>
+    </div>
+  </section>
+
+  <section id="showcase-inner" class="py-5 text-white">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-md-12">
+          <h1 class="display-4">Our Projects</h1>
+          <p class="lead">Browse our portfolio of completed and ongoing work</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick filter bar -->
+  <section class="py-4 bg-light border-bottom">
+    <div class="container">
+      <form method="get" action="{% url 'projects:projects' %}" id="quickFilterForm">
+        <div class="form-row align-items-end">
+
+          <div class="col-md-4 mb-2">
+            <label class="small font-weight-bold text-muted mb-1">Search</label>
+            <input type="text" name="q" class="form-control form-control-sm"
+                   placeholder="Keyword, city, description…" value="{{ values.q }}">
+          </div>
+
+          <div class="col-md-3 mb-2">
+            <label class="small font-weight-bold text-muted mb-1">Service</label>
+            <select name="service" class="form-control form-control-sm">
+              <option value="">All Services</option>
+              {% for svc in service_pages %}
+                <option value="{{ svc.id }}" {% if values.service == svc.id|stringformat:"s" %}selected{% endif %}>
+                  {{ svc.title }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-2 mb-2">
+            <label class="small font-weight-bold text-muted mb-1">Status</label>
+            <select name="status" class="form-control form-control-sm">
+              <option value="past"        {% if status_filter == 'past' %}selected{% endif %}>Past Works</option>
+              <option value="all"         {% if status_filter == 'all' %}selected{% endif %}>All</option>
+              <option value="active"      {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+              <option value="available"   {% if status_filter == 'available' %}selected{% endif %}>Available</option>
+              <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>In Progress</option>
+              <option value="completed"   {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+              <option value="sold"        {% if status_filter == 'sold' %}selected{% endif %}>Sold</option>
+            </select>
+          </div>
+
+          <!-- Preserve advanced filter params when quick-filtering -->
+          {% if values.price_min %}<input type="hidden" name="price_min" value="{{ values.price_min }}">{% endif %}
+          {% if values.price_max %}<input type="hidden" name="price_max" value="{{ values.price_max }}">{% endif %}
+          {% if values.sqft_min %}<input type="hidden" name="sqft_min" value="{{ values.sqft_min }}">{% endif %}
+          {% if values.sqft_max %}<input type="hidden" name="sqft_max" value="{{ values.sqft_max }}">{% endif %}
+          {% if values.bedrooms_min %}<input type="hidden" name="bedrooms_min" value="{{ values.bedrooms_min }}">{% endif %}
+          {% if values.city %}<input type="hidden" name="city" value="{{ values.city }}">{% endif %}
+          {% if values.state %}<input type="hidden" name="state" value="{{ values.state }}">{% endif %}
+          {% if values.employee %}<input type="hidden" name="employee" value="{{ values.employee }}">{% endif %}
+
+          <div class="col-auto mb-2">
+            <button type="button" class="btn btn-outline-secondary btn-sm"
+                    data-toggle="modal" data-target="#advFiltersModal">
+              <i class="fas fa-sliders-h"></i> More Filters
+              {% if advanced_filter_count %}
+                <span class="badge badge-secondary ml-1">{{ advanced_filter_count }}</span>
+              {% endif %}
+            </button>
+          </div>
+
+          <div class="col-auto mb-2">
+            <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+          </div>
+
+        </div>
+      </form>
+
+      <!-- Active filter chips -->
+      {% if filter_chips %}
+        <div class="d-flex flex-wrap align-items-center mt-2" style="gap:.5rem;">
+          <span class="small text-muted mr-1">Active:</span>
+          {% for chip in filter_chips %}
+            <a href="{{ chip.remove_url }}"
+               class="badge badge-primary d-inline-flex align-items-center"
+               style="font-size:.8rem;padding:5px 9px;font-weight:500;text-decoration:none;">
+              {{ chip.label }}
+              <span style="margin-left:6px;opacity:.75;">&times;</span>
+            </a>
+          {% endfor %}
+          <a href="{{ clear_url }}" class="small text-danger ml-1">Clear all</a>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+
+  {% include 'partials/_alerts.html' %}
+
+  <section id="projects" class="py-4">
+    <div class="container">
+
+      <!-- Result count -->
+      <p class="text-muted small mb-3">
+        Showing {{ query.paginator.count }} project{{ query.paginator.count|pluralize }}
+      </p>
+
+      <div class="row">
+        {% for project in query %}
+          <div class="col-md-6 col-lg-4 mb-4 d-flex">
+            <div class="card w-100" style="border:none;box-shadow:0 2px 12px rgba(0,0,0,.08);border-radius:10px;overflow:hidden;">
+
+              <!-- Image area -->
+              <div style="position:relative;height:220px;overflow:hidden;background:#e9ecef;">
+                {% if project.photo_main %}
+                  {% image project.photo_main fill-600x440 as card_img %}
+                  <img src="{{ card_img.url }}" alt="{{ project.title }}"
+                       style="width:100%;height:100%;object-fit:cover;display:block;">
+                {% else %}
+                  <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#dee2e6,#ced4da);">
+                    <i class="fas fa-hard-hat" style="font-size:3rem;color:#adb5bd;"></i>
+                  </div>
+                {% endif %}
+
+                <!-- Price — hidden for sold projects -->
+                {% if project.status != 'sold' %}
+                  <div style="position:absolute;top:12px;left:12px;">
+                    <span class="badge badge-secondary text-white" style="font-size:.85rem;padding:6px 10px;">
+                      ${{ project.price|intcomma }}
+                    </span>
+                  </div>
+                {% endif %}
+
+                <!-- Status badge top-right -->
+                <div style="position:absolute;top:12px;right:12px;">
+                  {% if project.status == 'available' %}
+                    <span class="badge badge-success" style="font-size:.75rem;">Available</span>
+                  {% elif project.status == 'in_progress' %}
+                    <span class="badge badge-primary" style="font-size:.75rem;">In Progress</span>
+                  {% elif project.status == 'completed' %}
+                    <span class="badge badge-info" style="font-size:.75rem;">Completed</span>
+                  {% elif project.status == 'sold' %}
+                    <span class="badge badge-dark" style="font-size:.75rem;">Sold</span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title text-primary mb-1">{{ project.title }}</h5>
+                <p class="text-muted small mb-1">
+                  <i class="fas fa-map-marker-alt"></i>
+                  {{ project.city }}{% if project.state_or_region %} {{ project.state_or_region }}{% endif %}
+                </p>
+                {% if project.service %}
+                  <p class="mb-2">
+                    <span class="badge badge-light border" style="font-size:.72rem;">{{ project.service.title }}</span>
+                  </p>
+                {% endif %}
+                {% if project.sqft or project.bedrooms %}
+                  <div class="d-flex text-secondary small mb-2" style="gap:1rem;">
+                    {% if project.sqft %}<span><i class="fas fa-th-large"></i> {{ project.sqft|intcomma }} sqft</span>{% endif %}
+                    {% if project.bedrooms %}<span><i class="fas fa-bed"></i> {{ project.bedrooms }} bed</span>{% endif %}
+                  </div>
+                {% endif %}
+                {% if project.employee %}
+                  <p class="text-secondary small mb-1">
+                    <i class="fas fa-user"></i> {{ project.employee }}
+                  </p>
+                {% endif %}
+                <p class="text-muted small mb-3" style="flex-grow:1;">
+                  <i class="fas fa-clock"></i> {{ project.project_date|timesince }} ago
+                </p>
+                <a href="{% url 'projects:project' project.id %}" class="btn btn-primary btn-block mt-auto">
+                  View Project
+                </a>
+              </div>
+
+            </div>
+          </div>
+        {% empty %}
+          <div class="col-12 text-center py-5">
+            <i class="fas fa-hard-hat fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No projects match your filters.</p>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      {% if query.has_other_pages %}
+        <div class="row mt-2">
+          <div class="col-12">
+            <ul class="pagination justify-content-center">
+              {% if query.has_previous %}
+                <li class="page-item">
+                  <a href="?{{ base_qs }}&page={{ query.previous_page_number }}" class="page-link">&laquo;</a>
+                </li>
+              {% else %}
+                <li class="page-item disabled"><a class="page-link">&laquo;</a></li>
+              {% endif %}
+              {% for i in query.paginator.page_range %}
+                <li class="page-item {% if i == query.number %}active{% endif %}">
+                  <a href="?{{ base_qs }}&page={{ i }}" class="page-link">{{ i }}</a>
+                </li>
+              {% endfor %}
+              {% if query.has_next %}
+                <li class="page-item">
+                  <a href="?{{ base_qs }}&page={{ query.next_page_number }}" class="page-link">&raquo;</a>
+                </li>
+              {% else %}
+                <li class="page-item disabled"><a class="page-link">&raquo;</a></li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      {% endif %}
+
+    </div>
+  </section>
+
+  <!-- Advanced Filters Modal -->
+  <div class="modal fade" id="advFiltersModal" tabindex="-1" role="dialog" aria-labelledby="advFiltersModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title" id="advFiltersModalLabel">
+            <i class="fas fa-sliders-h mr-2"></i>Advanced Filters
+          </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <form method="get" action="{% url 'projects:projects' %}">
+          <!-- Preserve quick-filter values -->
+          <input type="hidden" name="status" value="{{ status_filter }}">
+          {% if values.q %}<input type="hidden" name="q" value="{{ values.q }}">{% endif %}
+          {% if values.service %}<input type="hidden" name="service" value="{{ values.service }}">{% endif %}
+
+          <div class="modal-body">
+
+            <!-- Price -->
+            <h6 class="font-weight-bold text-muted text-uppercase mb-3" style="font-size:.75rem;letter-spacing:.08em;">Price</h6>
+            <div class="form-row mb-4">
+              <div class="col-md-6">
+                <label class="small mb-1">Min Price ($)</label>
+                <input type="number" name="price_min" class="form-control form-control-sm"
+                       placeholder="e.g. 50000" value="{{ values.price_min }}" min="0">
+              </div>
+              <div class="col-md-6">
+                <label class="small mb-1">Max Price ($)</label>
+                <input type="number" name="price_max" class="form-control form-control-sm"
+                       placeholder="e.g. 500000" value="{{ values.price_max }}" min="0">
+              </div>
+            </div>
+
+            <!-- Size -->
+            <h6 class="font-weight-bold text-muted text-uppercase mb-3" style="font-size:.75rem;letter-spacing:.08em;">Project Size</h6>
+            <div class="form-row mb-4">
+              <div class="col-md-4">
+                <label class="small mb-1">Min Sqft</label>
+                <input type="number" name="sqft_min" class="form-control form-control-sm"
+                       placeholder="e.g. 500" value="{{ values.sqft_min }}" min="0">
+              </div>
+              <div class="col-md-4">
+                <label class="small mb-1">Max Sqft</label>
+                <input type="number" name="sqft_max" class="form-control form-control-sm"
+                       placeholder="e.g. 5000" value="{{ values.sqft_max }}" min="0">
+              </div>
+              <div class="col-md-4">
+                <label class="small mb-1">Min Bedrooms</label>
+                <select name="bedrooms_min" class="form-control form-control-sm">
+                  <option value="">Any</option>
+                  {% for n in bedrooms_range %}
+                    <option value="{{ n }}" {% if values.bedrooms_min == n|stringformat:"s" %}selected{% endif %}>
+                      {{ n }}+
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <!-- Location -->
+            <h6 class="font-weight-bold text-muted text-uppercase mb-3" style="font-size:.75rem;letter-spacing:.08em;">Location</h6>
+            <div class="form-row mb-4">
+              <div class="col-md-6">
+                <label class="small mb-1">City</label>
+                <input type="text" name="city" class="form-control form-control-sm"
+                       placeholder="e.g. Accra" value="{{ values.city }}">
+              </div>
+              <div class="col-md-6">
+                <label class="small mb-1">State / Region</label>
+                <input type="text" name="state" class="form-control form-control-sm"
+                       placeholder="e.g. Greater Accra" value="{{ values.state }}">
+              </div>
+            </div>
+
+            <!-- Project Lead -->
+            {% if employees %}
+              <h6 class="font-weight-bold text-muted text-uppercase mb-3" style="font-size:.75rem;letter-spacing:.08em;">Project Lead</h6>
+              <div class="form-row mb-2">
+                <div class="col-md-6">
+                  <select name="employee" class="form-control form-control-sm">
+                    <option value="">Any</option>
+                    {% for emp in employees %}
+                      <option value="{{ emp.id }}" {% if values.employee == emp.id|stringformat:"s" %}selected{% endif %}>
+                        {{ emp.name }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            {% endif %}
+
+          </div>
+
+          <div class="modal-footer justify-content-between">
+            <a href="{{ clear_url }}" class="btn btn-link text-danger btn-sm">
+              Clear advanced filters
+            </a>
+            <div>
+              <button type="button" class="btn btn-secondary btn-sm mr-2" data-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-primary btn-sm">Apply Filters</button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

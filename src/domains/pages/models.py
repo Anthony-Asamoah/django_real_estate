@@ -1,14 +1,13 @@
-from django.conf import settings as django_settings
-from django.db import models
 import pendulum
-
-from wagtail.models import Page
-from wagtail.fields import StreamField
+from django.conf import settings as django_settings
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.db import models
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
+from wagtail.fields import StreamField
+from wagtail.models import Page
 from wagtail.snippets.models import register_snippet
 
-from .widgets import ColorInput
 from .blocks import (
     HomePageStreamBlock,
     AboutPageStreamBlock,
@@ -18,6 +17,7 @@ from .blocks import (
     ProjectDetailStreamBlock,
     ContactPageStreamBlock,
 )
+from .widgets import ColorInput
 
 
 def _default_site_name():
@@ -26,9 +26,26 @@ def _default_site_name():
 
 class HomePage(Page):
     body = StreamField(HomePageStreamBlock(), use_json_field=True, blank=True)
+    show_featured_projects = models.BooleanField(
+        default=True,
+        help_text='Toggle the Featured Work section on the home page',
+    )
+    featured_projects_heading = models.CharField(
+        max_length=100,
+        default='Featured Work',
+        blank=True,
+        help_text='Heading for the Featured Work section',
+    )
 
     content_panels = Page.content_panels + [
         FieldPanel('body'),
+        MultiFieldPanel(
+            [
+                FieldPanel('show_featured_projects'),
+                FieldPanel('featured_projects_heading'),
+            ],
+            heading='Featured Projects Section',
+        ),
     ]
 
     parent_page_types = ['wagtailcore.Page']
@@ -43,14 +60,11 @@ class HomePage(Page):
 
     def get_context(self, request):
         context = super().get_context(request)
-        from domains.listings.models import Listing
-        from domains.listings.choices import price_choices, bedroom_choices, state_choices
-        context['listing'] = Listing.objects.filter(
+        from domains.projects.models import Project
+        context['featured_projects'] = Project.objects.filter(
             is_published=True
-        ).order_by('-listing_date')[:3]
-        context['price_choices'] = price_choices
-        context['bedroom_choices'] = bedroom_choices
-        context['state_choices'] = state_choices
+        ).order_by('-project_date')[:3]
+        context['service_pages'] = ServiceDetailPage.objects.live().public().order_by('title')
         return context
 
     class Meta:
@@ -124,9 +138,17 @@ class ProjectsIndexPage(Page):
 
     def get_context(self, request):
         context = super().get_context(request)
-        context['projects'] = (
-            self.get_children().live().specific().order_by('-first_published_at')
-        )
+        all_projects = self.get_children().live().specific().order_by('-first_published_at')
+        paginator = Paginator(all_projects, 9)
+        page_num = request.GET.get('page')
+        try:
+            projects = paginator.page(page_num)
+        except PageNotAnInteger:
+            projects = paginator.page(1)
+        except EmptyPage:
+            projects = paginator.page(paginator.num_pages)
+        context['projects'] = projects
+        context['paginator'] = paginator
         return context
 
     class Meta:

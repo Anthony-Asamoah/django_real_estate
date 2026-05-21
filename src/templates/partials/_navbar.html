@@ -44,9 +44,6 @@
         <li {% if 'projects' in request.path %}class="nav-item active mr-3"{% else %}class="nav-item mr-3"{% endif %}>
           <a class="nav-link" href="/projects/">Projects</a>
         </li>
-        <li {% if 'listings' in request.path %}class="nav-item active mr-3"{% else %}class="nav-item mr-3"{% endif %}>
-          <a class="nav-link" href="{% url 'listings:listings' %}">Listings</a>
-        </li>
         <li {% if 'about' in request.path %}class="nav-item active mr-3"{% else %}class="nav-item mr-3"{% endif %}>
           <a class="nav-link" href="/about/">About</a>
         </li>

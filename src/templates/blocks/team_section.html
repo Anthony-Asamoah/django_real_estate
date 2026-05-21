@@ -4,12 +4,15 @@
       <h2 class="text-center mb-4">{{ value.heading }}</h2>
     {% endif %}
     <div class="row text-center">
-      {% for member in realtors %}
+      {% for member in employees %}
         <div class="col-md-4 mb-4">
-          <img src="{{ member.photo.url }}" alt="{{ member.name }}" class="rounded-circle mb-3 realtor-photo">
+          {% if member.photo %}
+            <img src="{{ member.photo.url }}" alt="{{ member.name }}" class="rounded-circle mb-3 realtor-photo">
+          {% endif %}
           <h4>{{ member.name }}</h4>
           <p class="text-success">
-            <i class="fas fa-award text-success mb-3"></i> Realtor
+            <i class="fas fa-award text-success mb-3"></i>
+            {{ member.role|default:"Team Member" }}
           </p>
           <hr>
           <p><i class="fas fa-phone"></i> {{ member.phone }}</p>

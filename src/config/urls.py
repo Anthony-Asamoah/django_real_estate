@@ -9,7 +9,7 @@ from wagtail.documents import urls as wagtaildocs_urls
 urlpatterns = [
     path('cms/', include(wagtailadmin_urls)),
     path('documents/', include(wagtaildocs_urls)),
-    path('listings/', include('domains.listings.urls')),
+    path('projects/', include('domains.projects.urls')),
     path('', include('domains.accounts.urls')),
     path('', include('domains.contacts.urls')),
     path('', include(wagtail_urls)),

@@ -1,3 +1,4 @@
+from django.forms import CharField
 from wagtail.blocks import (
     StructBlock,
     CharBlock,
@@ -5,12 +6,29 @@ from wagtail.blocks import (
     ListBlock,
     RichTextBlock,
     StreamBlock,
+    ChoiceBlock,
+    IntegerBlock,
+    FieldBlock,
 )
 from wagtail.images.blocks import ImageChooserBlock
 
+from .widgets import IconInput
+
+
+class IconCharBlock(FieldBlock):
+    """CharBlock that renders a live Font Awesome icon preview in the Wagtail admin."""
+
+    def __init__(self, required=True, help_text=None, **kwargs):
+        self.field = CharField(
+            required=required,
+            help_text=help_text or 'Font Awesome icon class, e.g. fa-home',
+            widget=IconInput(),
+        )
+        super().__init__(**kwargs)
+
 
 class ServiceCardBlock(StructBlock):
-    icon = CharBlock(help_text='Font Awesome icon class, e.g. fa-home')
+    icon = IconCharBlock()
     title = CharBlock()
     body = TextBlock()
 
@@ -38,6 +56,39 @@ class HeroBlock(StructBlock):
         icon = 'title'
         label = 'Hero'
         template = 'blocks/hero.html'
+
+
+class HeroSlideBlock(StructBlock):
+    image = ImageChooserBlock(help_text='Background image for this slide')
+    caption = CharBlock(required=False, help_text='Optional overlay caption')
+
+    class Meta:
+        icon = 'image'
+        label = 'Slide'
+
+
+class HeroSlideshowBlock(StructBlock):
+    heading = CharBlock()
+    subtext = TextBlock(required=False)
+    slides = ListBlock(HeroSlideBlock(), min_num=3, help_text='Add at least 3 slides')
+    transition_type = ChoiceBlock(
+        choices=[('slide', 'Slide'), ('fade', 'Fade')],
+        default='slide',
+        help_text='Animation style between slides',
+    )
+    interval = IntegerBlock(
+        default=5000,
+        help_text='Milliseconds each slide is shown before transitioning (e.g. 5000 = 5s)',
+    )
+    animation_speed = IntegerBlock(
+        default=600,
+        help_text='Duration of the transition animation in milliseconds',
+    )
+
+    class Meta:
+        icon = 'title'
+        label = 'Hero Slideshow'
+        template = 'blocks/hero_slideshow.html'
 
 
 class HeroBannerBlock(StructBlock):
@@ -97,7 +148,7 @@ class GalleryBlock(StructBlock):
 class StatItemBlock(StructBlock):
     value = CharBlock(help_text='e.g. 200+')
     label = CharBlock(help_text='e.g. Projects Completed')
-    icon = CharBlock(required=False, help_text='FA icon class, e.g. fa-home')
+    icon = IconCharBlock(required=False, help_text='Font Awesome icon class, e.g. fa-home')
 
 
 class StatsRowBlock(StructBlock):
@@ -121,6 +172,7 @@ class TestimonialsBlock(StructBlock):
 
 class HomePageStreamBlock(StreamBlock):
     hero = HeroBlock()
+    hero_slideshow = HeroSlideshowBlock()
     services_row = ServicesRowBlock()
     rich_text = RichTextBlock()
     cta_banner = CTABannerBlock()
@@ -141,23 +193,23 @@ class AboutIntroBlock(StructBlock):
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context=parent_context)
-        from domains.realtors.models import realtor as Realtor
-        context['mvp_realtor'] = Realtor.objects.filter(is_mvp=True).first()
+        from domains.employees.models import Employee
+        context['mvp_realtor'] = Employee.objects.filter(is_featured=True).first()
         return context
 
 
 class MVPRealtorBlock(StructBlock):
-    heading = CharBlock(default='Seller Of The Month', required=False)
+    heading = CharBlock(default='Featured Team Member', required=False)
 
     class Meta:
         icon = 'user'
-        label = 'MVP Realtor'
+        label = 'Featured Employee'
         template = 'blocks/mvp_realtor.html'
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context=parent_context)
-        from domains.realtors.models import realtor as Realtor
-        context['mvp_realtor'] = Realtor.objects.filter(is_mvp=True).first()
+        from domains.employees.models import Employee
+        context['mvp_realtor'] = Employee.objects.filter(is_featured=True).first()
         return context
 
 
@@ -171,8 +223,8 @@ class TeamSectionBlock(StructBlock):
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context=parent_context)
-        from domains.realtors.models import realtor as Realtor
-        context['realtors'] = Realtor.objects.order_by('hire_date')
+        from domains.employees.models import Employee
+        context['employees'] = Employee.objects.order_by('hire_date')
         return context
 
 
@@ -195,11 +247,40 @@ class ServicesIndexStreamBlock(StreamBlock):
     cta_banner = CTABannerBlock()
 
 
+class ProjectsGridBlock(StructBlock):
+    heading = CharBlock(required=False, default='Our Projects')
+    empty_message = CharBlock(
+        required=False,
+        default='No projects in this category yet.',
+        help_text='Shown when no published projects are linked to this service',
+    )
+
+    class Meta:
+        icon = 'folder-open-inverse'
+        label = 'Projects Grid'
+        template = 'blocks/projects_grid.html'
+
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context=parent_context)
+        from domains.projects.models import ACTIVE_STATUSES, Project
+        page = parent_context.get('page') if parent_context else None
+        context['projects'] = (
+            Project.objects.filter(
+                service=page,
+                is_published=True,
+                status__in=ACTIVE_STATUSES,
+            ).order_by('-project_date')
+            if page else Project.objects.none()
+        )
+        return context
+
+
 class ServiceDetailStreamBlock(StreamBlock):
     hero_banner = HeroBannerBlock()
     rich_text = RichTextBlock()
     process_steps = ProcessStepsBlock()
     gallery = GalleryBlock()
+    projects_grid = ProjectsGridBlock()
     stats_row = StatsRowBlock()
     testimonials = TestimonialsBlock()
     cta_banner = CTABannerBlock()

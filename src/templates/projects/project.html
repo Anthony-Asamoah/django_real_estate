@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load static wagtailimages_tags %}
+
+{% block title %} | {{ project.title }}{% endblock %}
+
+{% block content %}
+
+  <!-- Breadcrumb -->
+  <section id="bc" class="mt-3">
+    <div class="container">
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'projects:projects' %}">Projects</a></li>
+          <li class="breadcrumb-item active">{{ project.title }}</li>
+        </ol>
+      </nav>
+    </div>
+  </section>
+
+  <section id="showcase-inner" class="py-5 text-white">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-md-12">
+          <h1 class="display-4">{{ project.title }}</h1>
+          <p class="lead">
+            <i class="fas fa-map-marker"></i>
+            {{ project.city }}{% if project.state_or_region %} {{ project.state_or_region }}{% endif %}{% if project.zipcode %}, {{ project.zipcode }}{% endif %}
+          </p>
+          {% if project.status == 'available' %}
+            <span class="badge badge-success" style="font-size:.9rem;padding:6px 14px;">Available</span>
+          {% elif project.status == 'in_progress' %}
+            <span class="badge badge-primary" style="font-size:.9rem;padding:6px 14px;">In Progress</span>
+          {% elif project.status == 'completed' %}
+            <span class="badge badge-info" style="font-size:.9rem;padding:6px 14px;">Completed</span>
+          {% elif project.status == 'sold' %}
+            <span class="badge badge-dark" style="font-size:.9rem;padding:6px 14px;">Sold</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="project" class="py-4">
+    <div class="container">
+      <a href="{% url 'projects:projects' %}" class="btn btn-light mb-4">Back To Projects</a>
+      <div class="row">
+        <div class="col-md-9">
+          {% if project.photo_main %}
+            {% image project.photo_main fill-1000x480 as hero_img %}
+            <div style="max-height:480px;overflow:hidden;border-radius:8px;" class="mb-3">
+              <img src="{{ hero_img.url }}" alt="{{ project.title }}"
+                   style="width:100%;height:480px;object-fit:cover;display:block;">
+            </div>
+          {% endif %}
+
+          <!-- Thumbnails -->
+          <div class="row mb-5 thumbs">
+            {% for photo in photos %}
+              {% if photo %}
+                {% image photo fill-200x150 as thumb %}
+                {% image photo width-1200 as full %}
+                <div class="col-md-2 mb-2">
+                  <a href="{{ full.url }}" data-lightbox="project-images">
+                    <img src="{{ thumb.url }}" alt="" class="img-fluid" style="border-radius:4px;">
+                  </a>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          <!-- Details -->
+          <div class="row mb-5 fields">
+            <div class="col-md-6">
+              <ul class="list-group list-group-flush">
+                {% if project.status != 'sold' %}
+                  <li class="list-group-item text-secondary">
+                    <i class="fas fa-money-bill-alt"></i> Price / Value:
+                    <span class="float-right">${{ project.price|intcomma }}</span>
+                  </li>
+                {% endif %}
+                {% if project.bedrooms %}
+                  <li class="list-group-item text-secondary">
+                    <i class="fas fa-bed"></i> Bedrooms:
+                    <span class="float-right">{{ project.bedrooms }}</span>
+                  </li>
+                {% endif %}
+                {% if project.bathrooms %}
+                  <li class="list-group-item text-secondary">
+                    <i class="fas fa-bath"></i> Bathrooms:
+                    <span class="float-right">{{ project.bathrooms }}</span>
+                  </li>
+                {% endif %}
+                {% if project.garage is not None %}
+                  <li class="list-group-item text-secondary">
+                    <i class="fas fa-car"></i> Garage:
+                    <span class="float-right">{{ project.garage }}</span>
+                  </li>
+                {% endif %}
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <ul class="list-group list-group-flush">
+                {% if project.sqft %}
+                  <li class="list-group-item text-secondary">
+                    <i class="fas fa-th-large"></i> Square Feet:
+                    <span class="float-right">{{ project.sqft|intcomma }}</span>
+                  </li>
+                {% endif %}
+                {% if project.lot_size %}
+                  <li class="list-group-item text-secondary">
+                    <i class="fas fa-square"></i> Lot Size:
+                    <span class="float-right">{{ project.lot_size }} Acres</span>
+                  </li>
+                {% endif %}
+                {% if project.land_area_sqft %}
+                  <li class="list-group-item text-secondary">
+                    <i class="fas fa-map"></i> Land Area:
+                    <span class="float-right">{{ project.land_area_sqft|intcomma }} sqft</span>
+                  </li>
+                {% endif %}
+                <li class="list-group-item text-secondary">
+                  <i class="fas fa-calendar"></i> Project Date:
+                  <span class="float-right">{{ project.project_date|date:"N j, Y" }}</span>
+                </li>
+                {% if project.service %}
+                  <li class="list-group-item text-secondary">
+                    <i class="fas fa-tag"></i> Service:
+                    <span class="float-right">{{ project.service.title }}</span>
+                  </li>
+                {% endif %}
+                {% if project.employee %}
+                  <li class="list-group-item text-secondary">
+                    <i class="fas fa-user"></i> Lead:
+                    <span class="float-right">{{ project.employee }}</span>
+                  </li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="row mb-5">
+            <div class="col-md-12">
+              {{ project.description }}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          {% if project.employee and project.employee.photo %}
+            <div class="card mb-3">
+              <img class="card-img-top" src="{{ project.employee.photo.url }}" alt="{{ project.employee.name }}">
+              <div class="card-body">
+                <h5 class="card-title">Project Lead</h5>
+                <h6 class="text-secondary">{{ project.employee }}</h6>
+                {% if project.employee.role %}
+                  <p class="text-muted small">{{ project.employee.role }}</p>
+                {% endif %}
+              </div>
+            </div>
+          {% endif %}
+          {% if project.status != 'sold' %}
+            <button class="btn-primary btn-block btn-lg" data-toggle="modal" data-target="#inquiryModal">Make An Inquiry</button>
+          {% else %}
+            <div class="alert alert-secondary text-center mt-2">
+              <i class="fas fa-check-circle"></i> This project has been sold.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% if project.status != 'sold' %}
+  <!-- Inquiry Modal -->
+  <div class="modal fade" id="inquiryModal" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Make An Inquiry</h5>
+          <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <form action="{% url 'contact:contact' %}" method="post">
+            {% csrf_token %}
+            {% if user.is_authenticated %}
+              <input type="hidden" name="user_id" value="{{ user.id }}">
+            {% else %}
+              <input type="hidden" name="user_id" value="0">
+            {% endif %}
+            <input type="hidden" name="listing_id" value="{{ project.id }}">
+            <div class="form-group">
+              <label class="col-form-label">Project:</label>
+              <input type="text" name="listing" class="form-control" value="{{ project.title }}">
+            </div>
+            <div class="form-group">
+              <label class="col-form-label">Name:</label>
+              <input type="text" name="name" class="form-control"
+                {% if user.is_authenticated %}value="{{ user.first_name }} {{ user.last_name }}"{% endif %} required>
+            </div>
+            <div class="form-group">
+              <label class="col-form-label">Email:</label>
+              <input type="email" name="email" class="form-control"
+                {% if user.is_authenticated %}value="{{ user.email }}"{% endif %} required>
+            </div>
+            <div class="form-group">
+              <label class="col-form-label">Phone:</label>
+              <input type="text" name="phone" class="form-control">
+            </div>
+            <div class="form-group">
+              <label class="col-form-label">Message:</label>
+              <textarea name="message" class="form-control"></textarea>
+            </div>
+            <hr>
+            <input type="submit" value="Send" class="btn btn-block btn-secondary">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+{% endblock %}
