@@ -128,9 +128,63 @@ class HomePageStreamBlock(StreamBlock):
     testimonials = TestimonialsBlock()
 
 
+class AboutIntroBlock(StructBlock):
+    heading = CharBlock(default='We Build More Than Structures')
+    lead = CharBlock(required=False)
+    image = ImageChooserBlock(required=False, help_text='Shown only when no MVP realtor is set')
+    body = RichTextBlock(required=False)
+
+    class Meta:
+        icon = 'doc-full'
+        label = 'About Intro'
+        template = 'blocks/about_intro.html'
+
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context=parent_context)
+        from domains.realtors.models import realtor as Realtor
+        context['mvp_realtor'] = Realtor.objects.filter(is_mvp=True).first()
+        return context
+
+
+class MVPRealtorBlock(StructBlock):
+    heading = CharBlock(default='Seller Of The Month', required=False)
+
+    class Meta:
+        icon = 'user'
+        label = 'MVP Realtor'
+        template = 'blocks/mvp_realtor.html'
+
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context=parent_context)
+        from domains.realtors.models import realtor as Realtor
+        context['mvp_realtor'] = Realtor.objects.filter(is_mvp=True).first()
+        return context
+
+
+class TeamSectionBlock(StructBlock):
+    heading = CharBlock(default='Our Team', required=False)
+
+    class Meta:
+        icon = 'group'
+        label = 'Team Section'
+        template = 'blocks/team_section.html'
+
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context=parent_context)
+        from domains.realtors.models import realtor as Realtor
+        context['realtors'] = Realtor.objects.order_by('hire_date')
+        return context
+
+
 class AboutPageStreamBlock(StreamBlock):
-    rich_text = RichTextBlock()
+    hero_banner = HeroBannerBlock()
+    about_intro = AboutIntroBlock()
+    mvp_realtor = MVPRealtorBlock()
+    stats_row = StatsRowBlock()
     cta_banner = CTABannerBlock()
+    team_section = TeamSectionBlock()
+    testimonials = TestimonialsBlock()
+    rich_text = RichTextBlock()
 
 
 class ServicesIndexStreamBlock(StreamBlock):

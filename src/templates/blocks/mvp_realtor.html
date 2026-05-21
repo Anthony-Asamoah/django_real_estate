@@ -1,0 +1,18 @@
+{% if mvp_realtor %}
+<section class="py-4">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-4">
+        <div class="card">
+          <img class="card-img-top realtor-photo" src="{{ mvp_realtor.photo.url }}" alt="{{ mvp_realtor.name }}">
+          <div class="card-body">
+            <h5 class="card-title">{{ value.heading }}</h5>
+            <h6 class="text-secondary">{{ mvp_realtor.name }}</h6>
+            <p class="card-text">{{ mvp_realtor.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}

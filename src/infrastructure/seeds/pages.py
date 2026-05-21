@@ -79,32 +79,54 @@ def seed_pages():
     home_page = HomePage.objects.first()
 
     # About Page
-    if not AboutPage.objects.exists():
-        about = AboutPage(
-            title='About',
-            slug='about',
-            body=[
-                ('rich_text', (
-                    '<p>We are a full-service building and development company serving clients '
-                    'across the region. From securing land to completing construction, roofing, '
-                    'and installing boreholes — we manage the entire build lifecycle under one roof.</p>'
-                    '<p>Our team combines decades of hands-on experience with a commitment to quality, '
-                    'transparency, and delivering on time.</p>'
-                )),
-                ('cta_banner', {
-                    'heading': 'One Team. Every Stage.',
-                    'subtext': 'We are with you from land to completed property.',
-                    'button_text': 'See Our Projects',
-                    'button_url': '/projects/',
-                }),
+    _about_body = [
+        ('hero_banner', {
+            'heading': 'About Us',
+            'subtext': 'Building trust, one project at a time.',
+        }),
+        ('about_intro', {
+            'heading': 'We Build More Than Structures',
+            'lead': (
+                'A full-service building and development company, '
+                'delivering from land to completion.'
+            ),
+            'body': (
+                '<p>We are a full-service building and development company serving clients '
+                'across the region. From securing land to completing construction, roofing, '
+                'and installing boreholes — we manage the entire build lifecycle under one roof.</p>'
+                '<p>Our team combines decades of hands-on experience with a commitment to quality, '
+                'transparency, and delivering on time. Every project is assigned a dedicated manager '
+                'who keeps you informed at every stage.</p>'
+            ),
+        }),
+        ('stats_row', {
+            'heading': 'Our Track Record',
+            'stats': [
+                {'value': '150+', 'label': 'Projects Completed', 'icon': 'fa-hard-hat'},
+                {'value': '12', 'label': 'Years of Experience', 'icon': 'fa-calendar'},
+                {'value': '300+', 'label': 'Happy Clients', 'icon': 'fa-smile'},
+                {'value': '5', 'label': 'Core Services', 'icon': 'fa-tools'},
             ],
-        )
+        }),
+        ('cta_banner', {
+            'heading': 'One Team. Every Stage.',
+            'subtext': 'We are with you from land to completed property.',
+            'button_text': 'See Our Projects',
+            'button_url': '/projects/',
+        }),
+    ]
+
+    if not AboutPage.objects.exists():
+        about = AboutPage(title='About', slug='about', body=_about_body)
         home_page.add_child(instance=about)
         about.save_revision().publish()
         created += 1
         print(f'  Created AboutPage: {about.title}')
     else:
-        print('  Skipped (exists): AboutPage')
+        about = AboutPage.objects.first()
+        about.body = _about_body
+        about.save_revision().publish()
+        print('  Updated AboutPage body.')
 
     # Services Index
     if not ServicesIndexPage.objects.exists():

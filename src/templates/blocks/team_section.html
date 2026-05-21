@@ -1,0 +1,25 @@
+<section id="team" class="py-5">
+  <div class="container">
+    {% if value.heading %}
+      <h2 class="text-center mb-4">{{ value.heading }}</h2>
+    {% endif %}
+    <div class="row text-center">
+      {% for member in realtors %}
+        <div class="col-md-4 mb-4">
+          <img src="{{ member.photo.url }}" alt="{{ member.name }}" class="rounded-circle mb-3 realtor-photo">
+          <h4>{{ member.name }}</h4>
+          <p class="text-success">
+            <i class="fas fa-award text-success mb-3"></i> Realtor
+          </p>
+          <hr>
+          <p><i class="fas fa-phone"></i> {{ member.phone }}</p>
+          <p><i class="fas fa-envelope-open"></i> {{ member.email }}</p>
+        </div>
+      {% empty %}
+        <div class="col-md-12">
+          <p>No team members available.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

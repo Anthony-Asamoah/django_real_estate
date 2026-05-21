@@ -69,13 +69,6 @@ class AboutPage(Page):
 
     template = 'pages/about_page.html'
 
-    def get_context(self, request):
-        context = super().get_context(request)
-        from domains.realtors.models import realtor as Realtor
-        context['realtor'] = Realtor.objects.order_by('hire_date')
-        context['mvp_realtor'] = Realtor.objects.filter(is_mvp=True).first()
-        return context
-
     class Meta:
         verbose_name = 'About Page'
 
