@@ -344,12 +344,189 @@ img {
   margin-bottom: 1rem; }
 
 /* ===== TESTIMONIALS ===== */
-.testimonial-card {
-  border-radius: 8px; }
+.testimonials-section {
+  background: var(--brand-primary);
+  position: relative; }
 
-.testimonial-avatar {
+.testimonials-section .section-heading {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.01em; }
+
+.testimonials-section .section-subheading {
+  color: rgba(255,255,255,0.55);
+  font-size: 0.95rem; }
+
+.testimonial-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.75rem 1.75rem 1.5rem;
+  box-shadow: 0 6px 32px rgba(0,0,0,0.22);
+  display: flex;
+  flex-direction: column;
+  height: 100%; }
+
+.testimonial-body-wrap {
+  flex: 1; }
+
+.testimonial-open-quote {
+  display: block;
+  font-size: 3rem;
+  line-height: 1;
+  color: var(--brand-secondary);
+  font-family: Georgia, serif;
+  margin-bottom: 0.5rem;
+  margin-top: -0.25rem; }
+
+.testimonial-body {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #3a3a3a;
+  font-style: italic;
+  margin: 0; }
+
+.testimonial-read-more {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--brand-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px; }
+
+.testimonial-read-more:hover {
+  opacity: 0.8; }
+
+.testimonial-divider {
+  border: none;
+  border-top: 1px solid #ececec;
+  margin: 1.25rem 0 1rem; }
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem; }
+
+.testimonial-initials {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--brand-secondary);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  line-height: 1; }
+  letter-spacing: 0.04em;
+  text-transform: uppercase; }
+
+.testimonial-name {
+  font-weight: 700;
+  color: #111;
+  font-size: 0.92rem;
+  line-height: 1.2; }
+
+.testimonial-role {
+  color: #888;
+  font-size: 0.8rem;
+  margin-top: 0.1rem; }
+
+/* Modal */
+.testimonial-modal-content {
+  border-radius: 16px;
+  border: none; }
+
+.testimonial-modal-content .modal-body {
+  max-height: 70vh;
+  overflow-y: auto; }
+
+.testimonial-modal-quote {
+  font-size: 3.5rem;
+  line-height: 1;
+  color: var(--brand-secondary);
+  font-family: Georgia, serif;
+  margin-bottom: 0.5rem; }
+
+.testimonial-modal-body,
+.testimonial-modal-body p {
+  font-size: 1rem;
+  line-height: 1.85;
+  color: #3a3a3a;
+  font-style: italic;
+  margin-bottom: 1rem; }
+
+.testimonial-modal-body p:last-child { margin-bottom: 0; }
+
+/* Swiper overrides */
+.testimonials-section .swiper {
+  padding-bottom: 3.25rem !important; }
+
+.testimonials-section .swiper-pagination-bullet {
+  background: rgba(255,255,255,0.35);
+  opacity: 1;
+  width: 8px;
+  height: 8px; }
+
+.testimonials-section .swiper-pagination-bullet-active {
+  background: var(--brand-secondary);
+  width: 22px;
+  border-radius: 4px; }
+
+.testimonials-slider-wrap {
+  position: relative;
+  padding: 0 3.25rem; }
+
+@media (max-width: 767px) {
+  .testimonials-slider-wrap { padding: 0; } }
+
+.t-nav-btn {
+  position: absolute;
+  /* vertically center on the card area, excluding pagination padding-bottom */
+  top: calc(50% - 1.625rem);
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+  color: rgba(255,255,255,0.85); }
+
+.t-nav-prev { left: 0; }
+
+.t-nav-next { right: 0; }
+
+@media (max-width: 767px) {
+  .t-nav-btn { display: none; } }
+
+.t-nav-btn:hover {
+  background: var(--brand-secondary);
+  border-color: var(--brand-secondary);
+  color: #fff;
+  transform: translateY(-50%) scale(1.1); }
+
+.t-nav-btn:active {
+  transform: translateY(-50%) scale(0.95); }
+
+.t-nav-btn.swiper-button-disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none; }
+
+.t-nav-btn svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0; }
 
 /* ===== GALLERY ===== */
 .gallery-thumb {

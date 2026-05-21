@@ -4,6 +4,71 @@
 
 {% block extra_css %}
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<style>
+/* ── Refine Results Modal ──────────────────────────────────────────── */
+.rf-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.52);z-index:1050;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
+.rf-backdrop.is-open{opacity:1;visibility:visible}
+.rf-panel{background:#fff;border-radius:18px;width:100%;max-width:560px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 32px 80px rgba(15,23,42,.22);transform:translateY(14px) scale(.98);transition:transform .26s cubic-bezier(.22,1,.36,1)}
+.rf-backdrop.is-open .rf-panel{transform:translateY(0) scale(1)}
+
+.rf-header{display:flex;align-items:center;justify-content:space-between;padding:1.4rem 1.75rem 1.1rem;border-bottom:1px solid #f1f5f9;flex-shrink:0}
+.rf-title{font-size:1.05rem;font-weight:700;color:#0f172a;display:flex;align-items:center;gap:.5rem}
+.rf-close-btn{width:30px;height:30px;border-radius:50%;border:none;background:#f1f5f9;color:#64748b;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .14s,color .14s;flex-shrink:0;padding:0}
+.rf-close-btn:hover{background:#e2e8f0;color:#0f172a}
+
+.rf-body{padding:1.5rem 1.75rem;overflow-y:auto;flex:1}
+.rf-section{margin-bottom:1.75rem}
+.rf-section:last-child{margin-bottom:0}
+.rf-section-label{font-size:.64rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:1rem}
+
+/* Dual slider */
+.rf-slider-vals{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.rf-slider-val{font-size:.8rem;font-weight:600;color:#1e293b;background:#f8fafc;border:1.5px solid #e2e8f0;padding:3px 10px;border-radius:6px;min-width:80px;text-align:center}
+.rf-slider-sep{font-size:.72rem;color:#94a3b8}
+.rf-slider-track-wrap{position:relative;height:24px;display:flex;align-items:center}
+.rf-slider-track{position:absolute;left:0;right:0;height:4px;background:#e2e8f0;border-radius:2px}
+.rf-slider-fill{position:absolute;height:100%;background:var(--brand-secondary,#30caa0);border-radius:2px}
+.rf-range{position:absolute;width:100%;height:4px;background:transparent;-webkit-appearance:none;appearance:none;pointer-events:none;outline:none;z-index:2}
+.rf-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;background:#fff;border:2.5px solid var(--brand-secondary,#30caa0);border-radius:50%;cursor:grab;pointer-events:all;box-shadow:0 1px 5px rgba(0,0,0,.15);transition:box-shadow .15s}
+.rf-range:active::-webkit-slider-thumb{cursor:grabbing;box-shadow:0 0 0 6px rgba(48,202,160,.2)}
+.rf-range::-moz-range-thumb{width:20px;height:20px;background:#fff;border:2.5px solid var(--brand-secondary,#30caa0);border-radius:50%;cursor:grab;pointer-events:all;box-shadow:0 1px 5px rgba(0,0,0,.15)}
+
+/* Bedroom pills */
+.rf-sublabel{display:block;font-size:.72rem;font-weight:600;color:#64748b;margin-top:1.25rem;margin-bottom:.5rem}
+.rf-pills{display:flex;flex-wrap:wrap;gap:.45rem}
+.rf-pill{padding:5px 15px;border-radius:999px;border:1.5px solid #e2e8f0;background:#fff;color:#475569;font-size:.82rem;font-weight:500;cursor:pointer;transition:border-color .14s,background .14s,color .14s;line-height:1.5}
+.rf-pill:hover{border-color:var(--brand-secondary,#30caa0);color:var(--brand-secondary,#30caa0)}
+.rf-pill.is-active{background:var(--brand-secondary,#30caa0);border-color:var(--brand-secondary,#30caa0);color:#fff}
+
+/* Field inputs */
+.rf-field-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.rf-label{display:block;font-size:.72rem;font-weight:600;color:#64748b;margin-bottom:.35rem}
+.rf-input,.rf-select{width:100%;padding:.55rem .85rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.88rem;color:#0f172a;background:#f8fafc;box-sizing:border-box;outline:none;transition:border-color .15s,box-shadow .15s,background .15s}
+.rf-input:focus,.rf-select:focus{border-color:var(--brand-secondary,#30caa0);box-shadow:0 0 0 3px rgba(48,202,160,.13);background:#fff}
+.rf-input::placeholder{color:#cbd5e1}
+.rf-select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2394a3b8' d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .85rem center;padding-right:2.25rem;cursor:pointer}
+
+/* Footer */
+.rf-footer{padding:1.1rem 1.75rem;border-top:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.rf-btn-clear{font-size:.82rem;font-weight:500;color:#ef4444;text-decoration:none;background:none;border:none;cursor:pointer;padding:0;transition:color .14s}
+.rf-btn-clear:hover{color:#dc2626;text-decoration:underline}
+.rf-btn-cancel{padding:.5rem 1.2rem;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;color:#374151;font-size:.85rem;font-weight:500;cursor:pointer;transition:background .14s,border-color .14s}
+.rf-btn-cancel:hover{background:#f8fafc;border-color:#cbd5e1}
+.rf-btn-apply{padding:.5rem 1.4rem;border-radius:8px;border:none;background:var(--brand-primary,#1a2e4a);color:#fff;font-size:.85rem;font-weight:600;cursor:pointer;transition:filter .14s,transform .1s}
+.rf-btn-apply:hover{filter:brightness(1.12)}
+.rf-btn-apply:active{transform:translateY(1px)}
+
+/* Mobile – bottom sheet */
+@media(max-width:600px){
+  .rf-backdrop{align-items:flex-end;padding:0}
+  .rf-panel{border-radius:18px 18px 0 0;max-height:92vh;max-width:100%;transform:translateY(40px) scale(1)}
+  .rf-backdrop.is-open .rf-panel{transform:translateY(0) scale(1)}
+  .rf-body{padding:1.25rem}
+  .rf-header{padding:1.1rem 1.25rem 1rem}
+  .rf-footer{padding:1rem 1.25rem;padding-bottom:calc(1rem + env(safe-area-inset-bottom))}
+  .rf-field-grid{grid-template-columns:1fr}
+}
+</style>
 {% endblock %}
 
 {% block title %} | Projects{% endblock %}
@@ -48,7 +113,7 @@
 
           <div class="col-md-3 mb-2">
             <label class="small font-weight-bold text-muted mb-1">Service</label>
-            <select name="service" class="form-control form-control-sm">
+            <select name="service" class="form-control form-control-sm" onchange="this.form.submit()">
               <option value="">All Services</option>
               {% for svc in service_pages %}
                 <option value="{{ svc.id }}" {% if values.service == svc.id|stringformat:"s" %}selected{% endif %}>
@@ -60,14 +125,24 @@
 
           <div class="col-md-2 mb-2">
             <label class="small font-weight-bold text-muted mb-1">Status</label>
-            <select name="status" class="form-control form-control-sm">
-              <option value="past"        {% if status_filter == 'past' %}selected{% endif %}>Past Works</option>
+            <select name="status" class="form-control form-control-sm" onchange="this.form.submit()">
               <option value="all"         {% if status_filter == 'all' %}selected{% endif %}>All</option>
               <option value="active"      {% if status_filter == 'active' %}selected{% endif %}>Active</option>
               <option value="available"   {% if status_filter == 'available' %}selected{% endif %}>Available</option>
               <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>In Progress</option>
               <option value="completed"   {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
               <option value="sold"        {% if status_filter == 'sold' %}selected{% endif %}>Sold</option>
+              <option value="past"        {% if status_filter == 'past' %}selected{% endif %}>Past Works</option>
+            </select>
+          </div>
+
+          <div class="col-md-2 mb-2">
+            <label class="small font-weight-bold text-muted mb-1">Sort by</label>
+            <select name="sort" class="form-control form-control-sm" onchange="this.form.submit()">
+              <option value=""           {% if not sort %}selected{% endif %}>Newest</option>
+              <option value="price_asc"  {% if sort == 'price_asc' %}selected{% endif %}>Price ↑</option>
+              <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Price ↓</option>
+              <option value="sqft_desc"  {% if sort == 'sqft_desc' %}selected{% endif %}>Largest</option>
             </select>
           </div>
 
@@ -82,9 +157,8 @@
           {% if values.employee %}<input type="hidden" name="employee" value="{{ values.employee }}">{% endif %}
 
           <div class="col-auto mb-2">
-            <button type="button" class="btn btn-outline-secondary btn-sm"
-                    data-toggle="modal" data-target="#advFiltersModal">
-              <i class="fas fa-sliders-h"></i> More Filters
+            <button type="button" class="btn btn-outline-secondary btn-sm" id="rfOpenBtn">
+              <i class="fas fa-sliders-h"></i> Refine Results
               {% if advanced_filter_count %}
                 <span class="badge badge-secondary ml-1">{{ advanced_filter_count }}</span>
               {% endif %}
@@ -123,7 +197,11 @@
 
       <!-- Result count -->
       <p class="text-muted small mb-3">
-        Showing {{ query.paginator.count }} project{{ query.paginator.count|pluralize }}
+        {% if query.paginator.count == total_count %}
+          Showing {{ total_count }} project{{ total_count|pluralize }}
+        {% else %}
+          Showing {{ query.paginator.count }} of {{ total_count }} project{{ total_count|pluralize }}
+        {% endif %}
       </p>
 
       <div class="row reveal-group">
@@ -201,7 +279,10 @@
         {% empty %}
           <div class="col-12 text-center py-5">
             <i class="fas fa-hard-hat fa-3x text-muted mb-3"></i>
-            <p class="text-muted">No projects match your filters.</p>
+            <p class="text-muted mb-2">No projects match your filters.</p>
+            <a href="{% url 'projects:projects' %}" class="btn btn-outline-secondary btn-sm">
+              <i class="fas fa-times mr-1"></i>Clear all filters
+            </a>
           </div>
         {% endfor %}
       </div>
@@ -238,115 +319,117 @@
     </div>
   </section>
 
-  <!-- Advanced Filters Modal -->
-  <div class="modal fade" id="advFiltersModal" tabindex="-1" role="dialog" aria-labelledby="advFiltersModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
+  <!-- Refine Results Modal -->
+  <div id="rfBackdrop" class="rf-backdrop" role="dialog" aria-modal="true" aria-labelledby="rfPanelTitle" aria-hidden="true">
+    <div class="rf-panel">
 
-        <div class="modal-header">
-          <h5 class="modal-title" id="advFiltersModalLabel">
-            <i class="fas fa-sliders-h mr-2"></i>Advanced Filters
-          </h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+      <div class="rf-header">
+        <span class="rf-title" id="rfPanelTitle">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
+          Refine Results
+        </span>
+        <button class="rf-close-btn" id="rfCloseBtn" aria-label="Close">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <form method="get" action="{% url 'projects:projects' %}">
+        <input type="hidden" name="status" value="{{ status_filter }}">
+        {% if values.q %}<input type="hidden" name="q" value="{{ values.q }}">{% endif %}
+        {% if values.service %}<input type="hidden" name="service" value="{{ values.service }}">{% endif %}
+        {% if sort %}<input type="hidden" name="sort" value="{{ sort }}">{% endif %}
+        <input type="hidden" id="rfHiddenPriceMin" name="price_min" value="{{ values.price_min }}">
+        <input type="hidden" id="rfHiddenPriceMax" name="price_max" value="{{ values.price_max }}">
+        <input type="hidden" id="rfHiddenSqftMin" name="sqft_min" value="{{ values.sqft_min }}">
+        <input type="hidden" id="rfHiddenSqftMax" name="sqft_max" value="{{ values.sqft_max }}">
+        <input type="hidden" id="rfHiddenBedrooms" name="bedrooms_min" value="{{ values.bedrooms_min }}">
+
+        <div class="rf-body">
+
+          <!-- Price -->
+          <div class="rf-section">
+            <div class="rf-section-label">Price</div>
+            <div class="rf-slider-vals">
+              <span class="rf-slider-val" id="rfPriceMinLbl">—</span>
+              <span class="rf-slider-sep">to</span>
+              <span class="rf-slider-val" id="rfPriceMaxLbl">—</span>
+            </div>
+            <div class="rf-slider-track-wrap">
+              <div class="rf-slider-track">
+                <div class="rf-slider-fill" id="rfPriceFill"></div>
+              </div>
+              <input class="rf-range" id="rfPriceMin" type="range"
+                     data-port-min="{{ price_agg.min|default:0 }}" data-port-max="{{ price_agg.max|default:10000000 }}">
+              <input class="rf-range" id="rfPriceMax" type="range"
+                     data-port-min="{{ price_agg.min|default:0 }}" data-port-max="{{ price_agg.max|default:10000000 }}">
+            </div>
+          </div>
+
+          <!-- Project Size -->
+          <div class="rf-section">
+            <div class="rf-section-label">Project Size</div>
+            <div class="rf-slider-vals">
+              <span class="rf-slider-val" id="rfSqftMinLbl">—</span>
+              <span class="rf-slider-sep">to</span>
+              <span class="rf-slider-val" id="rfSqftMaxLbl">—</span>
+            </div>
+            <div class="rf-slider-track-wrap">
+              <div class="rf-slider-track">
+                <div class="rf-slider-fill" id="rfSqftFill"></div>
+              </div>
+              <input class="rf-range" id="rfSqftMin" type="range"
+                     data-port-min="{{ sqft_agg.min|default:0 }}" data-port-max="{{ sqft_agg.max|default:50000 }}">
+              <input class="rf-range" id="rfSqftMax" type="range"
+                     data-port-min="{{ sqft_agg.min|default:0 }}" data-port-max="{{ sqft_agg.max|default:50000 }}">
+            </div>
+            <span class="rf-sublabel">Min Bedrooms</span>
+            <div class="rf-pills" id="rfBedroomPills">
+              <button type="button" class="rf-pill{% if not values.bedrooms_min %} is-active{% endif %}" data-val="">Any</button>
+              {% for n in bedrooms_range %}{% if n <= 5 %}
+                <button type="button" class="rf-pill{% if values.bedrooms_min == n|stringformat:'s' %} is-active{% endif %}" data-val="{{ n }}">{{ n }}+</button>
+              {% endif %}{% endfor %}
+            </div>
+          </div>
+
+          <!-- Location -->
+          <div class="rf-section">
+            <div class="rf-section-label">Location</div>
+            <div class="rf-field-grid">
+              <div>
+                <label class="rf-label" for="rfCity">City</label>
+                <input type="text" class="rf-input" id="rfCity" name="city" placeholder="e.g. Accra" value="{{ values.city }}">
+              </div>
+              <div>
+                <label class="rf-label" for="rfState">State / Region</label>
+                <input type="text" class="rf-input" id="rfState" name="state" placeholder="e.g. Greater Accra" value="{{ values.state }}">
+              </div>
+            </div>
+          </div>
+
+          {% if employees %}
+          <!-- Project Lead -->
+          <div class="rf-section">
+            <div class="rf-section-label">Project Lead</div>
+            <select class="rf-select" name="employee">
+              <option value="">Any</option>
+              {% for emp in employees %}
+                <option value="{{ emp.id }}" {% if values.employee == emp.id|stringformat:"s" %}selected{% endif %}>{{ emp.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          {% endif %}
+
         </div>
 
-        <form method="get" action="{% url 'projects:projects' %}">
-          <!-- Preserve quick-filter values -->
-          <input type="hidden" name="status" value="{{ status_filter }}">
-          {% if values.q %}<input type="hidden" name="q" value="{{ values.q }}">{% endif %}
-          {% if values.service %}<input type="hidden" name="service" value="{{ values.service }}">{% endif %}
-
-          <div class="modal-body">
-
-            <!-- Price -->
-            <h6 class="font-weight-bold text-muted text-uppercase mb-3" style="font-size:.75rem;letter-spacing:.08em;">Price</h6>
-            <div class="form-row mb-4">
-              <div class="col-md-6">
-                <label class="small mb-1">Min Price ($)</label>
-                <input type="number" name="price_min" class="form-control form-control-sm"
-                       placeholder="e.g. 50000" value="{{ values.price_min }}" min="0">
-              </div>
-              <div class="col-md-6">
-                <label class="small mb-1">Max Price ($)</label>
-                <input type="number" name="price_max" class="form-control form-control-sm"
-                       placeholder="e.g. 500000" value="{{ values.price_max }}" min="0">
-              </div>
-            </div>
-
-            <!-- Size -->
-            <h6 class="font-weight-bold text-muted text-uppercase mb-3" style="font-size:.75rem;letter-spacing:.08em;">Project Size</h6>
-            <div class="form-row mb-4">
-              <div class="col-md-4">
-                <label class="small mb-1">Min Sqft</label>
-                <input type="number" name="sqft_min" class="form-control form-control-sm"
-                       placeholder="e.g. 500" value="{{ values.sqft_min }}" min="0">
-              </div>
-              <div class="col-md-4">
-                <label class="small mb-1">Max Sqft</label>
-                <input type="number" name="sqft_max" class="form-control form-control-sm"
-                       placeholder="e.g. 5000" value="{{ values.sqft_max }}" min="0">
-              </div>
-              <div class="col-md-4">
-                <label class="small mb-1">Min Bedrooms</label>
-                <select name="bedrooms_min" class="form-control form-control-sm">
-                  <option value="">Any</option>
-                  {% for n in bedrooms_range %}
-                    <option value="{{ n }}" {% if values.bedrooms_min == n|stringformat:"s" %}selected{% endif %}>
-                      {{ n }}+
-                    </option>
-                  {% endfor %}
-                </select>
-              </div>
-            </div>
-
-            <!-- Location -->
-            <h6 class="font-weight-bold text-muted text-uppercase mb-3" style="font-size:.75rem;letter-spacing:.08em;">Location</h6>
-            <div class="form-row mb-4">
-              <div class="col-md-6">
-                <label class="small mb-1">City</label>
-                <input type="text" name="city" class="form-control form-control-sm"
-                       placeholder="e.g. Accra" value="{{ values.city }}">
-              </div>
-              <div class="col-md-6">
-                <label class="small mb-1">State / Region</label>
-                <input type="text" name="state" class="form-control form-control-sm"
-                       placeholder="e.g. Greater Accra" value="{{ values.state }}">
-              </div>
-            </div>
-
-            <!-- Project Lead -->
-            {% if employees %}
-              <h6 class="font-weight-bold text-muted text-uppercase mb-3" style="font-size:.75rem;letter-spacing:.08em;">Project Lead</h6>
-              <div class="form-row mb-2">
-                <div class="col-md-6">
-                  <select name="employee" class="form-control form-control-sm">
-                    <option value="">Any</option>
-                    {% for emp in employees %}
-                      <option value="{{ emp.id }}" {% if values.employee == emp.id|stringformat:"s" %}selected{% endif %}>
-                        {{ emp.name }}
-                      </option>
-                    {% endfor %}
-                  </select>
-                </div>
-              </div>
-            {% endif %}
-
+        <div class="rf-footer">
+          <a href="{{ clear_url }}" class="rf-btn-clear">Clear filters</a>
+          <div style="display:flex;gap:.625rem;align-items:center;">
+            <button type="button" class="rf-btn-cancel" id="rfCancelBtn">Cancel</button>
+            <button type="submit" class="rf-btn-apply">Apply Filters</button>
           </div>
+        </div>
 
-          <div class="modal-footer justify-content-between">
-            <a href="{{ clear_url }}" class="btn btn-link text-danger btn-sm">
-              Clear advanced filters
-            </a>
-            <div>
-              <button type="button" class="btn btn-secondary btn-sm mr-2" data-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn btn-primary btn-sm">Apply Filters</button>
-            </div>
-          </div>
-
-        </form>
-      </div>
+      </form>
     </div>
   </div>
 
@@ -552,6 +635,107 @@
 {% endblock %}
 
 {% block extra_js %}
+<script>
+(function () {
+  // ── Modal open / close ─────────────────────────────────────────────
+  var backdrop  = document.getElementById('rfBackdrop');
+  var openBtn   = document.getElementById('rfOpenBtn');
+  var closeBtn  = document.getElementById('rfCloseBtn');
+  var cancelBtn = document.getElementById('rfCancelBtn');
+
+  function openModal()  { backdrop.classList.add('is-open');    backdrop.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
+  function closeModal() { backdrop.classList.remove('is-open'); backdrop.setAttribute('aria-hidden','true');  document.body.style.overflow=''; }
+
+  openBtn.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+  cancelBtn.addEventListener('click', closeModal);
+  backdrop.addEventListener('click', function (e) { if (e.target === backdrop) closeModal(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && backdrop.classList.contains('is-open')) closeModal(); });
+
+  // ── Dual-handle range slider ───────────────────────────────────────
+  function initSlider(cfg) {
+    var minR  = document.getElementById(cfg.minId);
+    var maxR  = document.getElementById(cfg.maxId);
+    var fill  = document.getElementById(cfg.fillId);
+    var minLbl = document.getElementById(cfg.minLblId);
+    var maxLbl = document.getElementById(cfg.maxLblId);
+    var minHid = document.getElementById(cfg.minHidId);
+    var maxHid = document.getElementById(cfg.maxHidId);
+    if (!minR || !maxR) return;
+
+    var portMin = parseInt(minR.dataset.portMin) || 0;
+    var portMax = parseInt(minR.dataset.portMax) || 1000000;
+    if (portMax <= portMin) portMax = portMin + 1000000;
+
+    var step = Math.max(cfg.minStep, Math.round((portMax - portMin) / 100));
+
+    [minR, maxR].forEach(function (r) { r.min = portMin; r.max = portMax; r.step = step; });
+
+    // Restore existing filter values or set to full range
+    var savedMin = parseInt(cfg.savedMin);
+    var savedMax = parseInt(cfg.savedMax);
+    minR.value = (savedMin && savedMin > portMin) ? savedMin : portMin;
+    maxR.value = (savedMax && savedMax < portMax) ? savedMax : portMax;
+
+    function fmt(v) {
+      return cfg.format === 'currency'
+        ? '$' + Number(v).toLocaleString()
+        : Number(v).toLocaleString() + ' sqft';
+    }
+
+    function update() {
+      var lo = parseInt(minR.value);
+      var hi = parseInt(maxR.value);
+      var span = portMax - portMin;
+      fill.style.left  = (span ? (lo - portMin) / span * 100 : 0) + '%';
+      fill.style.right = (span ? (portMax - hi) / span * 100 : 0) + '%';
+      minLbl.textContent = fmt(lo);
+      maxLbl.textContent = fmt(hi);
+      // Only write a value when it departs from the portfolio extreme
+      minHid.value = (lo > portMin) ? lo : '';
+      maxHid.value = (hi < portMax) ? hi : '';
+      // Prevent z-index deadlock when both thumbs meet at max
+      minR.style.zIndex = (lo >= portMax - step) ? 3 : 2;
+    }
+
+    minR.addEventListener('input', function () {
+      if (parseInt(this.value) > parseInt(maxR.value) - step) this.value = parseInt(maxR.value) - step;
+      update();
+    });
+    maxR.addEventListener('input', function () {
+      if (parseInt(this.value) < parseInt(minR.value) + step) this.value = parseInt(minR.value) + step;
+      update();
+    });
+    update();
+  }
+
+  initSlider({
+    minId:'rfPriceMin', maxId:'rfPriceMax', fillId:'rfPriceFill',
+    minLblId:'rfPriceMinLbl', maxLblId:'rfPriceMaxLbl',
+    minHidId:'rfHiddenPriceMin', maxHidId:'rfHiddenPriceMax',
+    savedMin:'{{ values.price_min }}', savedMax:'{{ values.price_max }}',
+    format:'currency', minStep:100
+  });
+  initSlider({
+    minId:'rfSqftMin', maxId:'rfSqftMax', fillId:'rfSqftFill',
+    minLblId:'rfSqftMinLbl', maxLblId:'rfSqftMaxLbl',
+    minHidId:'rfHiddenSqftMin', maxHidId:'rfHiddenSqftMax',
+    savedMin:'{{ values.sqft_min }}', savedMax:'{{ values.sqft_max }}',
+    format:'sqft', minStep:10
+  });
+
+  // ── Bedroom pills ──────────────────────────────────────────────────
+  var pills   = document.querySelectorAll('#rfBedroomPills .rf-pill');
+  var bedsHid = document.getElementById('rfHiddenBedrooms');
+  pills.forEach(function (p) {
+    p.addEventListener('click', function () {
+      pills.forEach(function (x) { x.classList.remove('is-active'); });
+      this.classList.add('is-active');
+      bedsHid.value = this.dataset.val;
+    });
+  });
+})();
+</script>
 <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 {% if RECAPTCHA_SITE_KEY %}
 <script src="https://www.google.com/recaptcha/api.js?render={{ RECAPTCHA_SITE_KEY }}"></script>

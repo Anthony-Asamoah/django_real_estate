@@ -1,39 +1,124 @@
-{% load page_tags wagtailimages_tags %}
+{% load page_tags %}
 {% get_testimonials as testimonials %}
 
-<!-- Testimonials -->
 {% if testimonials %}
-<section class="py-5 bg-light">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+<section class="testimonials-section py-5 py-lg-6">
   <div class="container">
-    {% if value.heading %}
-      <h2 class="text-center text-primary mb-5">{{ value.heading }}</h2>
-    {% else %}
-      <h2 class="text-center text-primary mb-5">What Our Clients Say</h2>
-    {% endif %}
-    <div class="row reveal-group">
-      {% for t in testimonials %}
-        <div class="col-md-6 col-lg-4 mb-4 reveal">
-          <div class="card h-100 testimonial-card shadow-sm border-0">
-            <div class="card-body p-4">
-              <div class="card-text text-muted fst-italic">&ldquo;{{ t.body|safe }}&rdquo;</div>
-            </div>
-            <div class="card-footer bg-white border-0 d-flex align-items-center pt-0 pb-4 px-4">
-              {% if t.author_photo %}
-                {% image t.author_photo fill-60x60 class="rounded-circle mr-3" %}
-              {% else %}
-                <div class="testimonial-avatar mr-3">
-                  <i class="fas fa-user-circle fa-3x text-secondary"></i>
+    <div class="text-center mb-5">
+      <h2 class="section-heading">
+        {% if value.heading %}{{ value.heading }}{% else %}What Our Clients Say{% endif %}
+      </h2>
+      <p class="section-subheading mt-2">Real experiences from the people we've worked with</p>
+    </div>
+
+    <div class="testimonials-slider-wrap">
+      <div class="swiper testimonials-swiper">
+        <div class="swiper-wrapper align-items-stretch">
+          {% for t in testimonials %}
+            {% with body_text=t.body %}
+            <div class="swiper-slide h-auto">
+              <div class="testimonial-card">
+                <div class="testimonial-body-wrap">
+                  <span class="testimonial-open-quote">&ldquo;</span>
+                  {% if body_text|length > 220 %}
+                    <p class="testimonial-body">{{ body_text|slice:":220" }}&hellip;
+                      <button class="testimonial-read-more"
+                              data-toggle="modal"
+                              data-target="#tModal{{ t.pk }}"
+                              type="button">Read more</button>
+                    </p>
+                  {% else %}
+                    <p class="testimonial-body">{{ body_text }}</p>
+                  {% endif %}
                 </div>
-              {% endif %}
-              <div>
-                <strong class="d-block text-primary">{{ t.author_name }}</strong>
-                {% if t.author_role %}<small class="text-muted">{{ t.author_role }}</small>{% endif %}
+                <hr class="testimonial-divider">
+                <div class="testimonial-author">
+                  <div class="testimonial-initials">{{ t.author_name|slice:":2"|upper }}</div>
+                  <div>
+                    <div class="testimonial-name">{{ t.author_name }}</div>
+                    {% if t.author_role %}
+                      <div class="testimonial-role">{{ t.author_role }}</div>
+                    {% endif %}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+            {% endwith %}
+          {% endfor %}
         </div>
-      {% endfor %}
+
+        <div class="swiper-pagination"></div>
+      </div>
+
+      <button class="t-nav-btn t-nav-prev" aria-label="Previous testimonial">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      <button class="t-nav-btn t-nav-next" aria-label="Next testimonial">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 6 15 12 9 18"></polyline>
+        </svg>
+      </button>
     </div>
   </div>
 </section>
+
+{% for t in testimonials %}
+  {% with body_text=t.body %}
+  {% if body_text|length > 220 %}
+  <div class="modal fade" id="tModal{{ t.pk }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content testimonial-modal-content">
+        <div class="modal-header border-0 pb-0">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body pt-0 px-4 pb-4">
+          <div class="testimonial-modal-quote">&ldquo;</div>
+          <div class="testimonial-modal-body">{{ body_text|linebreaks }}</div>
+          <hr class="testimonial-divider">
+          <div class="testimonial-author">
+            <div class="testimonial-initials">{{ t.author_name|slice:":2"|upper }}</div>
+            <div>
+              <div class="testimonial-name">{{ t.author_name }}</div>
+              {% if t.author_role %}
+                <div class="testimonial-role">{{ t.author_role }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  {% endwith %}
+{% endfor %}
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+  (function () {
+    var el = document.querySelector('.testimonials-swiper');
+    if (!el) return;
+    var count = el.querySelectorAll('.swiper-slide').length;
+    var delay = {{ value.autoplay_delay|default:4500 }};
+    new Swiper('.testimonials-swiper', {
+      slidesPerView: 1,
+      spaceBetween: 28,
+      loop: count > 3,
+      autoplay: delay > 0
+        ? { delay: delay, disableOnInteraction: false, pauseOnMouseEnter: true }
+        : false,
+      pagination: { el: '.swiper-pagination', clickable: true, dynamicBullets: true },
+      navigation: { nextEl: '.t-nav-next', prevEl: '.t-nav-prev' },
+      breakpoints: {
+        640:  { slidesPerView: 2 },
+        1024: { slidesPerView: 3 }
+      }
+    });
+  })();
+</script>
 {% endif %}

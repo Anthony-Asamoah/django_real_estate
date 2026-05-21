@@ -2,6 +2,8 @@ import pendulum
 from django.conf import settings as django_settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
 from wagtail.fields import StreamField
@@ -17,6 +19,7 @@ from .blocks import (
     ProjectDetailStreamBlock,
     ContactPageStreamBlock,
 )
+from .panels import ColorHistoryPanel, ColorPresetsPanel, ColorSavePanel
 from .widgets import ColorInput
 
 
@@ -218,13 +221,6 @@ class ContactPage(Page):
 class Testimonial(models.Model):
     author_name = models.CharField(max_length=200)
     author_role = models.CharField(max_length=200, blank=True)
-    author_photo = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+',
-    )
     body = models.TextField()
     service = models.ForeignKey(
         'pages.ServiceDetailPage',
@@ -241,7 +237,6 @@ class Testimonial(models.Model):
         MultiFieldPanel([
             FieldPanel('author_name'),
             FieldPanel('author_role'),
-            FieldPanel('author_photo'),
         ], heading='Author'),
         MultiFieldPanel([
             FieldPanel('body'),
@@ -255,6 +250,26 @@ class Testimonial(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+
+@register_snippet
+class ColorPreset(models.Model):
+    name = models.CharField(max_length=60)
+    primary_color = models.CharField(max_length=7, default='#10284e', help_text='Hex color, e.g. #10284e')
+    secondary_color = models.CharField(max_length=7, default='#30caa0', help_text='Hex color, e.g. #30caa0')
+
+    panels = [
+        FieldPanel('name'),
+        FieldPanel('primary_color', widget=ColorInput),
+        FieldPanel('secondary_color', widget=ColorInput),
+    ]
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Color Preset'
+        ordering = ['name']
 
 
 @register_setting
@@ -308,8 +323,11 @@ class BrandingSettings(BaseSiteSetting):
         ),
         MultiFieldPanel(
             [
+                ColorPresetsPanel(),
                 FieldPanel('primary_color', widget=ColorInput),
                 FieldPanel('secondary_color', widget=ColorInput),
+                ColorSavePanel(),
+                ColorHistoryPanel(),
             ],
             heading='Colors',
         ),
@@ -332,3 +350,51 @@ class BrandingSettings(BaseSiteSetting):
 
     class Meta:
         verbose_name = 'Branding & Site Settings'
+
+
+class BrandingColorHistory(models.Model):
+    branding = models.ForeignKey(
+        BrandingSettings,
+        on_delete=models.CASCADE,
+        related_name='color_history',
+    )
+    primary_color = models.CharField(max_length=7)
+    secondary_color = models.CharField(max_length=7)
+    changed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-changed_at']
+
+
+@receiver(pre_save, sender=BrandingSettings)
+def _stash_old_colors(sender, instance, **kwargs):
+    if instance.pk:
+        try:
+            old = BrandingSettings.objects.get(pk=instance.pk)
+            instance._old_primary = old.primary_color
+            instance._old_secondary = old.secondary_color
+        except BrandingSettings.DoesNotExist:
+            pass
+
+
+@receiver(post_save, sender=BrandingSettings)
+def _record_color_history(sender, instance, created, **kwargs):
+    if created:
+        return
+    old_primary = getattr(instance, '_old_primary', None)
+    old_secondary = getattr(instance, '_old_secondary', None)
+    if old_primary is None:
+        return
+    if old_primary != instance.primary_color or old_secondary != instance.secondary_color:
+        BrandingColorHistory.objects.create(
+            branding=instance,
+            primary_color=old_primary,
+            secondary_color=old_secondary,
+        )
+        ids = list(
+            BrandingColorHistory.objects.filter(branding=instance)
+            .order_by('-changed_at')
+            .values_list('id', flat=True)[20:]
+        )
+        if ids:
+            BrandingColorHistory.objects.filter(id__in=ids).delete()

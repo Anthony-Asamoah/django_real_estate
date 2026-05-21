@@ -226,6 +226,13 @@ class StatsRowBlock(StructBlock):
 
 class TestimonialsBlock(StructBlock):
     heading = CharBlock(required=False)
+    autoplay_delay = IntegerBlock(
+        required=False,
+        default=4500,
+        help_text='Slide transition delay in milliseconds (e.g. 4500 = 4.5 s). Set to 0 to disable autoplay.',
+        min_value=0,
+        max_value=20000,
+    )
 
     class Meta:
         icon = 'openquote'

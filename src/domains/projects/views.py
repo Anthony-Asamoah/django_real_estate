@@ -1,7 +1,7 @@
 from urllib.parse import urlencode
 
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Max, Min, Q
 from django.shortcuts import get_object_or_404, render
 
 from domains.employees.models import Employee
@@ -10,10 +10,11 @@ from .models import ACTIVE_STATUSES, PAST_STATUSES, STATUS_CHOICES, Project
 
 
 def index(request):
-    qs = Project.objects.filter(is_published=True).order_by('-project_date')
+    all_published = Project.objects.filter(is_published=True)
+    qs = all_published.order_by('-project_date')
 
     # ── Quick filters ─────────────────────────────────────────────────────────
-    status = request.GET.get('status', 'past')
+    status = request.GET.get('status', 'all')
     if status == 'past':
         qs = qs.filter(status__in=PAST_STATUSES)
     elif status == 'active':
@@ -48,6 +49,16 @@ def index(request):
     if state_filter: qs = qs.filter(state_or_region__icontains=state_filter)
     if emp_id:       qs = qs.filter(employee_id=emp_id)
 
+    # ── Sort ──────────────────────────────────────────────────────────────────
+    sort = request.GET.get('sort', '')
+    if sort == 'price_asc':
+        qs = qs.order_by('price')
+    elif sort == 'price_desc':
+        qs = qs.order_by('-price')
+    elif sort == 'sqft_desc':
+        qs = qs.order_by('-sqft')
+    # default order is already -project_date
+
     # ── Active filter chips ───────────────────────────────────────────────────
     filter_chips = []
     if price_min and price_max:
@@ -71,7 +82,11 @@ def index(request):
     if state_filter:
         filter_chips.append({'label': f'Region: {state_filter}', 'remove_keys': ['state']})
     if emp_id:
-        filter_chips.append({'label': 'Project Lead: filtered', 'remove_keys': ['employee']})
+        try:
+            emp_name = Employee.objects.get(pk=emp_id).name
+        except Employee.DoesNotExist:
+            emp_name = 'Unknown'
+        filter_chips.append({'label': f'Lead: {emp_name}', 'remove_keys': ['employee']})
 
     for chip in filter_chips:
         params = request.GET.copy()
@@ -81,7 +96,7 @@ def index(request):
         chip['remove_url'] = '?' + params.urlencode() if params else '?'
 
     # Clear-all advanced filters — preserves quick-filter params only
-    clear_params = {k: v for k, v in request.GET.items() if k in ('q', 'service', 'status')}
+    clear_params = {k: v for k, v in request.GET.items() if k in ('q', 'service', 'status', 'sort')}
     clear_url = '?' + urlencode(clear_params) if clear_params else '?'
 
     # Pagination base querystring (all current params minus page)
@@ -89,9 +104,14 @@ def index(request):
     page_params.pop('page', None)
     base_qs = page_params.urlencode()
 
+    # ── Range hints for advanced filter inputs ────────────────────────────────
+    price_agg = all_published.aggregate(min=Min('price'), max=Max('price'))
+    sqft_agg = all_published.aggregate(min=Min('sqft'), max=Max('sqft'))
+
     # ── Context ───────────────────────────────────────────────────────────────
     service_pages = ServiceDetailPage.objects.live().order_by('title')
     employees = Employee.objects.order_by('name')
+    total_count = all_published.count()
     paginator = Paginator(qs, 9)
     paged = paginator.get_page(request.GET.get('page'))
 
@@ -106,6 +126,10 @@ def index(request):
         'clear_url': clear_url,
         'base_qs': base_qs,
         'bedrooms_range': range(1, 11),
+        'total_count': total_count,
+        'price_agg': price_agg,
+        'sqft_agg': sqft_agg,
+        'sort': sort,
     })
 
 

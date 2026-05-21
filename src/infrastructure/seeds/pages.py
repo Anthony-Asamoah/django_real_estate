@@ -32,7 +32,7 @@ def seed_pages():
         HomePage, AboutPage,
         ServicesIndexPage, ServiceDetailPage,
         ProjectsIndexPage,
-        ContactPage, BrandingSettings,
+        ContactPage, BrandingSettings, ColorPreset,
     )
 
     created = 0
@@ -492,5 +492,26 @@ def seed_pages():
         )
         branding.save()
         print('  Updated BrandingSettings.')
+
+    # Color Presets
+    _presets = [
+        # name                primary    secondary
+        ('Brand Default',    '#10284e', '#30caa0'),  # navy + teal — the live brand
+        ('Slate & Gold',     '#1a3558', '#c9922a'),  # deep slate + warm gold — premium / luxury
+        ('Midnight & Sky',   '#0d1b2e', '#4ab3e8'),  # near-black navy + bright sky blue — clean modern
+        ('Charcoal & Coral', '#2b2d2f', '#e06c54'),  # dark charcoal + warm coral — bold campaign
+        ('Forest & Amber',   '#1f4a30', '#d4873a'),  # deep forest green + amber — earthy / eco builds
+        ('Plum & Stone',     '#3d1f47', '#a89b8c'),  # rich plum + warm stone — elegant / high-end
+    ]
+    for name, primary, secondary in _presets:
+        preset, created_p = ColorPreset.objects.get_or_create(
+            name=name,
+            defaults={'primary_color': primary, 'secondary_color': secondary},
+        )
+        if not created_p:
+            preset.primary_color = primary
+            preset.secondary_color = secondary
+            preset.save()
+    print(f'  Seeded {len(_presets)} color presets.')
 
     return created
