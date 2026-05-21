@@ -19,6 +19,7 @@
     <link href="{% static 'css/lightbox.min.css' %}" rel="stylesheet">
     <!-- Custom -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/animations.css' %}">
     <style>
       :root {
         --brand-primary: {{ settings.pages.BrandingSettings.primary_color|default:"#10284e" }};
@@ -53,6 +54,7 @@
   <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'js/lightbox.min.js' %}"></script>
   <script src="{% static 'js/main.js' %}"></script>
+  <script src="{% static 'js/animations.js' %}"></script>
   {% block extra_js %}{% endblock %}
 
 </body>
