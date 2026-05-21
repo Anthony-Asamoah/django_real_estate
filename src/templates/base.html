@@ -1,10 +1,10 @@
-{% load static %}
+{% load static wagtailimages_tags %}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BT Real Estate{% block title %}{% endblock %}</title>
+    <title>{{ settings.pages.BrandingSettings.site_name|default:"BT Real Estate" }}{% block title %}{% endblock %}</title>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{% static 'css/all.css' %}">
     <!-- Bootstrap -->
@@ -13,15 +13,35 @@
     <link href="{% static 'css/lightbox.min.css' %}" rel="stylesheet">
     <!-- Custom -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-
+    <style>
+      :root {
+        --brand-primary: {{ settings.pages.BrandingSettings.primary_color|default:"#10284e" }};
+        --brand-secondary: {{ settings.pages.BrandingSettings.secondary_color|default:"#30caa0" }};
+      }
+      .bg-primary, .navbar-dark.bg-primary { background-color: var(--brand-primary) !important; }
+      .btn-primary { background-color: var(--brand-primary) !important; border-color: var(--brand-primary) !important; }
+      .btn-primary:hover { filter: brightness(0.9); }
+      .text-primary { color: var(--brand-primary) !important; }
+      .border-primary { border-color: var(--brand-primary) !important; }
+      .bg-secondary { background-color: var(--brand-secondary) !important; }
+      .btn-secondary { background-color: var(--brand-secondary) !important; border-color: var(--brand-secondary) !important; color: #fff !important; }
+      .btn-secondary:hover { filter: brightness(0.9); }
+      .text-secondary { color: var(--brand-secondary) !important; }
+      .badge-secondary { background-color: var(--brand-secondary) !important; }
+      #services { background-color: var(--brand-secondary) !important; }
+      #services::before { background: none !important; }
+      #showcase-inner::before { background-color: var(--brand-secondary) !important; opacity: 0.8; }
+    </style>
 </head>
 <body>
 
 {% include 'partials/_topbar.html' %}
 {% include 'partials/_navbar.html' %}
 
+<main class="flex-grow-1">
 {% block content %}
 {% endblock %}
+</main>
 
 {% include 'partials/_footer.html' %}
 

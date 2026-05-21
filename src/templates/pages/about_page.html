@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% load static wagtailcore_tags %}
+
+{% block title %} | About{% endblock %}
+
+{% block content %}
+
+  <!-- Breadcrumb -->
+  <section id="bc" class="mt-3">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="/"><i class="fas fa-home"></i> Home</a>
+          </li>
+          <li class="breadcrumb-item active">About</li>
+        </ol>
+      </nav>
+    </div>
+  </section>
+
+  <section id="about" class="py-4">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8">
+          <h2>We Search For The Perfect Home</h2>
+          <p class="lead">Dedicated to finding you the ideal property.</p>
+          <img src="{% static 'img/about.jpg' %}" alt="" class="img-fluid mb-3">
+          {% for block in page.body %}
+            {% if block.block_type == 'rich_text' %}
+              {% include_block block %}
+            {% endif %}
+          {% endfor %}
+        </div>
+        {% if mvp_realtor %}
+          <div class="col-md-4">
+            <div class="card">
+              <img class="card-img-top realtor-photo" src="{{ mvp_realtor.photo.url }}" alt="Seller of the month">
+              <div class="card-body">
+                <h5 class="card-title">Seller Of The Month</h5>
+                <h6 class="text-secondary">{{ mvp_realtor.name }}</h6>
+                <p class="card-text">{{ mvp_realtor.description }}</p>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  {% for block in page.body %}
+    {% if block.block_type == 'cta_banner' %}
+      {% include_block block %}
+    {% endif %}
+  {% endfor %}
+
+  <!-- Team -->
+  <section id="team" class="py-5">
+    <div class="container">
+      <h2 class="text-center">Our Team</h2>
+      <div class="row text-center">
+        {% for staff in realtor %}
+          <div class="col-md-4">
+            <img src="{{ staff.photo.url }}" alt="" class="rounded-circle mb-3 realtor-photo">
+            <h4>{{ staff.name }}</h4>
+            <p class="text-success">
+              <i class="fas fa-award text-success mb-3"></i> Realtor
+            </p>
+            <hr>
+            <p><i class="fas fa-phone"></i> {{ staff.phone }}</p>
+            <p><i class="fas fa-envelope-open"></i> {{ staff.email }}</p>
+          </div>
+        {% empty %}
+          <div class="col-md-12">
+            <p>No Realtors Available</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+{% endblock %}

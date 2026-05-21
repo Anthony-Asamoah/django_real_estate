@@ -1,32 +1,52 @@
+{% with branding=settings.pages.BrandingSettings %}
 <!-- Top Bar -->
-  <section id="top-bar" class="p-3">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-4">
+<section id="top-bar" class="p-3">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        {% if branding.phone %}
+          <i class="fas fa-phone"></i> {{ branding.phone }}
+        {% else %}
           <i class="fas fa-phone"></i> (617)-555-5555
-        </div>
-        <div class="col-md-4">
+        {% endif %}
+      </div>
+      <div class="col-md-4">
+        {% if branding.email %}
+          <i class="fas fa-envelope-open"></i> {{ branding.email }}
+        {% else %}
           <i class="fas fa-envelope-open"></i> contact@btrealestate.co
-        </div>
-        <div class="col-md-4">
-          <div class="social text-right">
-            <a href="#">
-              <i class="fab fa-twitter"></i>
-            </a>
-            <a href="#">
-              <i class="fab fa-facebook"></i>
-            </a>
-            <a href="#">
-              <i class="fab fa-linkedin"></i>
-            </a>
-            <a href="#">
-              <i class="fab fa-instagram"></i>
-            </a>
-            <a href="#">
-              <i class="fab fa-pinterest"></i>
-            </a>
-          </div>
+        {% endif %}
+      </div>
+      <div class="col-md-4">
+        <div class="social text-right">
+          {% if branding.twitter_url %}
+            <a href="{{ branding.twitter_url }}"><i class="fab fa-twitter"></i></a>
+          {% else %}
+            <a href="#"><i class="fab fa-twitter"></i></a>
+          {% endif %}
+          {% if branding.facebook_url %}
+            <a href="{{ branding.facebook_url }}"><i class="fab fa-facebook"></i></a>
+          {% else %}
+            <a href="#"><i class="fab fa-facebook"></i></a>
+          {% endif %}
+          {% if branding.linkedin_url %}
+            <a href="{{ branding.linkedin_url }}"><i class="fab fa-linkedin"></i></a>
+          {% else %}
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+          {% endif %}
+          {% if branding.instagram_url %}
+            <a href="{{ branding.instagram_url }}"><i class="fab fa-instagram"></i></a>
+          {% else %}
+            <a href="#"><i class="fab fa-instagram"></i></a>
+          {% endif %}
+          {% if branding.pinterest_url %}
+            <a href="{{ branding.pinterest_url }}"><i class="fab fa-pinterest"></i></a>
+          {% else %}
+            <a href="#"><i class="fab fa-pinterest"></i></a>
+          {% endif %}
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
+{% endwith %}

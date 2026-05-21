@@ -1,4 +1,5 @@
-django
+django>=4.2,<5.0
+wagtail>=6.3,<7.0
 psycopg2-binary
 pendulum
 inflect

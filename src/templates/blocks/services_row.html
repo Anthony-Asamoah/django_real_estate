@@ -1,0 +1,15 @@
+<!-- Services -->
+<section id="services" class="py-5 bg-secondary text-white">
+  <div class="container">
+    <div class="row text-center">
+      {% for service in value.services %}
+        <div class="col-md-4">
+          <i class="fas {{ service.icon }} fa-4x mr-4"></i>
+          <hr>
+          <h3>{{ service.title }}</h3>
+          <p>{{ service.body }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

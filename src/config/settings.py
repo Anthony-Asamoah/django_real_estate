@@ -33,20 +33,37 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 # Application definition
 
 INSTALLED_APPS = [
-	'django.contrib.admin',
+	# Django (no django.contrib.admin)
 	'django.contrib.auth',
 	'django.contrib.contenttypes',
 	'django.contrib.sessions',
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
 	'django.contrib.humanize',
+	'django.contrib.sites',
 
-	# My apps
+	# Wagtail
+	'wagtail',
+	'wagtail.admin',
+	'wagtail.documents',
+	'wagtail.images',
+	'wagtail.search',
+	'wagtail.sites',
+	'wagtail.users',
+	'wagtail.snippets',
+	'wagtail.embeds',
+	'wagtail.contrib.settings',
+	'wagtail.contrib.redirects',
+	'wagtail.contrib.routable_page',
+	'modelcluster',
+	'taggit',
+
+	# Domain apps
 	'domains.pages',
 	'domains.listings',
 	'domains.realtors',
 	'domains.accounts',
-	'domains.contacts'
+	'domains.contacts',
 ]
 
 MIDDLEWARE = [
@@ -57,6 +74,7 @@ MIDDLEWARE = [
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 	'django.contrib.messages.middleware.MessageMiddleware',
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
+	'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -73,6 +91,7 @@ TEMPLATES = [
 				'django.template.context_processors.request',
 				'django.contrib.auth.context_processors.auth',
 				'django.contrib.messages.context_processors.messages',
+				'wagtail.contrib.settings.context_processors.settings',
 			],
 		},
 	},
@@ -147,6 +166,11 @@ MESSAGE_TAGS = {
 	messages.ERROR: 'danger',
 }
 
+
+# Wagtail
+WAGTAIL_SITE_NAME = 'BT Real Estate'
+WAGTAILADMIN_BASE_URL = config('WAGTAILADMIN_BASE_URL', default='http://localhost:8000')
+SITE_ID = 1
 
 # email config
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
