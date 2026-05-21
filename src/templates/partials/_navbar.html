@@ -5,7 +5,7 @@
 <style>
   .navbar-brand .logo { max-height: 50px; width: auto; }
 </style>
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+<nav id="main-nav" class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
   <div class="container">
     <a class="navbar-brand" href="/">
       {% if settings.pages.BrandingSettings.logo %}
@@ -19,12 +19,8 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <ul class="navbar-nav">
-        <li {% if '/' == request.path %}class="nav-item active mr-3"{% else %}class="nav-item mr-3"{% endif %}>
-          <a class="nav-link" href="/">Home</a>
-        </li>
-
         <!-- Services Dropdown -->
-        <li class="nav-item dropdown {% if 'services' in request.path %}active{% endif %} mr-3">
+        <li class="nav-item dropdown {% if request.path|startswith:'/services/' %}active{% endif %} mr-3">
           <a class="nav-link dropdown-toggle" href="/services/"
              id="servicesDropdown" role="button"
              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -41,20 +37,20 @@
           </div>
         </li>
 
-        <li {% if 'projects' in request.path %}class="nav-item active mr-3"{% else %}class="nav-item mr-3"{% endif %}>
+        <li class="nav-item mr-3 {% if request.path|startswith:'/projects/' %}active{% endif %}">
           <a class="nav-link" href="/projects/">Projects</a>
         </li>
-        <li {% if 'about' in request.path %}class="nav-item active mr-3"{% else %}class="nav-item mr-3"{% endif %}>
+        <li class="nav-item mr-3 {% if request.path|startswith:'/about/' %}active{% endif %}">
           <a class="nav-link" href="/about/">About</a>
         </li>
-        <li {% if request.path == '/contact/' %}class="nav-item active mr-3"{% else %}class="nav-item mr-3"{% endif %}>
+        <li class="nav-item mr-3 {% if request.path == '/contact/' %}active{% endif %}">
           <a class="nav-link" href="/contact/">Contact</a>
         </li>
       </ul>
 
-      <ul class="navbar-nav ml-auto">
+      <ul class="navbar-nav ml-auto align-items-center">
         {% if user.is_authenticated %}
-          <li {% if 'dashboard' in request.path or 'cms' in request.path %}class="nav-item active mr-3"{% else %}class="nav-item mr-3"{% endif %}>
+          <li class="nav-item mr-3 {% if request.path|startswith:'/cms/' %}active{% endif %}">
             {% if user.is_staff or user.is_superuser %}
               <a class="nav-link" href="/cms/">Dashboard</a>
             {% else %}
@@ -70,16 +66,10 @@
               <input type="hidden">
             </form>
           </li>
-        {% else %}
-          <li {% if 'register' in request.path %}class="nav-item active mr-3"{% else %}class="nav-item mr-3"{% endif %}>
-            <a class="nav-link" href="{% url 'accounts:register' %}">
-              <i class="fas fa-user-plus"></i> Register</a>
-          </li>
-          <li {% if 'login' in request.path %}class="nav-item active mr-3"{% else %}class="nav-item mr-3"{% endif %}>
-            <a class="nav-link" href="{% url 'accounts:login' %}">
-              <i class="fas fa-sign-in-alt"></i> Login</a>
-          </li>
         {% endif %}
+        <li class="nav-item ml-2">
+          <a href="/contact/" class="btn btn-secondary px-4">Get a Quote</a>
+        </li>
       </ul>
     </div>
   </div>

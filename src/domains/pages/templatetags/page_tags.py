@@ -3,6 +3,11 @@ from django import template
 register = template.Library()
 
 
+@register.filter
+def startswith(value, arg):
+    return str(value).startswith(arg)
+
+
 @register.simple_tag
 def get_testimonials():
     from domains.pages.models import Testimonial
