@@ -49,7 +49,8 @@
             </div>
             <div class="form-group">
               <label>Message</label>
-              <textarea name="message" class="form-control" rows="5" required></textarea>
+              <div id="contactMessageEditor" style="height:160px;background:#fff;border:1px solid #ced4da;border-radius:.25rem;"></div>
+              <input type="hidden" name="message" id="contactMessageInput">
             </div>
             <button type="submit" class="btn btn-primary btn-block">Send Message</button>
           </form>
@@ -137,15 +138,50 @@
 
 {% endblock %}
 
+{% block extra_css %}
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+{% endblock %}
+
 {% block extra_js %}
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+{% if RECAPTCHA_SITE_KEY %}
+<script src="https://www.google.com/recaptcha/api.js?render={{ RECAPTCHA_SITE_KEY }}"></script>
+{% endif %}
 <script>
-  document.getElementById('contactForm').addEventListener('submit', function(e) {
+  var contactQuill = new Quill('#contactMessageEditor', {
+    theme: 'snow',
+    placeholder: 'Write your message here…',
+    modules: { toolbar: [['bold', 'italic', 'underline'], [{ list: 'ordered' }, { list: 'bullet' }], ['clean']] }
+  });
+
+  var contactForm = document.getElementById('contactForm');
+  {% if RECAPTCHA_SITE_KEY %}
+  var contactTokenInput = document.createElement('input');
+  contactTokenInput.type = 'hidden';
+  contactTokenInput.name = 'g-recaptcha-response';
+  contactTokenInput.id = 'contact-recaptcha-token';
+  contactForm.appendChild(contactTokenInput);
+  {% endif %}
+
+  contactForm.addEventListener('submit', function (e) {
+    e.preventDefault();
     var email = document.getElementById('contactEmail').value.trim();
     var phone = document.getElementById('contactPhone').value.trim();
     if (!email && !phone) {
-      e.preventDefault();
       alert('Please provide at least an email address or phone number.');
+      return;
     }
+    document.getElementById('contactMessageInput').value = contactQuill.root.innerHTML;
+    {% if RECAPTCHA_SITE_KEY %}
+    grecaptcha.ready(function () {
+      grecaptcha.execute('{{ RECAPTCHA_SITE_KEY }}', { action: 'contact' }).then(function (token) {
+        document.getElementById('contact-recaptcha-token').value = token;
+        contactForm.submit();
+      });
+    });
+    {% else %}
+    contactForm.submit();
+    {% endif %}
   });
 </script>
 {% endblock %}

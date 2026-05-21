@@ -212,7 +212,8 @@
             </div>
             <div class="form-group">
               <label class="col-form-label">Message:</label>
-              <textarea name="message" class="form-control"></textarea>
+              <div id="projectMessageEditor" style="height:140px;background:#fff;border:1px solid #ced4da;border-radius:.25rem;"></div>
+              <input type="hidden" name="message" id="projectMessageInput">
             </div>
             <hr>
             <input type="submit" value="Send" class="btn btn-block btn-secondary">
@@ -223,4 +224,46 @@
   </div>
   {% endif %}
 
+{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+{% if RECAPTCHA_SITE_KEY %}
+<script src="https://www.google.com/recaptcha/api.js?render={{ RECAPTCHA_SITE_KEY }}"></script>
+{% endif %}
+<script>
+  var projectQuill = new Quill('#projectMessageEditor', {
+    theme: 'snow',
+    placeholder: 'Write your message here…',
+    modules: { toolbar: [['bold', 'italic', 'underline'], [{ list: 'ordered' }, { list: 'bullet' }], ['clean']] }
+  });
+
+  var projectForm = document.querySelector('form[action*="contact"]');
+  {% if RECAPTCHA_SITE_KEY %}
+  var projectTokenInput = document.createElement('input');
+  projectTokenInput.type = 'hidden';
+  projectTokenInput.name = 'g-recaptcha-response';
+  projectTokenInput.id = 'project-recaptcha-token';
+  projectForm.appendChild(projectTokenInput);
+  {% endif %}
+
+  projectForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    document.getElementById('projectMessageInput').value = projectQuill.root.innerHTML;
+    {% if RECAPTCHA_SITE_KEY %}
+    grecaptcha.ready(function () {
+      grecaptcha.execute('{{ RECAPTCHA_SITE_KEY }}', { action: 'project_inquiry' }).then(function (token) {
+        document.getElementById('project-recaptcha-token').value = token;
+        projectForm.submit();
+      });
+    });
+    {% else %}
+    projectForm.submit();
+    {% endif %}
+  });
+</script>
 {% endblock %}

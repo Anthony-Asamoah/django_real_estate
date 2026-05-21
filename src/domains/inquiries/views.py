@@ -1,20 +1,28 @@
 import pendulum
 from django.contrib import messages
-from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import HttpResponse, redirect
 from django.template.loader import render_to_string
 from wagtail.models import Site
 
+from domains.pages.models import BrandingSettings
+from infrastructure.email import get_email_provider
+from infrastructure import recaptcha
 from .models import GeneralInquiry, ProjectInquiry, EmailSettings
 
 
-def _get_email_settings(request):
+def _get_site_context(request):
     site = Site.find_for_request(request)
-    return EmailSettings.for_site(site)
+    email_settings = EmailSettings.for_site(site)
+    branding = BrandingSettings.for_site(site)
+    return email_settings, branding.site_name
 
 
 def contact(request):
     if request.method == 'POST':
+        if not recaptcha.verify(request.POST.get('g-recaptcha-response', ''), 'project_inquiry'):
+            messages.error(request, 'reCAPTCHA verification failed. Please try again.')
+            return redirect('projects:projects')
+
         listing_id = request.POST['listing_id']
         user_id = request.POST['user_id']
         listing = request.POST['listing']
@@ -39,10 +47,9 @@ def contact(request):
         )
         new_contact.save()
 
-        settings = _get_email_settings(request)
+        settings, site_name = _get_site_context(request)
         subject = settings.project_inquiry_subject
         intro = settings.project_inquiry_intro.format(project=listing)
-        site_name = settings.site.site_name
 
         html_body = render_to_string('emails/project_inquiry.html', {
             'subject': subject,
@@ -55,9 +62,7 @@ def contact(request):
             'message': new_contact.message,
         })
 
-        msg = EmailMultiAlternatives(subject, intro, 'anthonyasamoah48@gmail.com', [email])
-        msg.attach_alternative(html_body, 'text/html')
-        msg.send(fail_silently=False)
+        get_email_provider().send(email, subject, intro, html_body)
 
         messages.success(request, 'Your inquiry has been received. We will get back to you shortly.')
         return redirect('projects:projects')
@@ -67,6 +72,10 @@ def contact(request):
 
 def general_inquiry(request):
     if request.method == 'POST':
+        if not recaptcha.verify(request.POST.get('g-recaptcha-response', ''), 'contact'):
+            messages.error(request, 'reCAPTCHA verification failed. Please try again.')
+            return redirect('/contact/')
+
         email = request.POST.get('email', '').strip()
         phone = request.POST.get('phone', '').strip()
 
@@ -85,10 +94,9 @@ def general_inquiry(request):
         inquiry.save()
 
         if email:
-            settings = _get_email_settings(request)
+            settings, site_name = _get_site_context(request)
             subject = settings.general_inquiry_subject
             intro = settings.general_inquiry_intro.format(name=inquiry.name)
-            site_name = settings.site.site_name
 
             html_body = render_to_string('emails/general_inquiry.html', {
                 'subject': subject,
@@ -101,9 +109,7 @@ def general_inquiry(request):
                 'message': inquiry.message,
             })
 
-            msg = EmailMultiAlternatives(subject, intro, 'anthonyasamoah48@gmail.com', [email])
-            msg.attach_alternative(html_body, 'text/html')
-            msg.send(fail_silently=True)
+            get_email_provider().send(email, subject, intro, html_body)
 
         messages.success(request, 'Thank you! We will be in touch shortly.')
         return redirect('/contact/')

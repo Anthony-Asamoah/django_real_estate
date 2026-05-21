@@ -1,9 +1,19 @@
 from django.contrib import auth, messages
 from django.shortcuts import render, redirect
+from wagtail.admin.views.account import LoginView as WagtailLoginView
 
 from domains.inquiries.models import ProjectInquiry
+from infrastructure import recaptcha
 from .authentication import authenticate
 from .validation import validator
+
+
+class CMSLoginView(WagtailLoginView):
+    def post(self, request, *args, **kwargs):
+        if not recaptcha.verify(request.POST.get('g-recaptcha-response', ''), 'cms_login'):
+            messages.error(request, 'reCAPTCHA verification failed. Please try again.')
+            return self.get(request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)
 
 
 def login(request):

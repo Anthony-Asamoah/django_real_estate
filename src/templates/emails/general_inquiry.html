@@ -29,7 +29,7 @@
         {% if email %}<p><strong>Email:</strong> {{ email }}</p>{% endif %}
         {% if phone %}<p><strong>Phone:</strong> {{ phone }}</p>{% endif %}
         {% if service %}<p><strong>Service:</strong> {{ service }}</p>{% endif %}
-        {% if message %}<p><strong>Message:</strong> {{ message }}</p>{% endif %}
+        {% if message %}<p><strong>Message:</strong></p>{{ message|safe }}{% endif %}
       </div>
       <p>Our team will review your message and get back to you as soon as possible.</p>
     </div>

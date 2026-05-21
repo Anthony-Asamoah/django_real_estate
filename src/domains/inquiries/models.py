@@ -2,6 +2,7 @@ import pendulum
 from django.db import models
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
+from wagtail.fields import RichTextField
 from wagtail.snippets.models import register_snippet
 
 
@@ -12,7 +13,7 @@ class ProjectInquiry(models.Model):
     name = models.CharField(max_length=100, blank=False)
     phone = models.CharField(max_length=15, blank=False)
     email = models.CharField(max_length=100, blank=False)
-    message = models.TextField(blank=False)
+    message = RichTextField(blank=True)
     timestamp = models.DateTimeField(default=pendulum.now)
     user_id = models.IntegerField(blank=False)
 
@@ -51,7 +52,7 @@ class GeneralInquiry(models.Model):
         blank=True,
         help_text='Service the person is interested in',
     )
-    message = models.TextField()
+    message = RichTextField(blank=True)
     timestamp = models.DateTimeField(default=pendulum.now)
 
     panels = [

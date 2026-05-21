@@ -400,7 +400,7 @@ def seed_pages():
             defaults={
                 'hostname': 'localhost',
                 'port': 8000,
-                'site_name': 'Real Estate',
+                'site_name': 'Numira Real Estate',
                 'root_page': home_page,
                 'is_default_site': True,
             },

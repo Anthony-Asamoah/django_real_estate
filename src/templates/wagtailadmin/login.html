@@ -49,3 +49,30 @@
     <img src="{% static 'img/logo.png' %}" alt="Logo" style="max-height: 80px; width: auto;">
   </div>
 {% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+{% if RECAPTCHA_SITE_KEY %}
+<script src="https://www.google.com/recaptcha/api.js?render={{ RECAPTCHA_SITE_KEY }}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var form = document.querySelector('form');
+    if (!form) return;
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'g-recaptcha-response';
+    input.id = 'cms-recaptcha-token';
+    form.appendChild(input);
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      grecaptcha.ready(function () {
+        grecaptcha.execute('{{ RECAPTCHA_SITE_KEY }}', { action: 'cms_login' }).then(function (token) {
+          document.getElementById('cms-recaptcha-token').value = token;
+          form.submit();
+        });
+      });
+    });
+  });
+</script>
+{% endif %}
+{% endblock %}

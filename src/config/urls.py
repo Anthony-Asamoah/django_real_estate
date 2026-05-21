@@ -5,8 +5,10 @@ from wagtail import urls as wagtail_urls
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
+from domains.accounts.views import CMSLoginView
 
 urlpatterns = [
+    path('cms/login/', CMSLoginView.as_view()),
     path('cms/', include(wagtailadmin_urls)),
     path('documents/', include(wagtaildocs_urls)),
     path('projects/', include('domains.projects.urls')),

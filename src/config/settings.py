@@ -176,9 +176,20 @@ WAGTAILADMIN_BASE_URL = config('WAGTAILADMIN_BASE_URL', default='http://localhos
 SITE_ID = 1
 
 # email config
+EMAIL_PROVIDER = config('EMAIL_PROVIDER', default='django_smtp')  # 'django_smtp' or 'resend'
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@example.com')
+
+# SMTP settings (used when EMAIL_PROVIDER=django_smtp)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+
+# Resend settings (used when EMAIL_PROVIDER=resend)
+EMAIL_API_KEY = config('EMAIL_API_KEY', default='')
+
+# reCAPTCHA v3
+RECAPTCHA_SITE_KEY = config('RECAPTCHA_SITE_KEY', default='')
+RECAPTCHA_SECRET_KEY = config('RECAPTCHA_SECRET_KEY', default='')
