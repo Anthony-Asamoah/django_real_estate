@@ -1,26 +1,22 @@
 {% load static wagtailimages_tags page_tags %}
 {% get_service_pages as service_pages %}
 
-<!-- Navbar -->
-<style>
-  .navbar-brand .logo { max-height: 50px; width: auto; }
-</style>
 <nav id="main-nav" class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
   <div class="container">
     <a class="navbar-brand" href="/">
       {% if settings.pages.BrandingSettings.logo %}
-        {% image settings.pages.BrandingSettings.logo original class="logo" %}
+        {% image settings.pages.BrandingSettings.logo original class="nav-logo" %}
       {% else %}
-        <img src="{% static 'img/logo.png' %}" class="logo" alt="">
+        <img src="{% static 'img/logo.png' %}" class="nav-logo" alt="">
       {% endif %}
     </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+    <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
-        <!-- Services Dropdown -->
-        <li class="nav-item dropdown {% if request.path|startswith:'/services/' %}active{% endif %} mr-3">
+        <li class="nav-item dropdown {% if request.path|startswith:'/services/' %}active{% endif %}">
           <a class="nav-link dropdown-toggle" href="/services/"
              id="servicesDropdown" role="button"
              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -36,28 +32,27 @@
             {% endif %}
           </div>
         </li>
-
-        <li class="nav-item mr-3 {% if request.path|startswith:'/projects/' %}active{% endif %}">
+        <li class="nav-item {% if request.path|startswith:'/projects/' %}active{% endif %}">
           <a class="nav-link" href="/projects/">Projects</a>
         </li>
-        <li class="nav-item mr-3 {% if request.path|startswith:'/about/' %}active{% endif %}">
+        <li class="nav-item {% if request.path|startswith:'/about/' %}active{% endif %}">
           <a class="nav-link" href="/about/">About</a>
         </li>
-        <li class="nav-item mr-3 {% if request.path == '/contact/' %}active{% endif %}">
+        <li class="nav-item {% if request.path == '/contact/' %}active{% endif %}">
           <a class="nav-link" href="/contact/">Contact</a>
         </li>
       </ul>
 
       <ul class="navbar-nav ml-auto align-items-center">
         {% if user.is_authenticated %}
-          <li class="nav-item mr-3 {% if request.path|startswith:'/cms/' %}active{% endif %}">
+          <li class="nav-item {% if request.path|startswith:'/cms/' %}active{% endif %}">
             {% if user.is_staff or user.is_superuser %}
               <a class="nav-link" href="/cms/">Dashboard</a>
             {% else %}
               <a class="nav-link" href="{% url 'accounts:dashboard' %}">Dashboard</a>
             {% endif %}
           </li>
-          <li class="nav-item mr-3">
+          <li class="nav-item">
             <a class="nav-link" href="javascript:document.getElementById('logout').submit()">
               <i class="fas fa-sign-out-alt"></i> Logout
             </a>
@@ -67,8 +62,8 @@
             </form>
           </li>
         {% endif %}
-        <li class="nav-item ml-2">
-          <a href="/contact/" class="btn btn-secondary px-4">Get a Quote</a>
+        <li class="nav-item nav-cta">
+          <a href="/contact/" class="btn-quote">Get a Quote</a>
         </li>
       </ul>
     </div>

@@ -18,12 +18,175 @@ body > main {
 img {
   width: 100%; }
 
-.logo {
-  width: 80px; }
+/* ===== NAVBAR ===== */
+.nav-logo {
+  max-height: 46px;
+  width: auto;
+}
 
-.navbar {
-  opacity: 0.9;
-  text-transform: uppercase; }
+#main-nav {
+  transition: box-shadow 0.3s ease;
+  text-transform: uppercase;
+  padding-top: 0.65rem;
+  padding-bottom: 0.65rem;
+}
+
+#main-nav.nav-scrolled {
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.22);
+}
+
+#main-nav .nav-link {
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  padding: 0.5rem 0 !important;
+  margin: 0 1rem;
+  position: relative;
+  color: rgba(255, 255, 255, 0.82) !important;
+  transition: color 0.2s ease;
+}
+
+#main-nav .nav-link::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--brand-secondary);
+  transition: width 0.25s ease;
+  border-radius: 2px;
+}
+
+#main-nav .nav-item.active > .nav-link,
+#main-nav .nav-link:hover {
+  color: #fff !important;
+}
+
+#main-nav .nav-item.active > .nav-link::before,
+#main-nav .nav-link:hover::before {
+  width: 100%;
+}
+
+#main-nav .nav-cta .nav-link::before {
+  display: none;
+}
+
+/* Dropdown */
+#main-nav .dropdown-menu {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.13);
+  padding: 0.4rem 0;
+  min-width: 195px;
+  margin-top: 0.5rem;
+  animation: navDropIn 0.2s ease both;
+}
+
+@keyframes navDropIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+#main-nav .dropdown-item {
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 0.6rem 1.3rem;
+  color: #2c3e50;
+  transition: background 0.15s, color 0.15s, padding-left 0.18s;
+}
+
+#main-nav .dropdown-item:hover,
+#main-nav .dropdown-item:focus {
+  background: var(--brand-secondary);
+  color: #fff;
+  padding-left: 1.55rem;
+}
+
+#main-nav .dropdown-divider {
+  margin: 0.3rem 1rem;
+  border-color: rgba(0, 0, 0, 0.07);
+}
+
+/* CTA Button */
+.btn-quote {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #fff !important;
+  background: var(--brand-secondary);
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1.2rem;
+  display: inline-block;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.btn-quote:hover {
+  color: #fff !important;
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 18px color-mix(in srgb, var(--brand-secondary) 40%, transparent);
+}
+
+/* Hamburger */
+#main-nav .navbar-toggler {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 6px;
+  padding: 0.4rem 0.65rem;
+  transition: border-color 0.2s;
+}
+
+#main-nav .navbar-toggler:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-secondary) 30%, transparent);
+}
+
+/* Mobile collapsed menu */
+@media (max-width: 991px) {
+  #main-nav .nav-link {
+    margin: 0;
+    padding: 0.65rem 0 !important;
+  }
+
+  #main-nav .nav-link::before {
+    display: none;
+  }
+
+  #main-nav .navbar-collapse {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 0;
+    margin-top: 0.5rem;
+  }
+
+  #main-nav .dropdown-menu {
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: none;
+    border-radius: 6px;
+    animation: none;
+    padding: 0.25rem 0;
+  }
+
+  #main-nav .dropdown-item {
+    color: rgba(255, 255, 255, 0.75);
+    padding: 0.55rem 1rem;
+  }
+
+  #main-nav .dropdown-item:hover {
+    background: color-mix(in srgb, var(--brand-secondary) 18%, transparent);
+    color: #fff;
+    padding-left: 1rem;
+  }
+
+  #main-nav .nav-cta {
+    margin-top: 0.75rem;
+    padding-bottom: 0.25rem;
+  }
+}
 
 .social a {
   margin-right: 0.4rem; }
@@ -219,7 +382,4 @@ img {
 .contact-info-list li {
   font-size: 1.05rem; }
 
-/* ===== DROPDOWN ACTIVE STATE ===== */
-.nav-item.dropdown.active > .nav-link {
-  border-bottom: 2px solid var(--brand-secondary); }
 
