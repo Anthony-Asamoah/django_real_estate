@@ -290,10 +290,15 @@ class BrandingSettings(BaseSiteSetting):
     instagram_url = models.URLField(blank=True)
     pinterest_url = models.URLField(blank=True)
     tiktok_url = models.URLField(blank=True)
-    maps_url = models.URLField(
+    maps_url = models.TextField(
         blank=True,
         default=django_settings.MAPS_URL,
-        help_text='Google Maps share link for your location (e.g. https://maps.app.goo.gl/…)',
+        help_text='Google Maps share link — used for the "Get Directions" button (e.g. https://maps.app.goo.gl/…)',
+    )
+    maps_embed_url = models.TextField(
+        blank=True,
+        default=django_settings.MAPS_EMBED_URL,
+        help_text='Google Maps embed URL for the iframe — get it from Google Maps → Share → Embed a map → copy the iframe src',
     )
 
     panels = [
@@ -309,7 +314,7 @@ class BrandingSettings(BaseSiteSetting):
             heading='Colors',
         ),
         MultiFieldPanel(
-            [FieldPanel('phone'), FieldPanel('email'), FieldPanel('maps_url')],
+            [FieldPanel('phone'), FieldPanel('email'), FieldPanel('maps_url'), FieldPanel('maps_embed_url')],
             heading='Contact Info',
         ),
         MultiFieldPanel(

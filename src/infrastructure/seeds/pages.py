@@ -485,6 +485,11 @@ def seed_pages():
         branding.instagram_url = 'https://www.instagram.com/numiralreal/'
         branding.tiktok_url = 'https://www.tiktok.com/@numiral.real.estat'
         branding.maps_url = 'https://maps.app.goo.gl/WXZVF3jKSFmLrGMF9'
+        branding.maps_embed_url = (
+            'https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d451.7493565451374'
+            '!2d-0.8491877723289881!3d10.788708482747627!2m3!1f0!2f0!3f0!3m2!1i1024'
+            '!2i768!4f13.1!5e1!3m2!1sen!2sgh!4v1779392244804!5m2!1sen!2sgh'
+        )
         branding.save()
         print('  Updated BrandingSettings.')
 

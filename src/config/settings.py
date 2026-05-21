@@ -196,3 +196,4 @@ RECAPTCHA_SECRET_KEY = config('RECAPTCHA_SECRET_KEY', default='')
 
 # Google Maps
 MAPS_URL = config('MAPS_URL', default='')
+MAPS_EMBED_URL = config('MAPS_EMBED_URL', default='')
