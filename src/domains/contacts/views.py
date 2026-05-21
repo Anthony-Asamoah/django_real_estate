@@ -5,7 +5,7 @@ from django.shortcuts import redirect
 from django.core.mail import send_mail
 from django.urls import reverse_lazy
 
-from .models import Contact
+from .models import Contact, GeneralInquiry
 
 
 # Create your views here.
@@ -50,3 +50,29 @@ def contact(request):
 		return redirect(f"listings:listings")
 
 	return HttpResponse('request: GET')
+
+
+def general_inquiry(request):
+	if request.method == 'POST':
+		inquiry = GeneralInquiry(
+			name=request.POST.get('name', ''),
+			email=request.POST.get('email', ''),
+			phone=request.POST.get('phone', ''),
+			service=request.POST.get('service', ''),
+			message=request.POST.get('message', ''),
+			timestamp=pendulum.now(),
+		)
+		inquiry.save()
+
+		send_mail(
+			'New Inquiry',
+			f'New inquiry from {inquiry.name} ({inquiry.email}).\nService: {inquiry.service or "General"}\n\n{inquiry.message}',
+			'anthonyasamoah48@gmail.com',
+			[inquiry.email],
+			fail_silently=True,
+		)
+
+		messages.success(request, 'Thank you! We will be in touch shortly.')
+		return redirect('/contact/')
+
+	return redirect('/contact/')

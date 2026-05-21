@@ -1,0 +1,19 @@
+<!-- Stats Row -->
+<section class="py-5 bg-primary text-white stats-section">
+  <div class="container">
+    {% if value.heading %}
+      <h2 class="text-center mb-5">{{ value.heading }}</h2>
+    {% endif %}
+    <div class="row text-center">
+      {% for stat in value.stats %}
+        <div class="col-6 col-md-3 mb-4 stats-counter">
+          {% if stat.icon %}
+            <i class="fas {{ stat.icon }} fa-2x mb-2 text-secondary"></i>
+          {% endif %}
+          <div class="stat-value">{{ stat.value }}</div>
+          <div class="stat-label">{{ stat.label }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

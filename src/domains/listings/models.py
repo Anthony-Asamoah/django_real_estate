@@ -14,11 +14,17 @@ def listing_photo_path(instance, filename):
     return f'listings/{uuid.uuid4().hex}{ext}'
 
 
+LISTING_TYPE_CHOICES = [
+    ('property_sale', 'Completed Property for Sale'),
+    ('land_sale', 'Land for Sale'),
+]
+
+
 class ListingViewSet(SnippetViewSet):
     model = None  # set after Listing is defined
     icon = 'home'
     list_display = ['title', 'city', 'state_or_region', 'price', 'is_published', 'listing_date']
-    list_filter = ['is_published', 'state_or_region', 'realtor']
+    list_filter = ['is_published', 'listing_type', 'state_or_region', 'realtor']
     search_fields = ['title', 'address', 'city']
     ordering = ['-listing_date']
 
@@ -32,6 +38,18 @@ class Listing(models.Model):
     zipcode = models.CharField(max_length=11, default='')
     description = models.TextField(blank=True)
     price = models.IntegerField(default=0)
+    listing_type = models.CharField(
+        max_length=20,
+        choices=LISTING_TYPE_CHOICES,
+        default='property_sale',
+    )
+    land_area_sqft = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text='For land listings: total plot area in sqft',
+    )
     bedrooms = models.IntegerField(default=1)
     bathrooms = models.DecimalField(max_digits=2, decimal_places=1, default=1.0)
     garage = models.IntegerField(default=0)
@@ -52,6 +70,7 @@ class Listing(models.Model):
             [
                 FieldPanel('title'),
                 FieldPanel('realtor'),
+                FieldPanel('listing_type'),
                 FieldPanel('is_published'),
                 FieldPanel('listing_date'),
             ],
@@ -74,6 +93,7 @@ class Listing(models.Model):
                 FieldPanel('garage'),
                 FieldPanel('sqft'),
                 FieldPanel('lot_size'),
+                FieldPanel('land_area_sqft'),
                 FieldPanel('description'),
             ],
             heading='Property Details',

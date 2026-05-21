@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load wagtailcore_tags %}
+
+{% block title %} | Services{% endblock %}
+
+{% block content %}
+
+  {% include 'partials/_breadcrumbs.html' %}
+
+  {% for block in page.body %}
+    {% if block.block_type == 'hero_banner' %}
+      {% include_block block %}
+    {% endif %}
+  {% endfor %}
+
+  <!-- Services Grid -->
+  <section class="py-5">
+    <div class="container">
+      <h2 class="text-center text-primary mb-2">Our Services</h2>
+      <p class="text-center text-muted mb-5">Everything you need, from the ground up.</p>
+      <div class="row">
+        {% for service in services %}
+          <div class="col-md-6 col-lg-4 mb-4">
+            <a href="{{ service.url }}" class="text-decoration-none">
+              <div class="card service-card h-100 shadow-sm border-0">
+                <div class="card-body p-4 text-center">
+                  <i class="fas fa-hard-hat fa-3x text-secondary mb-3"></i>
+                  <h4 class="text-primary">{{ service.title }}</h4>
+                  <p class="text-muted small">{{ service.search_description|default:"Learn more about this service." }}</p>
+                </div>
+                <div class="card-footer bg-white border-0 text-center pb-4">
+                  <span class="btn btn-outline-primary btn-sm">Learn More &rarr;</span>
+                </div>
+              </div>
+            </a>
+          </div>
+        {% empty %}
+          <div class="col-12 text-center text-muted py-5">
+            <p>Services coming soon.</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  {% for block in page.body %}
+    {% if block.block_type == 'rich_text' %}
+      <section class="py-5">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-8">{{ block.value|richtext }}</div>
+          </div>
+        </div>
+      </section>
+    {% elif block.block_type != 'hero_banner' %}
+      {% include_block block %}
+    {% endif %}
+  {% endfor %}
+
+{% endblock %}

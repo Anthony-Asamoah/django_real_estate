@@ -35,3 +35,36 @@ class Contact(models.Model):
 
     class Meta:
         ordering = ['-timestamp']
+
+
+@register_snippet
+class GeneralInquiry(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.CharField(max_length=100)
+    phone = models.CharField(max_length=20, blank=True)
+    service = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text='Service the person is interested in',
+    )
+    message = models.TextField()
+    timestamp = models.DateTimeField(default=pendulum.now)
+
+    panels = [
+        MultiFieldPanel(
+            [FieldPanel('name'), FieldPanel('email'), FieldPanel('phone')],
+            heading='Contact Info',
+        ),
+        MultiFieldPanel(
+            [FieldPanel('service'), FieldPanel('message'), FieldPanel('timestamp')],
+            heading='Details',
+        ),
+    ]
+
+    def __str__(self):
+        return f'{self.name} — {self.service or "general"}'
+
+    class Meta:
+        ordering = ['-timestamp']
+        verbose_name = 'General Inquiry'
+        verbose_name_plural = 'General Inquiries'

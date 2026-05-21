@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block title %} | Projects{% endblock %}
+
+{% block content %}
+
+  {% include 'partials/_breadcrumbs.html' %}
+
+  {% for block in page.body %}
+    {% if block.block_type == 'hero_banner' %}
+      {% include_block block %}
+    {% endif %}
+  {% endfor %}
+
+  <!-- Projects Grid -->
+  <section class="py-5">
+    <div class="container">
+      <h2 class="text-center text-primary mb-2">Our Work</h2>
+      <p class="text-center text-muted mb-5">A selection of completed projects across our services.</p>
+      <div class="row">
+        {% for project in projects %}
+          <div class="col-md-6 col-lg-4 mb-4">
+            <a href="{{ project.url }}" class="text-decoration-none">
+              <div class="card project-card h-100 shadow-sm border-0 overflow-hidden">
+                <div class="project-card-img-wrapper">
+                  {% if project.cover_image %}
+                    {% image project.cover_image fill-600x400 class="card-img-top" %}
+                  {% else %}
+                    <div class="project-card-placeholder d-flex align-items-center justify-content-center">
+                      <i class="fas fa-hard-hat fa-3x text-white"></i>
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="card-body">
+                  <h5 class="text-primary">{{ project.title }}</h5>
+                  {% if project.service %}
+                    <span class="badge badge-secondary text-white mb-2">{{ project.service.title }}</span>
+                  {% endif %}
+                  {% if project.location %}
+                    <p class="text-muted small mb-0">
+                      <i class="fas fa-map-marker-alt mr-1"></i>{{ project.location }}
+                    </p>
+                  {% endif %}
+                </div>
+              </div>
+            </a>
+          </div>
+        {% empty %}
+          <div class="col-12 text-center text-muted py-5">
+            <p>Projects coming soon.</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  {% for block in page.body %}
+    {% if block.block_type == 'rich_text' %}
+      <section class="py-4">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-8">{{ block.value|richtext }}</div>
+          </div>
+        </div>
+      </section>
+    {% elif block.block_type != 'hero_banner' %}
+      {% include_block block %}
+    {% endif %}
+  {% endfor %}
+
+{% endblock %}

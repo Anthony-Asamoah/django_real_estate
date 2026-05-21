@@ -1,4 +1,87 @@
+{% load page_tags %}
+{% get_service_pages as service_pages %}
+
 <!-- Footer -->
-<footer id="main-footer" class="py-4 bg-primary text-white text-center">
-  Copyright &copy; {% now "Y" %} {{ settings.pages.BrandingSettings.site_name|default:SITE_NAME }}
+<footer id="main-footer" class="py-5 bg-primary text-white">
+  <div class="container">
+    <div class="row">
+
+      <!-- Brand -->
+      <div class="col-md-4 mb-4 footer-col">
+        <h5 class="font-weight-bold mb-3">
+          {{ settings.pages.BrandingSettings.site_name|default:SITE_NAME }}
+        </h5>
+        <p class="text-white-50 small">
+          Your trusted partner in land, construction, roofing, borehole, and property sales.
+        </p>
+        <div class="social mt-3">
+          {% if settings.pages.BrandingSettings.facebook_url %}
+            <a href="{{ settings.pages.BrandingSettings.facebook_url }}" class="text-white mr-2" target="_blank" rel="noopener">
+              <i class="fab fa-facebook fa-lg"></i></a>
+          {% endif %}
+          {% if settings.pages.BrandingSettings.instagram_url %}
+            <a href="{{ settings.pages.BrandingSettings.instagram_url }}" class="text-white mr-2" target="_blank" rel="noopener">
+              <i class="fab fa-instagram fa-lg"></i></a>
+          {% endif %}
+          {% if settings.pages.BrandingSettings.twitter_url %}
+            <a href="{{ settings.pages.BrandingSettings.twitter_url }}" class="text-white mr-2" target="_blank" rel="noopener">
+              <i class="fab fa-twitter fa-lg"></i></a>
+          {% endif %}
+          {% if settings.pages.BrandingSettings.linkedin_url %}
+            <a href="{{ settings.pages.BrandingSettings.linkedin_url }}" class="text-white mr-2" target="_blank" rel="noopener">
+              <i class="fab fa-linkedin fa-lg"></i></a>
+          {% endif %}
+          {% if settings.pages.BrandingSettings.tiktok_url %}
+            <a href="{{ settings.pages.BrandingSettings.tiktok_url }}" class="text-white mr-2" target="_blank" rel="noopener">
+              <i class="fab fa-tiktok fa-lg"></i></a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Services Links -->
+      <div class="col-md-4 mb-4 footer-col">
+        <h6 class="text-uppercase font-weight-bold mb-3 text-white-50 letter-spacing">Services</h6>
+        <ul class="list-unstyled footer-links">
+          <li><a href="/services/" class="text-white-50">All Services</a></li>
+          {% for svc in service_pages %}
+            <li><a href="{{ svc.url }}" class="text-white-50">{{ svc.title }}</a></li>
+          {% endfor %}
+          <li><a href="/projects/" class="text-white-50">Our Projects</a></li>
+          <li><a href="{% url 'listings:listings' %}" class="text-white-50">Property Listings</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="col-md-4 mb-4 footer-col">
+        <h6 class="text-uppercase font-weight-bold mb-3 text-white-50 letter-spacing">Contact</h6>
+        <ul class="list-unstyled footer-links">
+          {% if settings.pages.BrandingSettings.phone %}
+            <li class="mb-2">
+              <i class="fas fa-phone mr-2"></i>
+              <a href="tel:{{ settings.pages.BrandingSettings.phone }}" class="text-white-50">
+                {{ settings.pages.BrandingSettings.phone }}
+              </a>
+            </li>
+          {% endif %}
+          {% if settings.pages.BrandingSettings.email %}
+            <li class="mb-2">
+              <i class="fas fa-envelope mr-2"></i>
+              <a href="mailto:{{ settings.pages.BrandingSettings.email }}" class="text-white-50">
+                {{ settings.pages.BrandingSettings.email }}
+              </a>
+            </li>
+          {% endif %}
+          <li class="mt-3">
+            <a href="/contact/" class="btn btn-secondary btn-sm text-white">Get in Touch</a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <hr class="border-white-50 mt-2">
+    <p class="text-center text-white-50 mb-0 small">
+      &copy; {% now "Y" %} {{ settings.pages.BrandingSettings.site_name|default:SITE_NAME }}. All rights reserved.
+    </p>
+  </div>
 </footer>

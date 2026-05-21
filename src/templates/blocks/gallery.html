@@ -1,0 +1,23 @@
+{% load wagtailimages_tags %}
+
+<!-- Photo Gallery -->
+<section class="py-5">
+  <div class="container">
+    {% if value.heading %}
+      <h2 class="text-center text-primary mb-4">{{ value.heading }}</h2>
+    {% endif %}
+    <div class="row">
+      {% for item in value.images %}
+        <div class="col-sm-6 col-md-4 mb-4">
+          {% image item.image fill-600x400 as img %}
+          <a href="{{ img.url }}" data-lightbox="gallery-{{ block_id }}" data-title="{{ item.caption }}">
+            <img src="{{ img.url }}" alt="{{ item.caption }}" class="gallery-thumb img-fluid rounded shadow-sm">
+          </a>
+          {% if item.caption %}
+            <p class="text-muted text-center mt-1 small">{{ item.caption }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

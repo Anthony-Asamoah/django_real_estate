@@ -1,0 +1,39 @@
+{% load page_tags wagtailimages_tags %}
+{% get_testimonials as testimonials %}
+
+<!-- Testimonials -->
+{% if testimonials %}
+<section class="py-5 bg-light">
+  <div class="container">
+    {% if value.heading %}
+      <h2 class="text-center text-primary mb-5">{{ value.heading }}</h2>
+    {% else %}
+      <h2 class="text-center text-primary mb-5">What Our Clients Say</h2>
+    {% endif %}
+    <div class="row">
+      {% for t in testimonials %}
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card h-100 testimonial-card shadow-sm border-0">
+            <div class="card-body p-4">
+              <p class="card-text text-muted fst-italic">&ldquo;{{ t.body }}&rdquo;</p>
+            </div>
+            <div class="card-footer bg-white border-0 d-flex align-items-center pt-0 pb-4 px-4">
+              {% if t.author_photo %}
+                {% image t.author_photo fill-60x60 class="rounded-circle mr-3" %}
+              {% else %}
+                <div class="testimonial-avatar mr-3">
+                  <i class="fas fa-user-circle fa-3x text-secondary"></i>
+                </div>
+              {% endif %}
+              <div>
+                <strong class="d-block text-primary">{{ t.author_name }}</strong>
+                {% if t.author_role %}<small class="text-muted">{{ t.author_role }}</small>{% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}

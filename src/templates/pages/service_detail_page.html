@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load wagtailcore_tags %}
+
+{% block title %} | {{ page.title }}{% endblock %}
+
+{% block content %}
+
+  {% include 'partials/_breadcrumbs.html' %}
+
+  {% for block in page.body %}
+    {% if block.block_type == 'rich_text' %}
+      <section class="py-5">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-8">
+              {{ block.value|richtext }}
+            </div>
+          </div>
+        </div>
+      </section>
+    {% else %}
+      {% include_block block %}
+    {% endif %}
+  {% endfor %}
+
+{% endblock %}

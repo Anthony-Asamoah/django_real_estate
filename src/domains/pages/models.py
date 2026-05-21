@@ -1,15 +1,27 @@
 from django.conf import settings as django_settings
 from django.db import models
+import pendulum
+
 from wagtail.models import Page
+from wagtail.fields import StreamField
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel
+from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
+from wagtail.snippets.models import register_snippet
+
+from .widgets import ColorInput
+from .blocks import (
+    HomePageStreamBlock,
+    AboutPageStreamBlock,
+    ServicesIndexStreamBlock,
+    ServiceDetailStreamBlock,
+    ProjectsIndexStreamBlock,
+    ProjectDetailStreamBlock,
+    ContactPageStreamBlock,
+)
 
 
 def _default_site_name():
     return getattr(django_settings, 'SITE_NAME', 'Real Estate')
-from wagtail.fields import StreamField
-from wagtail.admin.panels import FieldPanel, MultiFieldPanel
-from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
-
-from .blocks import HomePageStreamBlock, AboutPageStreamBlock
 
 
 class HomePage(Page):
@@ -20,7 +32,12 @@ class HomePage(Page):
     ]
 
     parent_page_types = ['wagtailcore.Page']
-    subpage_types = ['pages.AboutPage']
+    subpage_types = [
+        'pages.AboutPage',
+        'pages.ServicesIndexPage',
+        'pages.ProjectsIndexPage',
+        'pages.ContactPage',
+    ]
 
     template = 'pages/home_page.html'
 
@@ -63,6 +80,168 @@ class AboutPage(Page):
         verbose_name = 'About Page'
 
 
+class ServicesIndexPage(Page):
+    body = StreamField(ServicesIndexStreamBlock(), use_json_field=True, blank=True)
+
+    content_panels = Page.content_panels + [
+        FieldPanel('body'),
+    ]
+
+    parent_page_types = ['pages.HomePage']
+    subpage_types = ['pages.ServiceDetailPage']
+
+    template = 'pages/services_index_page.html'
+
+    def get_context(self, request):
+        context = super().get_context(request)
+        context['services'] = self.get_children().live().specific()
+        return context
+
+    class Meta:
+        verbose_name = 'Services Index Page'
+
+
+class ServiceDetailPage(Page):
+    body = StreamField(ServiceDetailStreamBlock(), use_json_field=True, blank=True)
+
+    content_panels = Page.content_panels + [
+        FieldPanel('body'),
+    ]
+
+    parent_page_types = ['pages.ServicesIndexPage']
+    subpage_types = []
+
+    template = 'pages/service_detail_page.html'
+
+    class Meta:
+        verbose_name = 'Service Page'
+
+
+class ProjectsIndexPage(Page):
+    body = StreamField(ProjectsIndexStreamBlock(), use_json_field=True, blank=True)
+
+    content_panels = Page.content_panels + [
+        FieldPanel('body'),
+    ]
+
+    parent_page_types = ['pages.HomePage']
+    subpage_types = ['pages.ProjectDetailPage']
+
+    template = 'pages/projects_index_page.html'
+
+    def get_context(self, request):
+        context = super().get_context(request)
+        context['projects'] = (
+            self.get_children().live().specific().order_by('-first_published_at')
+        )
+        return context
+
+    class Meta:
+        verbose_name = 'Projects Index Page'
+
+
+class ProjectDetailPage(Page):
+    service = models.ForeignKey(
+        'pages.ServiceDetailPage',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='projects',
+    )
+    location = models.CharField(max_length=200, blank=True)
+    completion_date = models.DateField(null=True, blank=True)
+    cover_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
+    body = StreamField(ProjectDetailStreamBlock(), use_json_field=True, blank=True)
+
+    content_panels = Page.content_panels + [
+        MultiFieldPanel([
+            FieldPanel('service'),
+            FieldPanel('location'),
+            FieldPanel('completion_date'),
+            FieldPanel('cover_image'),
+        ], heading='Project Details'),
+        FieldPanel('body'),
+    ]
+
+    parent_page_types = ['pages.ProjectsIndexPage']
+    subpage_types = []
+
+    template = 'pages/project_detail_page.html'
+
+    class Meta:
+        verbose_name = 'Project Page'
+
+
+class ContactPage(Page):
+    body = StreamField(ContactPageStreamBlock(), use_json_field=True, blank=True)
+
+    content_panels = Page.content_panels + [
+        FieldPanel('body'),
+    ]
+
+    parent_page_types = ['pages.HomePage']
+    subpage_types = []
+
+    template = 'pages/contact_page.html'
+
+    def get_context(self, request):
+        context = super().get_context(request)
+        context['service_pages'] = ServiceDetailPage.objects.live().order_by('title')
+        return context
+
+    class Meta:
+        verbose_name = 'Contact Page'
+
+
+@register_snippet
+class Testimonial(models.Model):
+    author_name = models.CharField(max_length=200)
+    author_role = models.CharField(max_length=200, blank=True)
+    author_photo = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
+    body = models.TextField()
+    service = models.ForeignKey(
+        'pages.ServiceDetailPage',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='testimonials',
+        help_text='Leave blank to show on all service pages',
+    )
+    is_featured = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=pendulum.now)
+
+    panels = [
+        MultiFieldPanel([
+            FieldPanel('author_name'),
+            FieldPanel('author_role'),
+            FieldPanel('author_photo'),
+        ], heading='Author'),
+        MultiFieldPanel([
+            FieldPanel('body'),
+            FieldPanel('service'),
+            FieldPanel('is_featured'),
+        ], heading='Content'),
+    ]
+
+    def __str__(self):
+        return f'{self.author_name} — {self.author_role or "testimonial"}'
+
+    class Meta:
+        ordering = ['-created_at']
+
+
 @register_setting
 class BrandingSettings(BaseSiteSetting):
     site_name = models.CharField(
@@ -103,7 +282,10 @@ class BrandingSettings(BaseSiteSetting):
             heading='Branding',
         ),
         MultiFieldPanel(
-            [FieldPanel('primary_color'), FieldPanel('secondary_color')],
+            [
+                FieldPanel('primary_color', widget=ColorInput),
+                FieldPanel('secondary_color', widget=ColorInput),
+            ],
             heading='Colors',
         ),
         MultiFieldPanel(

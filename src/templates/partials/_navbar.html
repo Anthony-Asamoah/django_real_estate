@@ -1,4 +1,5 @@
-{% load static wagtailimages_tags %}
+{% load static wagtailimages_tags page_tags %}
+{% get_service_pages as service_pages %}
 
 <!-- Navbar -->
 <style>
@@ -18,36 +19,45 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <ul class="navbar-nav">
-        <li {% if '/' == request.path %}
-          class="nav-item active mr-3"
-        {% else %}
-          class="nav-item mr-3"
-        {% endif %}>
+        <li {% if '/' == request.path %}class="nav-item active mr-3"{% else %}class="nav-item mr-3"{% endif %}>
           <a class="nav-link" href="/">Home</a>
         </li>
-        <li {% if 'about' in request.path %}
-          class="nav-item active mr-3"
-        {% else %}
-          class="nav-item mr-3"
-        {% endif %}>
+
+        <!-- Services Dropdown -->
+        <li class="nav-item dropdown {% if 'services' in request.path %}active{% endif %} mr-3">
+          <a class="nav-link dropdown-toggle" href="/services/"
+             id="servicesDropdown" role="button"
+             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Services
+          </a>
+          <div class="dropdown-menu" aria-labelledby="servicesDropdown">
+            <a class="dropdown-item" href="/services/">All Services</a>
+            {% if service_pages %}
+              <div class="dropdown-divider"></div>
+              {% for svc in service_pages %}
+                <a class="dropdown-item" href="{{ svc.url }}">{{ svc.title }}</a>
+              {% endfor %}
+            {% endif %}
+          </div>
+        </li>
+
+        <li {% if 'projects' in request.path %}class="nav-item active mr-3"{% else %}class="nav-item mr-3"{% endif %}>
+          <a class="nav-link" href="/projects/">Projects</a>
+        </li>
+        <li {% if 'listings' in request.path %}class="nav-item active mr-3"{% else %}class="nav-item mr-3"{% endif %}>
+          <a class="nav-link" href="{% url 'listings:listings' %}">Listings</a>
+        </li>
+        <li {% if 'about' in request.path %}class="nav-item active mr-3"{% else %}class="nav-item mr-3"{% endif %}>
           <a class="nav-link" href="/about/">About</a>
         </li>
-        <li {% if 'listings' in request.path %}
-          class="nav-item active mr-3"
-        {% else %}
-          class="nav-item mr-3"
-        {% endif %}>
-          <a class="nav-link" href="{% url 'listings:listings' %}">Featured Listings</a>
+        <li {% if request.path == '/contact/' %}class="nav-item active mr-3"{% else %}class="nav-item mr-3"{% endif %}>
+          <a class="nav-link" href="/contact/">Contact</a>
         </li>
       </ul>
 
       <ul class="navbar-nav ml-auto">
         {% if user.is_authenticated %}
-          <li {% if 'dashboard' in request.path or 'cms' in request.path %}
-            class="nav-item active mr-3"
-          {% else %}
-            class="nav-item mr-3"
-          {% endif %}>
+          <li {% if 'dashboard' in request.path or 'cms' in request.path %}class="nav-item active mr-3"{% else %}class="nav-item mr-3"{% endif %}>
             {% if user.is_staff or user.is_superuser %}
               <a class="nav-link" href="/cms/">Dashboard</a>
             {% else %}
@@ -64,19 +74,11 @@
             </form>
           </li>
         {% else %}
-          <li {% if 'register' in request.path %}
-            class="nav-item active mr-3"
-          {% else %}
-            class="nav-item mr-3"
-          {% endif %}>
+          <li {% if 'register' in request.path %}class="nav-item active mr-3"{% else %}class="nav-item mr-3"{% endif %}>
             <a class="nav-link" href="{% url 'accounts:register' %}">
               <i class="fas fa-user-plus"></i> Register</a>
           </li>
-          <li {% if 'login' in request.path %}
-            class="nav-item active mr-3"
-          {% else %}
-            class="nav-item mr-3"
-          {% endif %}>
+          <li {% if 'login' in request.path %}class="nav-item active mr-3"{% else %}class="nav-item mr-3"{% endif %}>
             <a class="nav-link" href="{% url 'accounts:login' %}">
               <i class="fas fa-sign-in-alt"></i> Login</a>
           </li>

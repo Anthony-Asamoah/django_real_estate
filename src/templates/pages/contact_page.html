@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load wagtailcore_tags %}
+
+{% block title %} | Contact Us{% endblock %}
+
+{% block content %}
+
+  {% include 'partials/_breadcrumbs.html' %}
+
+  {% for block in page.body %}
+    {% if block.block_type == 'hero_banner' %}
+      {% include_block block %}
+    {% endif %}
+  {% endfor %}
+
+  <section class="py-5">
+    <div class="container">
+      {% include 'partials/_alerts.html' %}
+      <div class="row">
+
+        <!-- Contact Form -->
+        <div class="col-md-7 mb-5">
+          <h3 class="text-primary mb-4">Send Us a Message</h3>
+          <form action="{% url 'contact:general_inquiry' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" name="name" class="form-control" required>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label>Email Address</label>
+                <input type="email" name="email" class="form-control" required>
+              </div>
+              <div class="form-group col-md-6">
+                <label>Phone Number</label>
+                <input type="tel" name="phone" class="form-control">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Service of Interest</label>
+              <select name="service" class="form-control">
+                <option value="">— Select a service (optional) —</option>
+                {% for svc in service_pages %}
+                  <option value="{{ svc.title }}">{{ svc.title }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Message</label>
+              <textarea name="message" class="form-control" rows="5" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+          </form>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="col-md-5">
+          <h3 class="text-primary mb-4">Get in Touch</h3>
+          <ul class="list-unstyled contact-info-list">
+            {% if settings.pages.BrandingSettings.phone %}
+              <li class="mb-3">
+                <i class="fas fa-phone text-secondary mr-2"></i>
+                <a href="tel:{{ settings.pages.BrandingSettings.phone }}" class="text-dark">
+                  {{ settings.pages.BrandingSettings.phone }}
+                </a>
+              </li>
+            {% endif %}
+            {% if settings.pages.BrandingSettings.email %}
+              <li class="mb-3">
+                <i class="fas fa-envelope text-secondary mr-2"></i>
+                <a href="mailto:{{ settings.pages.BrandingSettings.email }}" class="text-dark">
+                  {{ settings.pages.BrandingSettings.email }}
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+
+          {% if service_pages %}
+            <h5 class="text-primary mt-4 mb-3">Our Services</h5>
+            <ul class="list-unstyled">
+              {% for svc in service_pages %}
+                <li class="mb-2">
+                  <i class="fas fa-chevron-right text-secondary mr-2"></i>
+                  <a href="{{ svc.url }}" class="text-dark">{{ svc.title }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  {% for block in page.body %}
+    {% if block.block_type != 'hero_banner' %}
+      {% include_block block %}
+    {% endif %}
+  {% endfor %}
+
+{% endblock %}

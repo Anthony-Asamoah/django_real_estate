@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block title %} | {{ page.title }}{% endblock %}
+
+{% block content %}
+
+  {% include 'partials/_breadcrumbs.html' %}
+
+  <!-- Project Meta -->
+  <section class="py-3 bg-light border-bottom">
+    <div class="container">
+      <div class="row text-center text-md-left">
+        {% if page.location %}
+          <div class="col-md-4 py-2">
+            <i class="fas fa-map-marker-alt text-secondary mr-1"></i>
+            <strong>Location:</strong> {{ page.location }}
+          </div>
+        {% endif %}
+        {% if page.completion_date %}
+          <div class="col-md-4 py-2">
+            <i class="fas fa-calendar-check text-secondary mr-1"></i>
+            <strong>Completed:</strong> {{ page.completion_date|date:"F Y" }}
+          </div>
+        {% endif %}
+        {% if page.service %}
+          <div class="col-md-4 py-2">
+            <i class="fas fa-tools text-secondary mr-1"></i>
+            <strong>Service:</strong>
+            <a href="{{ page.service.url }}" class="text-primary">{{ page.service.title }}</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  {% if page.cover_image %}
+    <div class="container py-4">
+      {% image page.cover_image width-1200 class="img-fluid rounded shadow-sm" %}
+    </div>
+  {% endif %}
+
+  {% for block in page.body %}
+    {% if block.block_type == 'rich_text' %}
+      <section class="py-5">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-8">{{ block.value|richtext }}</div>
+          </div>
+        </div>
+      </section>
+    {% else %}
+      {% include_block block %}
+    {% endif %}
+  {% endfor %}
+
+  <!-- Back to Projects -->
+  <section class="py-4">
+    <div class="container">
+      <a href="{{ page.get_parent.url }}" class="btn btn-outline-primary">
+        &larr; Back to Projects
+      </a>
+    </div>
+  </section>
+
+{% endblock %}
