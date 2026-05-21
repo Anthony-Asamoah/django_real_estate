@@ -74,7 +74,7 @@ def seed_pages():
             slug='about',
             body=[
                 ('rich_text', (
-                    '<p>BT Real Estate has been connecting buyers and sellers '
+                    '<p>Real Estate has been connecting buyers and sellers '
                     'across the DMV area since 2015. Our team of experienced realtors '
                     'specialises in residential, commercial, and luxury properties.</p>'
                     '<p>We pride ourselves on honest guidance, market expertise, '
@@ -104,7 +104,7 @@ def seed_pages():
             defaults={
                 'hostname': 'localhost',
                 'port': 8000,
-                'site_name': 'BT Real Estate',
+                'site_name': 'Real Estate',
                 'root_page': home_page,
                 'is_default_site': True,
             },

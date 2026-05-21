@@ -1,11 +1,14 @@
 {% load static wagtailimages_tags %}
 
 <!-- Navbar -->
+<style>
+  .navbar-brand .logo { max-height: 50px; width: auto; }
+</style>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
   <div class="container">
     <a class="navbar-brand" href="/">
       {% if settings.pages.BrandingSettings.logo %}
-        {% image settings.pages.BrandingSettings.logo width-80 class="logo" %}
+        {% image settings.pages.BrandingSettings.logo original class="logo" %}
       {% else %}
         <img src="{% static 'img/logo.png' %}" class="logo" alt="">
       {% endif %}

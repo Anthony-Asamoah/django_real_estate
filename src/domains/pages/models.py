@@ -1,5 +1,10 @@
+from django.conf import settings as django_settings
 from django.db import models
 from wagtail.models import Page
+
+
+def _default_site_name():
+    return getattr(django_settings, 'SITE_NAME', 'Real Estate')
 from wagtail.fields import StreamField
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
@@ -62,7 +67,7 @@ class AboutPage(Page):
 class BrandingSettings(BaseSiteSetting):
     site_name = models.CharField(
         max_length=100,
-        default='BT Real Estate',
+        default=_default_site_name,
         help_text='Displayed in browser title and footer',
     )
     logo = models.ForeignKey(
@@ -84,12 +89,13 @@ class BrandingSettings(BaseSiteSetting):
         help_text='Hex color, e.g. #30caa0',
     )
     phone = models.CharField(max_length=20, blank=True, default='(617)-555-5555')
-    email = models.EmailField(blank=True, default='contact@btrealestate.co')
+    email = models.EmailField(blank=True, default='info@site.co')
     twitter_url = models.URLField(blank=True)
     facebook_url = models.URLField(blank=True)
     linkedin_url = models.URLField(blank=True)
     instagram_url = models.URLField(blank=True)
     pinterest_url = models.URLField(blank=True)
+    tiktok_url = models.URLField(blank=True)
 
     panels = [
         MultiFieldPanel(
@@ -111,6 +117,7 @@ class BrandingSettings(BaseSiteSetting):
                 FieldPanel('linkedin_url'),
                 FieldPanel('instagram_url'),
                 FieldPanel('pinterest_url'),
+                FieldPanel('tiktok_url'),
             ],
             heading='Social Links',
         ),

@@ -7,3 +7,4 @@ db.sqlite3
 todo
 .env
 CLAUDE.md
+src/media/

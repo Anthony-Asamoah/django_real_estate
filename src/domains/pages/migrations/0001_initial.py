@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
             name='BrandingSettings',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('site_name', models.CharField(default='BT Real Estate', help_text='Displayed in browser title and footer', max_length=100)),
+                ('site_name', models.CharField(default='Real Estate', help_text='Displayed in browser title and footer', max_length=100)),
                 ('primary_color', models.CharField(default='#10284e', help_text='Hex color, e.g. #10284e', max_length=7)),
                 ('secondary_color', models.CharField(default='#30caa0', help_text='Hex color, e.g. #30caa0', max_length=7)),
                 ('phone', models.CharField(blank=True, default='(617)-555-5555', max_length=20)),

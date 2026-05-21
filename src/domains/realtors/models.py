@@ -1,7 +1,15 @@
+import os
+import uuid
+
 from django.db import models
 import pendulum
 from wagtail.snippets.models import register_snippet
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
+
+
+def realtor_photo_path(instance, filename):
+    ext = os.path.splitext(filename)[1].lower()
+    return f'realtors/{uuid.uuid4().hex}{ext}'
 
 
 @register_snippet
@@ -12,7 +20,7 @@ class realtor(models.Model):
     phone = models.CharField(max_length=20, default='')
     is_mvp = models.BooleanField(default=False)
     hire_date = models.DateTimeField(default=pendulum.now, blank=True)
-    photo = models.ImageField(upload_to='media/%Y/%m/%d/')
+    photo = models.ImageField(upload_to=realtor_photo_path)
 
     panels = [
         MultiFieldPanel(

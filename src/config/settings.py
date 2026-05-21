@@ -92,6 +92,7 @@ TEMPLATES = [
 				'django.contrib.auth.context_processors.auth',
 				'django.contrib.messages.context_processors.messages',
 				'wagtail.contrib.settings.context_processors.settings',
+				'domains.pages.context_processors.site_name',
 			],
 		},
 	},
@@ -168,7 +169,8 @@ MESSAGE_TAGS = {
 
 
 # Wagtail
-WAGTAIL_SITE_NAME = 'BT Real Estate'
+SITE_NAME = config('SITE_NAME', default='Real Estate')
+WAGTAIL_SITE_NAME = SITE_NAME
 WAGTAILADMIN_BASE_URL = config('WAGTAILADMIN_BASE_URL', default='http://localhost:8000')
 SITE_ID = 1
 

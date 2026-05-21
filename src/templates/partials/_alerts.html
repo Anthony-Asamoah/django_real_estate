@@ -1,17 +1,75 @@
 {% if messages %}
-    {% for message in messages %}
-    <div class="container" id="message">
-        <div class="alert alert-{{ message.tags }} alert-dismissible text-center" role="alert">
-            <button class="close" type="button" data-dismiss="alert"><span aria-hidden="true">&times;</span></button>
-            <strong>
-                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-                        Error
-                    {% else %}
-                        {{ message.tags | title }}
-                {% endif %}
-            </strong>
-        {{ message }}
-        </div>
-    </div>
-    {% endfor %}
+<style>
+  #toast-container {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.25rem;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .toast-slide {
+    min-width: 280px;
+    max-width: 360px;
+    padding: 0.85rem 1.1rem;
+    border-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    transform: translateX(120%);
+    opacity: 0;
+    animation: slideIn 0.35s ease forwards;
+  }
+  .toast-slide.hide {
+    animation: slideOut 0.3s ease forwards;
+  }
+  @keyframes slideIn {
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes slideOut {
+    to { transform: translateX(120%); opacity: 0; }
+  }
+  .toast-slide .toast-close {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.6;
+    padding: 0;
+    flex-shrink: 0;
+  }
+  .toast-slide .toast-close:hover { opacity: 1; }
+</style>
+
+<div id="toast-container">
+  {% for message in messages %}
+  <div class="toast-slide" style="
+    {% if message.tags == 'error' %}background:#f8d7da;color:#842029;
+    {% elif message.tags == 'warning' %}background:#fff3cd;color:#664d03;
+    {% elif message.tags == 'success' %}background:#d1e7dd;color:#0f5132;
+    {% else %}background:#cff4fc;color:#055160;
+    {% endif %}">
+    <span><strong>{{ message.tags|title }}:</strong> {{ message }}</span>
+    <button class="toast-close" onclick="dismissToast(this)" aria-label="Close">&times;</button>
+  </div>
+  {% endfor %}
+</div>
+
+<script>
+  (function () {
+    document.querySelectorAll('.toast-slide').forEach(function (el, i) {
+      setTimeout(function () { dismissToast(el.querySelector('.toast-close')); }, 4000 + i * 300);
+    });
+  })();
+
+  function dismissToast(btn) {
+    var el = btn.closest('.toast-slide');
+    el.classList.add('hide');
+    el.addEventListener('animationend', function () { el.remove(); }, { once: true });
+  }
+</script>
 {% endif %}
