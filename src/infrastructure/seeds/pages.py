@@ -373,25 +373,90 @@ def seed_pages():
         print('  Skipped (exists): ProjectsIndexPage')
 
     # Contact Page
+    _contact_faqs = [
+        {
+            'question': 'What services does Numira offer?',
+            'answer': (
+                'We are a full-service building and development company. Our services cover '
+                'Land Acquisition & Sales, Construction (residential and commercial), '
+                'Roofing (installation, re-roofing, and repairs), Borehole Drilling, '
+                'and Property Sales of completed homes. One team, every stage.'
+            ),
+        },
+        {
+            'question': 'Where do you operate?',
+            'answer': (
+                'We are based in Bolgatanga, Ghana, and serve clients across the Upper East '
+                'Region and surrounding areas. Contact us to discuss projects in other locations.'
+            ),
+        },
+        {
+            'question': 'How long does a construction project typically take?',
+            'answer': (
+                'Timelines vary by scope. A standard residential build typically runs '
+                '6–12 months from groundbreaking to handover. We provide a detailed '
+                'project schedule at the start and keep you updated at every milestone.'
+            ),
+        },
+        {
+            'question': 'Do I need architectural plans before getting in touch?',
+            'answer': (
+                'No — you can come to us at any stage. If you already have plans, '
+                'we will work from them. If not, we can connect you with our architects '
+                'to develop a design that fits your vision and budget.'
+            ),
+        },
+        {
+            'question': 'How do I know my land purchase is legally secure?',
+            'answer': (
+                'Every land transaction we handle includes a full title search, '
+                'encumbrance checks, and land use verification before any agreement is '
+                'signed. We manage the complete transfer and registration process so '
+                'your investment is fully protected.'
+            ),
+        },
+        {
+            'question': 'Can I see examples of your completed work?',
+            'answer': (
+                'Yes — visit our Projects page to browse a selection of completed builds '
+                'across construction, roofing, and borehole drilling. You can also '
+                'arrange a site visit to see our work in person.'
+            ),
+        },
+        {
+            'question': 'How do I get started?',
+            'answer': (
+                'Simply fill in the contact form on this page or call us on 0247737950. '
+                'We will schedule a free initial consultation to understand your project, '
+                'answer your questions, and outline the next steps — no obligation.'
+            ),
+        },
+    ]
+
+    _contact_body = [
+        ('hero_banner', {
+            'heading': 'Contact Us',
+            'subtext': 'We are ready to help — reach out today.',
+            'overlay_color': 'black',
+            'overlay_opacity': '0.55',
+        }),
+        ('faq', {
+            'heading': 'Frequently Asked Questions',
+            'items': _contact_faqs,
+        }),
+    ]
+
     if not ContactPage.objects.exists():
-        contact = ContactPage(
-            title='Contact',
-            slug='contact',
-            body=[
-                ('hero_banner', {
-                    'heading': 'Contact Us',
-                    'subtext': 'We are ready to help — reach out today.',
-                    'overlay_color': 'black',
-                    'overlay_opacity': '0.55',
-                }),
-            ],
-        )
+        contact = ContactPage(title='Contact', slug='contact', body=_contact_body)
         home_page.add_child(instance=contact)
         contact.save_revision().publish()
         created += 1
         print(f'  Created ContactPage: {contact.title}')
     else:
-        print('  Skipped (exists): ContactPage')
+        contact = ContactPage.objects.first()
+        contact.body = _contact_body
+        contact.save_revision().publish()
+        print('  Updated ContactPage body (added FAQ).')
 
     # Ensure Site record points to HomePage
     if home_page:
@@ -419,6 +484,7 @@ def seed_pages():
         branding.email = 'sumailainusah5@gmail.com'
         branding.instagram_url = 'https://www.instagram.com/numiralreal/'
         branding.tiktok_url = 'https://www.tiktok.com/@numiral.real.estat'
+        branding.maps_url = 'https://maps.app.goo.gl/WXZVF3jKSFmLrGMF9'
         branding.save()
         print('  Updated BrandingSettings.')
 

@@ -290,6 +290,11 @@ class BrandingSettings(BaseSiteSetting):
     instagram_url = models.URLField(blank=True)
     pinterest_url = models.URLField(blank=True)
     tiktok_url = models.URLField(blank=True)
+    maps_url = models.URLField(
+        blank=True,
+        default=django_settings.MAPS_URL,
+        help_text='Google Maps share link for your location (e.g. https://maps.app.goo.gl/…)',
+    )
 
     panels = [
         MultiFieldPanel(
@@ -304,7 +309,7 @@ class BrandingSettings(BaseSiteSetting):
             heading='Colors',
         ),
         MultiFieldPanel(
-            [FieldPanel('phone'), FieldPanel('email')],
+            [FieldPanel('phone'), FieldPanel('email'), FieldPanel('maps_url')],
             heading='Contact Info',
         ),
         MultiFieldPanel(

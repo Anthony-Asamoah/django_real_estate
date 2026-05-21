@@ -15,7 +15,7 @@
         <div class="col-md-6 col-lg-4 mb-4">
           <div class="card h-100 testimonial-card shadow-sm border-0">
             <div class="card-body p-4">
-              <p class="card-text text-muted fst-italic">&ldquo;{{ t.body }}&rdquo;</p>
+              <div class="card-text text-muted fst-italic">&ldquo;{{ t.body|safe }}&rdquo;</div>
             </div>
             <div class="card-footer bg-white border-0 d-flex align-items-center pt-0 pb-4 px-4">
               {% if t.author_photo %}

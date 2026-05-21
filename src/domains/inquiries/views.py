@@ -4,7 +4,7 @@ from django.shortcuts import HttpResponse, redirect
 from django.template.loader import render_to_string
 from wagtail.models import Site
 
-from domains.pages.models import BrandingSettings
+from domains.pages.models import BrandingSettings, Testimonial
 from infrastructure.email import get_email_provider
 from infrastructure import recaptcha
 from .models import GeneralInquiry, ProjectInquiry, EmailSettings
@@ -115,3 +115,29 @@ def general_inquiry(request):
         return redirect('/contact/')
 
     return redirect('/contact/')
+
+
+def testimonial_submission(request):
+    if request.method == 'POST':
+        if not recaptcha.verify(request.POST.get('g-recaptcha-response', ''), 'testimonial'):
+            messages.error(request, 'reCAPTCHA verification failed. Please try again.')
+            return redirect('/projects/')
+
+        author_name = request.POST.get('author_name', '').strip()
+        body = request.POST.get('body', '').strip()
+
+        if not author_name or not body:
+            messages.error(request, 'Please provide your name and a testimonial.')
+            return redirect('/projects/')
+
+        Testimonial(
+            author_name=author_name,
+            author_role=request.POST.get('author_role', '').strip(),
+            body=body,
+            is_featured=False,
+        ).save()
+
+        messages.success(request, 'Thank you for your testimonial! We will review it shortly.')
+        return redirect('/projects/')
+
+    return redirect('/projects/')

@@ -222,3 +222,4 @@ img {
 /* ===== DROPDOWN ACTIVE STATE ===== */
 .nav-item.dropdown.active > .nav-link {
   border-bottom: 2px solid var(--brand-secondary); }
+

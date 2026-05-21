@@ -362,6 +362,24 @@ class ProjectDetailStreamBlock(StreamBlock):
     cta_banner = CTABannerBlock()
 
 
+class FAQItemBlock(StructBlock):
+    question = CharBlock()
+    answer = TextBlock()
+
+    class Meta:
+        icon = 'help'
+
+
+class FAQBlock(StructBlock):
+    heading = CharBlock(required=False, default='Frequently Asked Questions')
+    items = ListBlock(FAQItemBlock())
+
+    class Meta:
+        icon = 'list-ul'
+        template = 'blocks/faq.html'
+
+
 class ContactPageStreamBlock(StreamBlock):
     hero_banner = HeroBannerBlock()
     rich_text = RichTextBlock()
+    faq = FAQBlock()

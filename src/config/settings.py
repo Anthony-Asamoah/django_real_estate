@@ -193,3 +193,6 @@ EMAIL_API_KEY = config('EMAIL_API_KEY', default='')
 # reCAPTCHA v3
 RECAPTCHA_SITE_KEY = config('RECAPTCHA_SITE_KEY', default='')
 RECAPTCHA_SECRET_KEY = config('RECAPTCHA_SECRET_KEY', default='')
+
+# Google Maps
+MAPS_URL = config('MAPS_URL', default='')

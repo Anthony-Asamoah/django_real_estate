@@ -13,117 +13,138 @@
     {% endif %}
   {% endfor %}
 
-  <section class="py-5">
+  <section class="contact-section">
     <div class="container">
       {% include 'partials/_alerts.html' %}
-      <div class="row">
 
-        <!-- Contact Form -->
-        <div class="col-md-7 mb-5">
-          <h3 class="text-primary mb-4">Send Us a Message</h3>
-          <form action="{% url 'inquiry:general_inquiry' %}" method="post" id="contactForm">
+      <div class="contact-card">
+
+        <!-- ── Form panel ───────────────────────────────── -->
+        <div class="contact-form-panel">
+          <span class="contact-eyebrow">Reach Out</span>
+          <h2 class="contact-panel-title">Send Us a Message</h2>
+          <div class="contact-rule"></div>
+
+          <form action="{% url 'inquiry:general_inquiry' %}" method="post" id="contactForm" novalidate>
             {% csrf_token %}
-            <div class="form-group">
-              <label>Full Name</label>
-              <input type="text" name="name" class="form-control" required>
+
+            <div class="cf-field">
+              <label class="cf-label" for="cf-name">Full Name</label>
+              <input type="text" id="cf-name" name="name" class="cf-input" placeholder="e.g. Kofi Mensah" required>
             </div>
-            <div class="form-row">
-              <div class="form-group col-md-6">
-                <label>Email Address</label>
-                <input type="email" name="email" id="contactEmail" class="form-control">
+
+            <div class="cf-row">
+              <div class="cf-field">
+                <label class="cf-label" for="contactEmail">Email Address</label>
+                <input type="email" id="contactEmail" name="email" class="cf-input" placeholder="you@example.com">
               </div>
-              <div class="form-group col-md-6">
-                <label>Phone Number</label>
-                <input type="tel" name="phone" id="contactPhone" class="form-control">
+              <div class="cf-field">
+                <label class="cf-label" for="contactPhone">Phone Number</label>
+                <input type="tel" id="contactPhone" name="phone" class="cf-input" placeholder="0XX XXX XXXX">
               </div>
             </div>
-            <small class="form-text text-muted mb-3">Please provide at least an email address or phone number.</small>
-            <div class="form-group">
-              <label>Service of Interest</label>
-              <select name="service" class="form-control">
-                <option value="">— Select a service (optional) —</option>
-                {% for svc in service_pages %}
-                  <option value="{{ svc.title }}">{{ svc.title }}</option>
-                {% endfor %}
-              </select>
+            <p class="cf-hint">Please provide at least an email or phone number.</p>
+
+            <div class="cf-field">
+              <label class="cf-label" for="cf-service">Service of Interest</label>
+              <div class="cf-select-wrapper">
+                <select id="cf-service" name="service" class="cf-input cf-select">
+                  <option value="">— Select a service (optional) —</option>
+                  {% for svc in service_pages %}
+                    <option value="{{ svc.title }}">{{ svc.title }}</option>
+                  {% endfor %}
+                </select>
+                <svg class="cf-select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
             </div>
-            <div class="form-group">
-              <label>Message</label>
-              <div id="contactMessageEditor" style="height:160px;background:#fff;border:1px solid #ced4da;border-radius:.25rem;"></div>
+
+            <div class="cf-field">
+              <label class="cf-label">Message</label>
+              <div id="contactMessageEditor"></div>
               <input type="hidden" name="message" id="contactMessageInput">
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+
+            <button type="submit" class="cf-submit">
+              <span>Send Message</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
           </form>
         </div>
 
-        <!-- Contact Info -->
-        <div class="col-md-5">
-          <h3 class="text-primary mb-4">Get in Touch</h3>
-          <ul class="list-unstyled contact-info-list">
+        <!-- ── Info panel ────────────────────────────────── -->
+        <div class="contact-info-panel">
+          <span class="contact-eyebrow">Where to Find Us</span>
+          <h2 class="contact-panel-title ci-title">Get in Touch</h2>
+          <div class="contact-rule"></div>
 
-            <li class="mb-3">
-              <i class="fas fa-map-marker-alt text-secondary mr-2"></i>
-              <span class="text-dark">Bolgatanga, Upper East Region, Ghana</span>
+          <ul class="ci-list">
+            <li class="ci-item">
+              <div class="ci-icon"><i class="fas fa-map-marker-alt"></i></div>
+              <div>
+                <span class="ci-label">Location</span>
+                <a href="#location" class="ci-value ci-link ci-scroll">Bolgatanga, Upper East Region, Ghana</a>
+              </div>
             </li>
-
             {% with b=settings.pages.BrandingSettings %}
               {% if b.phone %}
-                <li class="mb-3">
-                  <i class="fas fa-phone text-secondary mr-2"></i>
-                  <a href="tel:{{ b.phone }}" class="text-dark">{{ b.phone }}</a>
+                <li class="ci-item">
+                  <div class="ci-icon"><i class="fas fa-phone"></i></div>
+                  <div>
+                    <span class="ci-label">Phone</span>
+                    <a href="tel:{{ b.phone }}" class="ci-value ci-link">{{ b.phone }}</a>
+                  </div>
                 </li>
               {% endif %}
               {% if b.email %}
-                <li class="mb-3">
-                  <i class="fas fa-envelope text-secondary mr-2"></i>
-                  <a href="mailto:{{ b.email }}" class="text-dark">{{ b.email }}</a>
-                </li>
-              {% endif %}
-
-              {% if b.instagram_url or b.tiktok_url or b.facebook_url or b.twitter_url %}
-                <li class="mt-4 mb-2">
-                  <span class="text-muted small text-uppercase font-weight-bold">Follow Us</span>
-                </li>
-                <li>
-                  <div class="d-flex" style="gap:.75rem;font-size:1.4rem;">
-                    {% if b.instagram_url %}
-                      <a href="{{ b.instagram_url }}" target="_blank" rel="noopener" class="text-secondary">
-                        <i class="fab fa-instagram"></i>
-                      </a>
-                    {% endif %}
-                    {% if b.tiktok_url %}
-                      <a href="{{ b.tiktok_url }}" target="_blank" rel="noopener" class="text-secondary">
-                        <i class="fab fa-tiktok"></i>
-                      </a>
-                    {% endif %}
-                    {% if b.facebook_url %}
-                      <a href="{{ b.facebook_url }}" target="_blank" rel="noopener" class="text-secondary">
-                        <i class="fab fa-facebook"></i>
-                      </a>
-                    {% endif %}
-                    {% if b.twitter_url %}
-                      <a href="{{ b.twitter_url }}" target="_blank" rel="noopener" class="text-secondary">
-                        <i class="fab fa-twitter"></i>
-                      </a>
-                    {% endif %}
+                <li class="ci-item">
+                  <div class="ci-icon"><i class="fas fa-envelope"></i></div>
+                  <div>
+                    <span class="ci-label">Email</span>
+                    <a href="mailto:{{ b.email }}" class="ci-value ci-link">{{ b.email }}</a>
                   </div>
                 </li>
               {% endif %}
             {% endwith %}
-
           </ul>
 
+          {% with b=settings.pages.BrandingSettings %}
+            {% if b.instagram_url or b.tiktok_url or b.facebook_url or b.twitter_url %}
+              <div class="ci-block">
+                <span class="ci-label ci-block-label">Follow Us</span>
+                <div class="ci-social-links">
+                  {% if b.instagram_url %}
+                    <a href="{{ b.instagram_url }}" target="_blank" rel="noopener" class="ci-social-btn" title="Instagram"><i class="fab fa-instagram"></i></a>
+                  {% endif %}
+                  {% if b.tiktok_url %}
+                    <a href="{{ b.tiktok_url }}" target="_blank" rel="noopener" class="ci-social-btn" title="TikTok"><i class="fab fa-tiktok"></i></a>
+                  {% endif %}
+                  {% if b.facebook_url %}
+                    <a href="{{ b.facebook_url }}" target="_blank" rel="noopener" class="ci-social-btn" title="Facebook"><i class="fab fa-facebook"></i></a>
+                  {% endif %}
+                  {% if b.twitter_url %}
+                    <a href="{{ b.twitter_url }}" target="_blank" rel="noopener" class="ci-social-btn" title="Twitter"><i class="fab fa-twitter"></i></a>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endwith %}
+
           {% if service_pages %}
-            <h5 class="text-primary mt-4 mb-3">Our Services</h5>
-            <ul class="list-unstyled">
-              {% for svc in service_pages %}
-                <li class="mb-2">
-                  <i class="fas fa-chevron-right text-secondary mr-2"></i>
-                  <a href="{{ svc.url }}" class="text-dark">{{ svc.title }}</a>
-                </li>
-              {% endfor %}
-            </ul>
+            <div class="ci-block">
+              <span class="ci-label ci-block-label">Our Services</span>
+              <ul class="ci-services-list">
+                {% for svc in service_pages %}
+                  <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                    <a href="{{ svc.url }}">{{ svc.title }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
           {% endif %}
+
+          <div class="ci-deco-circle ci-deco-1"></div>
+          <div class="ci-deco-circle ci-deco-2"></div>
         </div>
 
       </div>
@@ -136,10 +157,638 @@
     {% endif %}
   {% endfor %}
 
+  <!-- ── Location Section ───────────────────────────────── -->
+  {% with maps=settings.pages.BrandingSettings.maps_url %}
+  <section id="location" class="location-section">
+    <div class="container">
+      <div class="location-card">
+
+        <div class="location-pin-col">
+          <div class="location-pin-icon">
+            <i class="fas fa-map-marker-alt"></i>
+          </div>
+        </div>
+
+        <div class="location-details">
+          <span class="contact-eyebrow" style="color:var(--brand-secondary)">Our Location</span>
+          <h2 class="location-title">Find Us in Bolgatanga</h2>
+          <div class="contact-rule"></div>
+
+          <address class="location-address">
+            <p class="location-address-line">
+              <i class="fas fa-building"></i>
+              Numira Real Estate &amp; Construction
+            </p>
+            <p class="location-address-line">
+              <i class="fas fa-map-marker-alt"></i>
+              Bolgatanga, Upper East Region, Ghana
+            </p>
+            {% with b=settings.pages.BrandingSettings %}
+              {% if b.phone %}
+                <p class="location-address-line">
+                  <i class="fas fa-phone"></i>
+                  <a href="tel:{{ b.phone }}">{{ b.phone }}</a>
+                </p>
+              {% endif %}
+              {% if b.email %}
+                <p class="location-address-line">
+                  <i class="fas fa-envelope"></i>
+                  <a href="mailto:{{ b.email }}">{{ b.email }}</a>
+                </p>
+              {% endif %}
+            {% endwith %}
+          </address>
+
+          {% if maps %}
+            <a href="{{ maps }}" target="_blank" rel="noopener noreferrer" class="location-btn">
+              <i class="fas fa-directions"></i>
+              Get Directions
+            </a>
+          {% endif %}
+        </div>
+
+        <div class="location-map-col">
+          <div class="location-map-placeholder">
+            <div class="location-map-inner">
+              <i class="fas fa-map-marked-alt location-map-icon"></i>
+              <p class="location-map-label">Bolgatanga</p>
+              <p class="location-map-sub">Upper East Region, Ghana</p>
+              {% if maps %}
+                <a href="{{ maps }}" target="_blank" rel="noopener noreferrer" class="location-map-link">
+                  <i class="fas fa-external-link-alt"></i> Open in Google Maps
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  {% endwith %}
+
 {% endblock %}
 
 {% block extra_css %}
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<style>
+/* ── Contact Section ───────────────────────────────────── */
+.contact-section {
+  background: #f0f3f9;
+  padding: 4.5rem 0 5.5rem;
+}
+
+.contact-card {
+  display: grid;
+  grid-template-columns: 1.45fr 1fr;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 12px 48px rgba(16, 40, 78, 0.13);
+}
+
+/* ── Shared header ─────────────────────────────────────── */
+.contact-eyebrow {
+  display: inline-block;
+  color: var(--brand-secondary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.45rem;
+}
+
+.contact-panel-title {
+  color: var(--brand-primary);
+  font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+  font-weight: 800;
+  margin: 0 0 0.7rem;
+  line-height: 1.2;
+}
+
+.contact-rule {
+  width: 40px;
+  height: 3px;
+  background: var(--brand-secondary);
+  border-radius: 2px;
+  margin-bottom: 1.75rem;
+}
+
+/* ── Form panel ────────────────────────────────────────── */
+.contact-form-panel {
+  background: #fff;
+  padding: 3rem 3rem 3rem;
+}
+
+.cf-field {
+  margin-bottom: 1.15rem;
+}
+
+.cf-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.cf-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--brand-primary);
+  margin-bottom: 0.35rem;
+  opacity: 0.85;
+}
+
+.cf-input {
+  width: 100%;
+  padding: 0.72rem 1rem;
+  border: 1.5px solid #dde3ec;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #1a2540;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  font-family: inherit;
+}
+
+.cf-input:focus {
+  border-color: var(--brand-secondary);
+  box-shadow: 0 0 0 3px rgba(48, 202, 160, 0.14);
+}
+
+.cf-input::placeholder {
+  color: #b0bac9;
+}
+
+.cf-select-wrapper {
+  position: relative;
+}
+
+.cf-select {
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+.cf-select-arrow {
+  position: absolute;
+  right: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rem;
+  height: 1rem;
+  color: #9aa3b2;
+  pointer-events: none;
+}
+
+.cf-hint {
+  font-size: 0.77rem;
+  color: #9aa3b2;
+  margin: -0.65rem 0 1.15rem;
+}
+
+/* Quill editor styling */
+#contactMessageEditor {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1.5px solid #dde3ec;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: #fff;
+}
+
+#contactMessageEditor:focus-within {
+  border-color: var(--brand-secondary);
+  box-shadow: 0 0 0 3px rgba(48, 202, 160, 0.14);
+}
+
+#contactMessageEditor .ql-toolbar.ql-snow {
+  border: none;
+  border-bottom: 1.5px solid #dde3ec;
+  background: #f8fafc;
+  border-radius: 0;
+  padding: 0.4rem 0.75rem;
+}
+
+#contactMessageEditor .ql-container.ql-snow {
+  border: none;
+  min-height: 110px;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+#contactMessageEditor .ql-editor {
+  min-height: 110px;
+  padding: 0.75rem 1rem;
+  color: #1a2540;
+}
+
+#contactMessageEditor .ql-editor.ql-blank::before {
+  color: #b0bac9;
+  font-style: normal;
+}
+
+.cf-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.88rem 1.5rem;
+  background: var(--brand-primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.93rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+  margin-top: 0.35rem;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+}
+
+.cf-submit:hover {
+  filter: brightness(1.14);
+}
+
+.cf-submit svg {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.cf-submit:hover svg {
+  transform: translateX(4px);
+}
+
+/* ── Info panel ────────────────────────────────────────── */
+.contact-info-panel {
+  background: var(--brand-primary);
+  padding: 3rem 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.ci-title {
+  color: #fff !important;
+}
+
+.ci-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem;
+}
+
+.ci-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.4rem;
+}
+
+.ci-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  background: rgba(48, 202, 160, 0.15);
+  color: var(--brand-secondary);
+  font-size: 0.88rem;
+}
+
+.ci-label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 0.15rem;
+}
+
+.ci-block-label {
+  margin-bottom: 0.65rem;
+}
+
+.ci-value {
+  display: block;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.ci-link {
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.ci-link:hover {
+  color: var(--brand-secondary);
+}
+
+.ci-block {
+  margin-bottom: 1.75rem;
+}
+
+.ci-social-links {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.ci-social-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.09);
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.88rem;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.ci-social-btn:hover {
+  background: var(--brand-secondary);
+  color: #fff;
+}
+
+.ci-services-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ci-services-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
+}
+
+.ci-services-list svg {
+  width: 0.8rem;
+  height: 0.8rem;
+  color: var(--brand-secondary);
+  flex-shrink: 0;
+}
+
+.ci-services-list a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.87rem;
+  transition: color 0.15s ease;
+}
+
+.ci-services-list a:hover {
+  color: var(--brand-secondary);
+}
+
+.ci-deco-circle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.ci-deco-1 {
+  bottom: -70px;
+  right: -70px;
+  width: 220px;
+  height: 220px;
+  border: 50px solid rgba(255, 255, 255, 0.04);
+}
+
+.ci-deco-2 {
+  top: -40px;
+  right: -20px;
+  width: 140px;
+  height: 140px;
+  border: 30px solid rgba(48, 202, 160, 0.07);
+}
+
+/* ── Responsive ────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .contact-card {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-info-panel {
+    padding: 2.5rem 2rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .contact-form-panel {
+    padding: 2rem 1.5rem;
+  }
+
+  .cf-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Location Section ──────────────────────────────────── */
+.location-section {
+  background: #f0f3f9;
+  padding: 0 0 5rem;
+}
+
+.location-card {
+  display: grid;
+  grid-template-columns: 5rem 1fr 1.1fr;
+  gap: 0;
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 12px 48px rgba(16, 40, 78, 0.11);
+}
+
+.location-pin-col {
+  background: var(--brand-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+.location-pin-icon {
+  font-size: 1.6rem;
+  color: #fff;
+  opacity: 0.85;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  letter-spacing: 0.1em;
+}
+
+.location-details {
+  padding: 2.75rem 2.5rem;
+}
+
+.location-title {
+  color: var(--brand-primary);
+  font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+  font-weight: 800;
+  margin: 0 0 0.65rem;
+  line-height: 1.2;
+}
+
+.location-address {
+  font-style: normal;
+  margin-bottom: 1.75rem;
+}
+
+.location-address-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  color: #4a5568;
+  font-size: 0.9rem;
+  margin-bottom: 0.55rem;
+  line-height: 1.5;
+}
+
+.location-address-line i {
+  color: var(--brand-secondary);
+  width: 1rem;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.location-address-line a {
+  color: #4a5568;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.location-address-line a:hover {
+  color: var(--brand-primary);
+}
+
+.location-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.7rem 1.4rem;
+  background: var(--brand-primary);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 0.87rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: filter 0.2s ease;
+  letter-spacing: 0.02em;
+}
+
+.location-btn:hover {
+  filter: brightness(1.14);
+  color: #fff;
+}
+
+.location-btn i {
+  font-size: 1rem;
+}
+
+.location-map-col {
+  background: var(--brand-primary);
+  position: relative;
+  overflow: hidden;
+  min-height: 280px;
+}
+
+.location-map-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+/* subtle grid pattern */
+.location-map-col::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.location-map-icon {
+  font-size: 3.5rem;
+  color: var(--brand-secondary);
+  opacity: 0.7;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.location-map-label {
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin: 0 0 0.2rem;
+  position: relative;
+}
+
+.location-map-sub {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.82rem;
+  margin: 0 0 1.5rem;
+  position: relative;
+}
+
+.location-map-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.1rem;
+  border: 1.5px solid var(--brand-secondary);
+  border-radius: 6px;
+  color: var(--brand-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  position: relative;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.location-map-link:hover {
+  background: var(--brand-secondary);
+  color: #fff;
+}
+
+@media (max-width: 900px) {
+  .location-card {
+    grid-template-columns: 1fr;
+  }
+
+  .location-pin-col {
+    display: none;
+  }
+
+  .location-map-col {
+    min-height: 200px;
+  }
+}
+
+@media (max-width: 640px) {
+  .location-details {
+    padding: 2rem 1.5rem;
+  }
+}
+</style>
 {% endblock %}
 
 {% block extra_js %}
@@ -151,10 +800,17 @@
   var contactQuill = new Quill('#contactMessageEditor', {
     theme: 'snow',
     placeholder: 'Write your message here…',
-    modules: { toolbar: [['bold', 'italic', 'underline'], [{ list: 'ordered' }, { list: 'bullet' }], ['clean']] }
+    modules: {
+      toolbar: [
+        ['bold', 'italic', 'underline'],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        ['clean']
+      ]
+    }
   });
 
   var contactForm = document.getElementById('contactForm');
+
   {% if RECAPTCHA_SITE_KEY %}
   var contactTokenInput = document.createElement('input');
   contactTokenInput.type = 'hidden';
@@ -162,6 +818,17 @@
   contactTokenInput.id = 'contact-recaptcha-token';
   contactForm.appendChild(contactTokenInput);
   {% endif %}
+
+  // smooth scroll for location anchor
+  document.querySelectorAll('.ci-scroll').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      var target = document.querySelector(el.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
 
   contactForm.addEventListener('submit', function (e) {
     e.preventDefault();
