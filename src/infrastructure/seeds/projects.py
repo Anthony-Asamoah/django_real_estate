@@ -13,7 +13,7 @@ from domains.projects.models import (
     Project,
 )
 
-MEDIA_DIR = Path(__file__).parent / 'media'
+MEDIA_DIR = Path(__file__).parent / 'assets'
 
 _image_cache: dict[str, WagtailImage] = {}
 
@@ -26,7 +26,7 @@ def _img(filename: str) -> WagtailImage | None:
     if existing:
         _image_cache[filename] = existing
         return existing
-    path = MEDIA_DIR / filename
+    path = MEDIA_DIR / 'images' / filename
     if not path.exists():
         print(f'  Warning: {filename} not found in seeds/media — skipping photo')
         return None

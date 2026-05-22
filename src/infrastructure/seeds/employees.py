@@ -5,7 +5,7 @@ from django.core.files import File
 
 from domains.employees.models import Employee
 
-MEDIA_DIR = Path(__file__).parent / 'media'
+MEDIA_DIR = Path(__file__).parent / 'assets'
 
 EMPLOYEES = [
     {
@@ -59,7 +59,7 @@ def seed_employees():
             defaults=data,
         )
         if was_created:
-            photo_path = MEDIA_DIR / photo_file
+            photo_path = MEDIA_DIR / 'images'/ photo_file
             if photo_path.exists():
                 with open(photo_path, 'rb') as f:
                     obj.photo.save(photo_file, File(f), save=True)
