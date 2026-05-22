@@ -103,34 +103,8 @@
 
 {% block content %}
 
-  {% if settings.pages.BrandingSettings.breadcrumb_style != 'overlay' %}
-  <!-- Breadcrumb — bar style -->
-  <section id="bc">
-    <div class="container">
-      <nav aria-label="breadcrumb">
-        <ol class="bc-trail">
-          <li class="bc-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
-          <li class="bc-item bc-item--active">Projects</li>
-        </ol>
-      </nav>
-    </div>
-  </section>
-  {% endif %}
-
   <section id="showcase-inner" class="py-5 text-white text-center">
     <div class="overlay-black" style="position:absolute;inset:0;opacity:0.55;pointer-events:none;"></div>
-    {% if settings.pages.BrandingSettings.breadcrumb_style == 'overlay' %}
-    <div class="bc-in-hero">
-      <div class="container">
-        <nav aria-label="breadcrumb">
-          <ol class="bc-trail">
-            <li class="bc-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
-            <li class="bc-item bc-item--active">Projects</li>
-          </ol>
-        </nav>
-      </div>
-    </div>
-    {% endif %}
     <div class="container" style="position:relative;z-index:1;">
       <div class="row text-center">
         <div class="col-md-12">
@@ -138,6 +112,18 @@
           <p class="lead">Browse our portfolio of completed and ongoing work</p>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- Breadcrumb -->
+  <section id="bc" {% if settings.pages.BrandingSettings.breadcrumb_style == 'overlay' %}class="bc-hero-overlay"{% endif %}>
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="bc-trail">
+          <li class="bc-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
+          <li class="bc-item bc-item--active">Projects</li>
+        </ol>
+      </nav>
     </div>
   </section>
 
