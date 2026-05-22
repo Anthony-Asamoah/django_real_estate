@@ -24,7 +24,7 @@
           style="background-image:url('{{ slide_img.url }}');background-size:cover;background-position:center;"
         >
           {% if slide.caption %}
-            <div class="carousel-caption hero-slide-caption" style="bottom:80px;z-index:15;">
+            <div class="carousel-caption hero-slide-caption" style="bottom:14px;z-index:15;">
               <p class="mb-0 hero-caption-text" style="text-shadow:0 1px 3px rgba(0,0,0,.6);">{{ slide.caption }}</p>
             </div>
           {% endif %}
@@ -45,32 +45,40 @@
       </div>
 
       <div class="container">
-        <div class="card border-0 shadow-lg mx-auto" style="max-width:860px;border-radius:12px;overflow:visible;">
-          <div class="card-body p-4">
-            <form method="get" action="{% url 'projects:projects' %}">
-              <div class="row g-3 align-items-end">
+        <div class="hero-filter-card mx-auto">
+          <form method="get" action="{% url 'projects:projects' %}">
+            <div class="hero-filter-fields">
 
-                <div class="col-md-4">
-                  <label class="small fw-bold text-muted mb-1 text-uppercase" style="font-size:.7rem;letter-spacing:.06em;">Keyword</label>
-                  <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted" style="font-size:.85rem;"></i></span>
-                    <input type="text" name="q" class="form-control border-start-0 ps-0" placeholder="Search projects…" style="border-radius:0 6px 6px 0;">
-                  </div>
+              <div class="hero-filter-field">
+                <label class="hero-filter-label">Keyword</label>
+                <div class="hero-filter-input-wrap">
+                  <i class="fas fa-search hero-filter-icon"></i>
+                  <input type="text" name="q" class="hero-filter-input" placeholder="Search projects…">
                 </div>
+              </div>
 
-                <div class="col-md-3">
-                  <label class="small fw-bold text-muted mb-1 text-uppercase" style="font-size:.7rem;letter-spacing:.06em;">Service</label>
-                  <select name="service" class="form-select" style="border-radius:6px;">
+              <div class="hero-filter-divider"></div>
+
+              <div class="hero-filter-field">
+                <label class="hero-filter-label">Service</label>
+                <div class="hero-filter-input-wrap">
+                  <i class="fas fa-tools hero-filter-icon"></i>
+                  <select name="service" class="hero-filter-select">
                     <option value="">All Services</option>
                     {% for svc in service_pages %}
                       <option value="{{ svc.id }}">{{ svc.title }}</option>
                     {% endfor %}
                   </select>
                 </div>
+              </div>
 
-                <div class="col-md-3">
-                  <label class="small fw-bold text-muted mb-1 text-uppercase" style="font-size:.7rem;letter-spacing:.06em;">Status</label>
-                  <select name="status" class="form-select" style="border-radius:6px;">
+              <div class="hero-filter-divider"></div>
+
+              <div class="hero-filter-field">
+                <label class="hero-filter-label">Status</label>
+                <div class="hero-filter-input-wrap">
+                  <i class="fas fa-filter hero-filter-icon"></i>
+                  <select name="status" class="hero-filter-select">
                     <option value="all">All Projects</option>
                     <option value="past">Past Works</option>
                     <option value="active">Active</option>
@@ -78,16 +86,15 @@
                     <option value="in_progress">In Progress</option>
                   </select>
                 </div>
-
-                <div class="col-md-2 d-grid">
-                  <button type="submit" class="btn-accent">
-                    <i class="fas fa-search me-1"></i> Explore
-                  </button>
-                </div>
-
               </div>
-            </form>
-          </div>
+
+              <button type="submit" class="hero-filter-btn">
+                <i class="fas fa-search"></i>
+                <span>Explore</span>
+              </button>
+
+            </div>
+          </form>
         </div>
       </div>
     </div>
