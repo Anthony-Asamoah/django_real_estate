@@ -6,6 +6,32 @@ class ColorInput(Input):
     input_type = 'color'
 
 
+class RangeInput(Input):
+    input_type = 'range'
+
+    def __init__(self, attrs=None, min_value=0, max_value=30, step=1, suffix=''):
+        self.suffix = suffix
+        default_attrs = {'min': str(min_value), 'max': str(max_value), 'step': str(step)}
+        if attrs:
+            default_attrs.update(attrs)
+        super().__init__(attrs=default_attrs)
+
+    def render(self, name, value, attrs=None, renderer=None):
+        final_attrs = self.build_attrs(self.attrs, attrs)
+        display_id = final_attrs.get('id', name) + '_display'
+        display_value = value if value is not None else ''
+        final_attrs['oninput'] = (
+            f"document.getElementById('{display_id}').textContent = this.value + '{self.suffix}'"
+        )
+        base_html = super().render(name, value, final_attrs, renderer)
+        return mark_safe(
+            f'<div class="range-wrapper">'
+            f'{base_html}'
+            f'<span id="{display_id}" class="range-value">{display_value}{self.suffix}</span>'
+            f'</div>'
+        )
+
+
 _FA_ICONS = [
     'fa-home', 'fa-building', 'fa-hard-hat', 'fa-hammer', 'fa-wrench', 'fa-tools',
     'fa-paint-brush', 'fa-paint-roller', 'fa-ruler', 'fa-ruler-combined',

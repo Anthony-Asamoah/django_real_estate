@@ -9,7 +9,7 @@
       {% else %}
         <img src="{% static 'img/logo.png' %}" class="nav-logo" alt="">
       {% endif %}
-      <span class="nav-brand-name d-none d-lg-inline">
+      <span class="nav-brand-name">
         {% if settings.pages.BrandingSettings.site_name %}
           {{ settings.pages.BrandingSettings.site_name }}
         {% else %}
@@ -87,6 +87,11 @@
           </li>
         {% endif %}
       </ul>
+      {% if not user.is_authenticated %}
+        <div class="nav-mobile-cta d-lg-none">
+          <a href="/contact/" class="btn-quote">Get a Quote</a>
+        </div>
+      {% endif %}
     </div>
   </div>
 </nav>

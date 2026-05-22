@@ -49,4 +49,14 @@
     opacity: 1;
     transform: none;
   }
+
+  .nav-logo,
+  .nav-mobile-brand {
+    transition: none !important;
+  }
+
+  #navbarNav.show .nav-mobile-brand {
+    opacity: 1;
+    transform: none;
+  }
 }

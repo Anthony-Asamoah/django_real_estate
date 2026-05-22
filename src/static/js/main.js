@@ -1,5 +1,5 @@
-const date = new Date();
-document.querySelector('.year').innerHTML = date.getFullYear();
+const yearEl = document.querySelector('.year');
+if (yearEl) yearEl.textContent = new Date().getFullYear();
 
 setTimeout(function() {
     $('#message').fadeOut('slow');
@@ -14,5 +14,18 @@ setTimeout(function() {
   }
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+})();
+
+// Brand name slide-in + top-bar CTA swap when mobile menu opens
+(function () {
+  var nav = document.getElementById('main-nav');
+  var navCollapse = document.getElementById('navbarNav');
+  if (!nav || !navCollapse) return;
+  navCollapse.addEventListener('show.bs.collapse', function () {
+    nav.classList.add('nav-menu-open');
+  });
+  navCollapse.addEventListener('hide.bs.collapse', function () {
+    nav.classList.remove('nav-menu-open');
+  });
 })();
 

@@ -35,6 +35,15 @@ img {
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.22);
 }
 
+/* Centre the main nav links on desktop */
+@media (min-width: 992px) {
+  #main-nav ul.navbar-nav:first-of-type {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
 #main-nav .nav-link {
   font-size: 0.76rem;
   font-weight: 600;
@@ -142,13 +151,17 @@ img {
   color: #fff;
   margin-left: 0.55rem;
   vertical-align: middle;
+  white-space: nowrap;
 }
 
-/* Mobile top-bar CTA (compact variant) */
+/* Mobile top-bar CTA (compact variant) — min-height 44px meets Apple/Google touch target spec */
 .btn-quote--sm {
   font-size: 0.7rem;
-  padding: 0.28rem 0.7rem;
+  padding: 0.4rem 0.9rem;
   letter-spacing: 0.06em;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
 }
 
 
@@ -219,6 +232,46 @@ img {
     color: #fff;
     padding-right: 1.3rem;
     padding-left: 1rem;
+  }
+
+  /* Brand name: absolutely positioned so it never shifts the flex row */
+  .navbar-brand {
+    position: relative;
+  }
+
+  .nav-brand-name {
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    margin-left: 0.5rem;
+    opacity: 0;
+    transform: translateY(-50%) translateX(-8px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+  }
+
+  #main-nav.nav-menu-open .nav-brand-name {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+    pointer-events: auto;
+  }
+
+  /* Top-bar CTA fades out as menu opens (CTA lives inside the menu instead) */
+  .mobile-top-cta {
+    transition: opacity 0.15s ease;
+  }
+
+  #main-nav.nav-menu-open .mobile-top-cta {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* CTA inside expanded mobile menu */
+  .nav-mobile-cta {
+    text-align: right;
+    padding: 0.75rem 0 0.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 0.25rem;
   }
 
 }
