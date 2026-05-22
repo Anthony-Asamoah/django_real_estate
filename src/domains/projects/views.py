@@ -3,10 +3,20 @@ from urllib.parse import urlencode
 from django.core.paginator import Paginator
 from django.db.models import Max, Min, Q
 from django.shortcuts import get_object_or_404, render
+from wagtail.models import Site
 
 from domains.employees.models import Employee
-from domains.pages.models import ServiceDetailPage
+from domains.pages.models import BrandingSettings, ServiceDetailPage
 from .models import ACTIVE_STATUSES, PAST_STATUSES, STATUS_CHOICES, Project
+
+
+def _site_currency_symbol():
+    site = Site.objects.filter(is_default_site=True).first()
+    if site:
+        branding = BrandingSettings.for_site(site)
+        if branding and branding.default_currency_id:
+            return branding.default_currency.symbol
+    return 'GH₵'
 
 
 def index(request):
@@ -60,14 +70,15 @@ def index(request):
     # default order is already -project_date
 
     # ── Active filter chips ───────────────────────────────────────────────────
+    sym = _site_currency_symbol()
     filter_chips = []
     if price_min and price_max:
         filter_chips.append(
-            {'label': f'Price: ${int(price_min):,}–${int(price_max):,}', 'remove_keys': ['price_min', 'price_max']})
+            {'label': f'Price: {sym}{int(price_min):,}–{sym}{int(price_max):,}', 'remove_keys': ['price_min', 'price_max']})
     elif price_min:
-        filter_chips.append({'label': f'Price ≥ ${int(price_min):,}', 'remove_keys': ['price_min']})
+        filter_chips.append({'label': f'Price ≥ {sym}{int(price_min):,}', 'remove_keys': ['price_min']})
     elif price_max:
-        filter_chips.append({'label': f'Price ≤ ${int(price_max):,}', 'remove_keys': ['price_max']})
+        filter_chips.append({'label': f'Price ≤ {sym}{int(price_max):,}', 'remove_keys': ['price_max']})
     if sqft_min and sqft_max:
         filter_chips.append(
             {'label': f'Sqft: {int(sqft_min):,}–{int(sqft_max):,}', 'remove_keys': ['sqft_min', 'sqft_max']})
@@ -130,10 +141,32 @@ def index(request):
         'price_agg': price_agg,
         'sqft_agg': sqft_agg,
         'sort': sort,
+        'bc_items': [{'title': 'Projects', 'url': ''}],
     })
 
 
 def project(request, project_id):
     obj = get_object_or_404(Project, pk=project_id)
     photos = [p for p in [obj.photo_1, obj.photo_2, obj.photo_3, obj.photo_4, obj.photo_5, obj.photo_6] if p]
-    return render(request, 'projects/project.html', {'project': obj, 'photos': photos})
+
+    from wagtail.models import Site
+    site = Site.find_for_request(request)
+    branding = BrandingSettings.for_site(site) if site else None
+
+    related = []
+    if branding and branding.project_show_related:
+        count = max(1, min(branding.project_related_count, 6))
+        qs = Project.objects.filter(is_published=True).exclude(pk=obj.pk).order_by('-project_date')
+        if obj.service_id:
+            qs = qs.filter(service_id=obj.service_id)
+        related = list(qs[:count])
+
+    return render(request, 'projects/project.html', {
+        'project': obj,
+        'photos': photos,
+        'related_projects': related,
+        'bc_items': [
+            {'title': 'Projects', 'url': '/projects/'},
+            {'title': obj.title, 'url': ''},
+        ],
+    })

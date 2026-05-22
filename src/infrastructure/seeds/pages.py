@@ -503,6 +503,10 @@ def seed_pages():
             '!2d-0.8491877723289881!3d10.788708482747627!2m3!1f0!2f0!3f0!3m2!1i1024'
             '!2i768!4f13.1!5e1!3m2!1sen!2sgh!4v1779392244804!5m2!1sen!2sgh'
         )
+        from domains.projects.models import Currency
+        ghs = Currency.objects.filter(code='GHS').first()
+        if ghs:
+            branding.default_currency = ghs
         branding.save()
         print('  Updated BrandingSettings.')
 

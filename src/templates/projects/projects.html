@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load humanize %}
+{% load humanize project_tags %}
 {% load static wagtailimages_tags %}
 
 {% block extra_css %}
@@ -103,6 +103,8 @@
 
 {% block content %}
 
+  {% include 'partials/_breadcrumbs.html' with position='before' %}
+
   <section id="showcase-inner" class="py-5 text-white text-center">
     <div class="overlay-black" style="position:absolute;inset:0;opacity:0.55;pointer-events:none;"></div>
     <div class="container" style="position:relative;z-index:1;">
@@ -115,17 +117,7 @@
     </div>
   </section>
 
-  <!-- Breadcrumb -->
-  <section id="bc" {% if settings.pages.BrandingSettings.breadcrumb_style == 'overlay' %}class="bc-hero-overlay"{% endif %}>
-    <div class="container">
-      <nav aria-label="breadcrumb">
-        <ol class="bc-trail">
-          <li class="bc-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
-          <li class="bc-item bc-item--active">Projects</li>
-        </ol>
-      </nav>
-    </div>
-  </section>
+  {% include 'partials/_breadcrumbs.html' with position='after' %}
 
   <!-- Quick filter bar -->
   <section class="py-4 bg-light border-bottom">
@@ -235,74 +227,7 @@
       <div class="row reveal-group">
         {% for project in query %}
           <div class="col-md-6 col-lg-4 mb-4 d-flex reveal">
-            <div class="card w-100" style="border:none;box-shadow:0 2px 12px rgba(0,0,0,.08);border-radius:10px;overflow:hidden;">
-
-              <!-- Image area -->
-              <div style="position:relative;height:220px;overflow:hidden;background:#e9ecef;">
-                {% if project.photo_main %}
-                  {% image project.photo_main fill-600x440 as card_img %}
-                  <img src="{{ card_img.url }}" alt="{{ project.title }}"
-                       style="width:100%;height:100%;object-fit:cover;display:block;">
-                {% else %}
-                  <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#dee2e6,#ced4da);">
-                    <i class="fas fa-hard-hat" style="font-size:3rem;color:#adb5bd;"></i>
-                  </div>
-                {% endif %}
-
-                <!-- Price — hidden for sold projects -->
-                {% if project.status != 'sold' %}
-                  <div style="position:absolute;top:12px;left:12px;">
-                    <span class="badge bg-secondary text-white" style="font-size:.85rem;padding:6px 10px;">
-                      ${{ project.price|intcomma }}
-                    </span>
-                  </div>
-                {% endif %}
-
-                <!-- Status badge top-right -->
-                <div style="position:absolute;top:12px;right:12px;">
-                  {% if project.status == 'available' %}
-                    <span class="badge bg-success text-white" style="font-size:.75rem;">Available</span>
-                  {% elif project.status == 'in_progress' %}
-                    <span class="badge bg-primary text-white" style="font-size:.75rem;">In Progress</span>
-                  {% elif project.status == 'completed' %}
-                    <span class="badge bg-info text-white" style="font-size:.75rem;">Completed</span>
-                  {% elif project.status == 'sold' %}
-                    <span class="badge bg-dark text-white" style="font-size:.75rem;">Sold</span>
-                  {% endif %}
-                </div>
-              </div>
-
-              <div class="card-body d-flex flex-column">
-                <h5 class="card-title text-primary mb-1">{{ project.title }}</h5>
-                <p class="text-muted small mb-1">
-                  <i class="fas fa-map-marker-alt"></i>
-                  {{ project.city }}{% if project.state_or_region %} {{ project.state_or_region }}{% endif %}
-                </p>
-                {% if project.service %}
-                  <p class="mb-2">
-                    <span class="badge badge-light border" style="font-size:.72rem;">{{ project.service.title }}</span>
-                  </p>
-                {% endif %}
-                {% if project.sqft or project.bedrooms %}
-                  <div class="d-flex text-secondary small mb-2" style="gap:1rem;">
-                    {% if project.sqft %}<span><i class="fas fa-th-large"></i> {{ project.sqft|intcomma }} sqft</span>{% endif %}
-                    {% if project.bedrooms %}<span><i class="fas fa-bed"></i> {{ project.bedrooms }} bed</span>{% endif %}
-                  </div>
-                {% endif %}
-                {% if project.employee %}
-                  <p class="text-secondary small mb-1">
-                    <i class="fas fa-user"></i> {{ project.employee }}
-                  </p>
-                {% endif %}
-                <p class="text-muted small mb-3" style="flex-grow:1;">
-                  <i class="fas fa-clock"></i> {{ project.project_date|timesince }} ago
-                </p>
-                <a href="{% url 'projects:project' project.id %}" class="btn-brand w-100 mt-auto">
-                  View Project
-                </a>
-              </div>
-
-            </div>
+            {% include 'partials/_project_card.html' with project=project %}
           </div>
         {% empty %}
           <div class="col-12 text-center py-5">

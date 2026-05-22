@@ -103,11 +103,14 @@ class Command(BaseCommand):
             self.stdout.write(f'  Superuser "{username}" already exists — skipped.')
 
         self.stdout.write(self.style.WARNING('Seeding data...'))
+        from infrastructure.seeds.currencies import seed_currencies
         from infrastructure.seeds.employees import seed_employees
         from infrastructure.seeds.pages import seed_pages
         from infrastructure.seeds.projects import seed_projects
         from infrastructure.seeds.testimonials import seed_testimonials
 
+        self.stdout.write('  Seeding currencies...')
+        seed_currencies()
         self.stdout.write('  Seeding employees...')
         seed_employees()
         self.stdout.write('  Seeding pages...')

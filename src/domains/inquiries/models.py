@@ -16,6 +16,7 @@ class ProjectInquiry(models.Model):
     message = RichTextField(blank=True)
     timestamp = models.DateTimeField(default=pendulum.now)
     user_id = models.IntegerField(blank=False)
+    is_read = models.BooleanField(default=False)
 
     panels = [
         MultiFieldPanel(
@@ -27,7 +28,7 @@ class ProjectInquiry(models.Model):
             heading='Contact Info',
         ),
         MultiFieldPanel(
-            [FieldPanel('message'), FieldPanel('timestamp'), FieldPanel('user_id')],
+            [FieldPanel('message'), FieldPanel('timestamp'), FieldPanel('user_id'), FieldPanel('is_read')],
             heading='Details',
         ),
     ]
@@ -54,6 +55,7 @@ class GeneralInquiry(models.Model):
     )
     message = RichTextField(blank=True)
     timestamp = models.DateTimeField(default=pendulum.now)
+    is_read = models.BooleanField(default=False)
 
     panels = [
         MultiFieldPanel(
@@ -61,7 +63,7 @@ class GeneralInquiry(models.Model):
             heading='Contact Info',
         ),
         MultiFieldPanel(
-            [FieldPanel('service'), FieldPanel('message'), FieldPanel('timestamp')],
+            [FieldPanel('service'), FieldPanel('message'), FieldPanel('timestamp'), FieldPanel('is_read')],
             heading='Details',
         ),
     ]

@@ -21,6 +21,11 @@ def branding_admin_js():
     return format_html('<script src="{}"></script>', static('js/admin_branding.js'))
 
 
+@hooks.register('insert_global_admin_js')
+def notifications_admin_js():
+    return format_html('<script src="{}"></script>', static('js/admin_notifications.js'))
+
+
 @hooks.register('register_admin_urls')
 def register_branding_admin_urls():
     from . import views

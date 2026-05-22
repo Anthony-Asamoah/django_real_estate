@@ -162,3 +162,108 @@
     height: auto !important;
     line-height: 1.6 !important;
 }
+
+/* ── Sidebar notification badges ─────────────────────── */
+.notif-badge {
+    display: inline-block;
+    background: #30caa0;
+    color: #0b1f3a;
+    border-radius: 12px;
+    padding: 1px 7px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-left: 6px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+
+/* ── Unread notifications dashboard panel ────────────── */
+@keyframes notif-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(48,202,160,.5); }
+    50%       { opacity: 0.85; transform: scale(1.15); box-shadow: 0 0 0 6px rgba(48,202,160,0); }
+}
+
+.unread-notifications-panel {
+    background: rgba(11, 31, 58, 0.72);
+    border: 1px solid rgba(48, 202, 160, 0.35);
+    border-radius: 12px;
+    padding: 1.1rem 1.4rem 1.25rem;
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.unread-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.9rem;
+}
+
+.unread-pulse {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #30caa0;
+    flex-shrink: 0;
+    animation: notif-pulse 2s ease-in-out infinite;
+}
+
+.unread-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #30caa0;
+    margin: 0;
+}
+
+.unread-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.unread-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255,255,255,0.04);
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+.unread-label {
+    flex: 1;
+    font-size: 0.85rem;
+    color: #e0e8f0;
+    text-decoration: none;
+    white-space: nowrap;
+}
+.unread-label:hover { color: #30caa0; text-decoration: underline; }
+
+.unread-count-badge {
+    display: inline-block;
+    background: rgba(48,202,160,0.18);
+    color: #30caa0;
+    border: 1px solid rgba(48,202,160,0.4);
+    border-radius: 10px;
+    padding: 1px 9px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.55;
+    flex-shrink: 0;
+}
+
+.unread-mark-btn {
+    flex-shrink: 0;
+    font-size: 0.72rem !important;
+    padding: 2px 10px !important;
+    height: auto !important;
+    line-height: 1.6 !important;
+    white-space: nowrap;
+}

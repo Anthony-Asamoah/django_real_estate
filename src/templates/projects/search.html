@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
-{% load static humanize %}
+{% load static humanize project_tags %}
 
 {% block title %} | Search Projects{% endblock %}
 
 {% block content %}
+
+  {% include 'partials/_breadcrumbs.html' with position='before' %}
 
   <section id="showcase-inner" class="showcase-search text-white py-5">
     <div class="container">
@@ -53,18 +55,7 @@
     </div>
   </section>
 
-  <!-- Breadcrumb -->
-  <section id="bc">
-    <div class="container">
-      <nav aria-label="breadcrumb">
-        <ol class="bc-trail">
-          <li class="bc-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
-          <li class="bc-item"><a href="{% url 'projects:projects' %}">Projects</a></li>
-          <li class="bc-item bc-item--active">Search Results</li>
-        </ol>
-      </nav>
-    </div>
-  </section>
+  {% include 'partials/_breadcrumbs.html' with position='after' %}
 
   <section id="projects" class="py-4">
     <div class="container">
@@ -77,7 +68,7 @@
               {% endif %}
               <div class="card-img-overlay">
                 <h2>
-                  <span class="badge bg-secondary text-white">${{ project.price|intcomma }}</span>
+                  <span class="badge bg-secondary text-white">{{ project.price|format_price:project.effective_currency }}</span>
                 </h2>
               </div>
               <div class="card-body">

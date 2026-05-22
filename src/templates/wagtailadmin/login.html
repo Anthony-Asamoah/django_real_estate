@@ -5,6 +5,202 @@
   <link rel="shortcut icon" href="{% static 'img/logo.png' %}">
 {% endblock %}
 
+{% block extra_css %}
+{{ block.super }}
+<style>
+  /* ── Aurora base ── */
+  body.login {
+    background: #060d1f !important;
+    min-height: 100vh;
+    position: relative;
+  }
+
+  #aurora-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    will-change: transform;
+  }
+
+  /* Orb 1 — brand teal, large, top-left */
+  .orb-1 {
+    width: 70vw;
+    height: 70vw;
+    top: -20vh;
+    left: -20vw;
+    background: radial-gradient(circle at center, rgba(27,168,126,0.72), transparent 65%);
+    animation: driftA 14s ease-in-out infinite alternate;
+  }
+
+  /* Orb 2 — deep blue, right side */
+  .orb-2 {
+    width: 50vw;
+    height: 50vw;
+    top: 10vh;
+    right: -15vw;
+    background: radial-gradient(circle at center, rgba(30,64,175,0.65), transparent 65%);
+    animation: driftB 10s ease-in-out infinite alternate;
+  }
+
+  /* Orb 3 — teal-green, bottom */
+  .orb-3 {
+    width: 55vw;
+    height: 55vw;
+    bottom: -25vh;
+    left: 15vw;
+    background: radial-gradient(circle at center, rgba(13,148,136,0.6), transparent 65%);
+    animation: driftC 16s ease-in-out infinite alternate;
+  }
+
+  /* Orb 4 — emerald accent, top-right */
+  .orb-4 {
+    width: 30vw;
+    height: 30vw;
+    top: 5vh;
+    right: 25vw;
+    background: radial-gradient(circle at center, rgba(5,150,105,0.5), transparent 65%);
+    animation: driftD 11s ease-in-out infinite alternate;
+  }
+
+  @keyframes driftA {
+    0%   { transform: translate(0, 0) scale(1); }
+    50%  { transform: translate(8vw, 6vh) scale(1.05); }
+    100% { transform: translate(14vw, -10vh) scale(0.95); }
+  }
+
+  @keyframes driftB {
+    0%   { transform: translate(0, 0) scale(1); }
+    50%  { transform: translate(-6vw, 8vh) scale(1.08); }
+    100% { transform: translate(-12vw, 14vh) scale(0.92); }
+  }
+
+  @keyframes driftC {
+    0%   { transform: translate(0, 0) scale(1); }
+    50%  { transform: translate(10vw, -5vh) scale(1.06); }
+    100% { transform: translate(-8vw, -12vh) scale(0.98); }
+  }
+
+  @keyframes driftD {
+    0%   { transform: translate(0, 0) scale(1); }
+    50%  { transform: translate(-10vw, 6vh) scale(1.1); }
+    100% { transform: translate(6vw, 10vh) scale(0.9); }
+  }
+
+  /* ── Layout lift above orbs ── */
+  .login__container,
+  .w-login {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Glassmorphism card ── */
+  .login__card {
+    background: rgba(255, 255, 255, 0.04) !important;
+    backdrop-filter: blur(22px) !important;
+    -webkit-backdrop-filter: blur(22px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255,255,255,0.06) inset !important;
+    color: #e2e8f0 !important;
+  }
+
+  /* ── Branding / heading text ── */
+  .login__card-header,
+  .login h1,
+  .login h2,
+  .login__branding {
+    color: #f0f4f8 !important;
+  }
+
+  /* ── Labels ── */
+  .login__card label,
+  .login__card .field label,
+  .login .field label {
+    color: rgba(226, 232, 240, 0.85) !important;
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* ── Inputs ── */
+  .login__card input[type="text"],
+  .login__card input[type="password"],
+  .login__card input[type="email"],
+  .login__card input[type="tel"] {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 8px !important;
+    color: #f0f4f8 !important;
+    padding: 10px 14px !important;
+    transition: border-color 0.2s, box-shadow 0.2s !important;
+  }
+
+  .login__card input[type="text"]:focus,
+  .login__card input[type="password"]:focus,
+  .login__card input[type="email"]:focus {
+    border-color: rgba(27, 168, 126, 0.7) !important;
+    box-shadow: 0 0 0 3px rgba(27, 168, 126, 0.18) !important;
+    outline: none !important;
+  }
+
+  .login__card input::placeholder {
+    color: rgba(226, 232, 240, 0.35) !important;
+  }
+
+  /* ── Submit button ── */
+  .login__card .button,
+  .login__card button[type="submit"],
+  .login__card input[type="submit"] {
+    background: linear-gradient(135deg, #1ba87e 0%, #0d9488 100%) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.03em !important;
+    padding: 11px 20px !important;
+    transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s !important;
+    box-shadow: 0 4px 18px rgba(27, 168, 126, 0.35) !important;
+    cursor: pointer;
+  }
+
+  .login__card .button:hover,
+  .login__card button[type="submit"]:hover {
+    opacity: 0.92 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 24px rgba(27, 168, 126, 0.45) !important;
+  }
+
+  /* ── Error / help text ── */
+  .login__card .error-message,
+  .login__card .help {
+    color: rgba(252, 165, 165, 0.9) !important;
+  }
+
+  /* ── Footer / links ── */
+  .login__card a {
+    color: #1ba87e !important;
+  }
+
+  /* ── Reduced motion ── */
+  @media (prefers-reduced-motion: reduce) {
+    .orb {
+      animation: none !important;
+    }
+    body.login {
+      background: #0d1b35 !important;
+    }
+  }
+</style>
+{% endblock %}
+
 {% block branding_login %}
 <span id="login-label">Log into</span><br />{{ SITE_NAME }}<br />CMS
 <style>
@@ -51,6 +247,14 @@
 {% endblock %}
 
 {% block extra_js %}
+<script>
+  (function () {
+    var bg = document.createElement('div');
+    bg.id = 'aurora-bg';
+    bg.innerHTML = '<div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div><div class="orb orb-4"></div>';
+    document.body.prepend(bg);
+  })();
+</script>
 {{ block.super }}
 {% if RECAPTCHA_SITE_KEY %}
 <script src="https://www.google.com/recaptcha/api.js?render={{ RECAPTCHA_SITE_KEY }}"></script>

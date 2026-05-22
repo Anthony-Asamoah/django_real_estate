@@ -10,10 +10,14 @@ django.setup()
 
 
 def run():
+    from .currencies import seed_currencies
     from .employees import seed_employees
     from .projects import seed_projects
     from .testimonials import seed_testimonials
     from .pages import seed_pages
+
+    print('Seeding currencies...')
+    c = seed_currencies()
 
     print('Seeding employees...')
     e = seed_employees()
@@ -27,7 +31,7 @@ def run():
     print('Seeding pages...')
     p = seed_pages()
 
-    print(f'\nDone. Created {e} employee(s), {pr} project(s), {t} testimonial(s), and {p} page(s).')
+    print(f'\nDone. Created {c} currency(ies), {e} employee(s), {pr} project(s), {t} testimonial(s), and {p} page(s).')
 
 
 run()

@@ -1,9 +1,12 @@
 {% extends 'base.html' %}
 {% load wagtailcore_tags wagtailimages_tags %}
+{# CMS-authored editorial project pages (Wagtail ProjectDetailPage). For the full-featured project detail view driven by the Project model, see templates/projects/project.html. #}
 
 {% block title %} | {{ page.title }}{% endblock %}
 
 {% block content %}
+
+  {% include 'partials/_breadcrumbs.html' with position='before' %}
 
   {% for block in page.body %}
     {% if block.block_type == 'hero_banner' %}
@@ -11,7 +14,7 @@
     {% endif %}
   {% endfor %}
 
-  {% include 'partials/_breadcrumbs.html' %}
+  {% include 'partials/_breadcrumbs.html' with position='after' %}
 
   <!-- Project Meta -->
   <section class="py-3 bg-light border-bottom">

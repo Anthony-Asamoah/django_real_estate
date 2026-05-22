@@ -1,13 +1,58 @@
 import pendulum
 from django.contrib import messages
+from django.http import JsonResponse
 from django.shortcuts import HttpResponse, redirect
 from django.template.loader import render_to_string
+from django.views.decorators.http import require_POST
 from wagtail.models import Site
 
 from domains.pages.models import BrandingSettings, Testimonial
 from infrastructure.email import get_email_provider
 from infrastructure import recaptcha
 from .models import GeneralInquiry, ProjectInquiry, EmailSettings
+
+_MODEL_MAP = None
+
+
+def _get_model_map():
+    global _MODEL_MAP
+    if _MODEL_MAP is None:
+        _MODEL_MAP = {
+            'project': ProjectInquiry,
+            'general': GeneralInquiry,
+            'testimonial': Testimonial,
+        }
+    return _MODEL_MAP
+
+
+def notification_counts(request):
+    if not request.user.is_staff:
+        return JsonResponse({'error': 'forbidden'}, status=403)
+    return JsonResponse({
+        'project': ProjectInquiry.objects.filter(is_read=False).count(),
+        'general': GeneralInquiry.objects.filter(is_read=False).count(),
+        'testimonial': Testimonial.objects.filter(is_read=False).count(),
+    })
+
+
+@require_POST
+def mark_read(request):
+    if not request.user.is_staff:
+        return JsonResponse({'error': 'forbidden'}, status=403)
+
+    model_name = request.POST.get('model')
+    pk = request.POST.get('pk', '').strip()
+    model_cls = _get_model_map().get(model_name)
+
+    if not model_cls:
+        return JsonResponse({'error': 'invalid model'}, status=400)
+
+    qs = model_cls.objects.filter(is_read=False)
+    if pk:
+        qs = qs.filter(pk=pk)
+    qs.update(is_read=True)
+
+    return JsonResponse({'ok': True, 'remaining': model_cls.objects.filter(is_read=False).count()})
 
 
 def _get_site_context(request):

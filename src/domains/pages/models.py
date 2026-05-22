@@ -227,6 +227,7 @@ class Testimonial(models.Model):
         help_text='Leave blank to show on all service pages',
     )
     is_featured = models.BooleanField(default=False)
+    is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=pendulum.now)
 
     panels = [
@@ -238,6 +239,7 @@ class Testimonial(models.Model):
             FieldPanel('body'),
             FieldPanel('service'),
             FieldPanel('is_featured'),
+            FieldPanel('is_read'),
         ], heading='Content'),
     ]
 
@@ -301,6 +303,14 @@ class BrandingSettings(BaseSiteSetting):
     instagram_url = models.URLField(blank=True)
     pinterest_url = models.URLField(blank=True)
     tiktok_url = models.URLField(blank=True)
+    default_currency = models.ForeignKey(
+        'projects.Currency',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text='Default currency for project prices site-wide',
+    )
     maps_url = models.TextField(
         blank=True,
         default=django_settings.MAPS_URL,
@@ -321,6 +331,30 @@ class BrandingSettings(BaseSiteSetting):
         choices=BREADCRUMB_STYLE_CHOICES,
         default='bar',
         help_text='Controls how breadcrumbs are displayed on interior pages',
+    )
+
+    # ── Project detail page layout ────────────────────────────────────────────
+    project_show_stats_bar = models.BooleanField(
+        default=True,
+        help_text='Show the key stats strip (price, sqft, beds, baths) on the project detail page',
+    )
+    project_sticky_cta = models.BooleanField(
+        default=True,
+        help_text='Keep the "Make An Inquiry" button visible while scrolling on desktop; show a fixed bottom bar on mobile',
+    )
+    project_show_related = models.BooleanField(
+        default=True,
+        help_text='Show a "More Projects" section at the bottom of each project page',
+    )
+    project_related_count = models.PositiveSmallIntegerField(
+        default=3,
+        help_text='Number of related projects to display (max 6)',
+    )
+    project_sold_message = models.CharField(
+        max_length=200,
+        blank=True,
+        default='This project is complete.',
+        help_text='Heading shown when a project has been sold',
     )
 
     panels = [
@@ -354,8 +388,22 @@ class BrandingSettings(BaseSiteSetting):
             heading='Social Links',
         ),
         MultiFieldPanel(
+            [FieldPanel('default_currency')],
+            heading='Currency',
+        ),
+        MultiFieldPanel(
             [FieldPanel('breadcrumb_style')],
             heading='Layout',
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel('project_show_stats_bar'),
+                FieldPanel('project_sticky_cta'),
+                FieldPanel('project_show_related'),
+                FieldPanel('project_related_count'),
+                FieldPanel('project_sold_message'),
+            ],
+            heading='Project Pages',
         ),
     ]
 

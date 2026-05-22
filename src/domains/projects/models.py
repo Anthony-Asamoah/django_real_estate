@@ -19,6 +19,25 @@ PAST_STATUSES = [STATUS_SOLD, STATUS_COMPLETED]
 ACTIVE_STATUSES = [STATUS_AVAILABLE, STATUS_IN_PROGRESS, STATUS_COMPLETED]
 
 
+class Currency(models.Model):
+    code = models.CharField(max_length=10, unique=True)
+    name = models.CharField(max_length=100)
+    symbol = models.CharField(max_length=10)
+
+    panels = [
+        FieldPanel('code'),
+        FieldPanel('name'),
+        FieldPanel('symbol'),
+    ]
+
+    def __str__(self):
+        return f'{self.code} — {self.name}'
+
+    class Meta:
+        verbose_name_plural = 'Currencies'
+        ordering = ['code']
+
+
 class ProjectViewSet(SnippetViewSet):
     model = None
     icon = 'folder-open-inverse'
@@ -50,6 +69,14 @@ class Project(models.Model):
     zipcode = models.CharField(max_length=11, default='')
     description = models.TextField(blank=True)
     price = models.IntegerField(default=0, help_text='Contract value or sale price')
+    currency = models.ForeignKey(
+        'projects.Currency',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text='Leave blank to use the site default currency',
+    )
 
     # Optional fields — relevant for house/building sales, not needed for infrastructure/borehole work
     bedrooms = models.IntegerField(null=True, blank=True)
@@ -128,6 +155,7 @@ class Project(models.Model):
         MultiFieldPanel(
             [
                 FieldPanel('price'),
+                FieldPanel('currency'),
                 FieldPanel('bedrooms'),
                 FieldPanel('bathrooms'),
                 FieldPanel('garage'),
@@ -151,6 +179,22 @@ class Project(models.Model):
             heading='Photos',
         ),
     ]
+
+    @property
+    def effective_currency(self):
+        if self.currency_id:
+            return self.currency
+        try:
+            from wagtail.models import Site
+            from domains.pages.models import BrandingSettings
+            site = Site.objects.filter(is_default_site=True).first()
+            if site:
+                settings = BrandingSettings.for_site(site)
+                if settings and settings.default_currency_id:
+                    return settings.default_currency
+        except Exception:
+            pass
+        return None
 
     def __str__(self):
         return self.title
