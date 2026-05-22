@@ -1,19 +1,15 @@
 <!-- Breadcrumb -->
-<section id="bc" class="mt-3">
+<section id="bc" {% if settings.pages.BrandingSettings.breadcrumb_style == 'overlay' %}class="bc-hero-overlay"{% endif %}>
   <div class="container">
     <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-          <a href="/"><i class="fas fa-home"></i> Home</a>
-        </li>
+      <ol class="bc-trail">
+        <li class="bc-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
         {% for ancestor in page.get_ancestors %}
           {% if ancestor.depth > 2 %}
-            <li class="breadcrumb-item">
-              <a href="{{ ancestor.url }}">{{ ancestor.title }}</a>
-            </li>
+            <li class="bc-item"><a href="{{ ancestor.url }}">{{ ancestor.title }}</a></li>
           {% endif %}
         {% endfor %}
-        <li class="breadcrumb-item active">{{ page.title }}</li>
+        <li class="bc-item bc-item--active">{{ page.title }}</li>
       </ol>
     </nav>
   </div>

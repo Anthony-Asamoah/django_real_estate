@@ -6,8 +6,8 @@
   {% endif %}
   <hr>
   {% if value.button_text and value.button_url %}
-    <a href="{{ value.button_url }}" class="btn btn-secondary text-white btn-lg">{{ value.button_text }}</a>
+    <a href="{{ value.button_url }}" class="btn-accent btn-lg">{{ value.button_text }}</a>
   {% else %}
-    <a href="{% url 'projects:projects' %}" class="btn btn-secondary text-white btn-lg">View Our Projects</a>
+    <a href="{% url 'projects:projects' %}" class="btn-accent btn-lg">View Our Projects</a>
   {% endif %}
 </section>

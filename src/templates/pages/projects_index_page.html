@@ -39,11 +39,11 @@
                 <div class="card-body">
                   <h5 class="text-primary">{{ project.title }}</h5>
                   {% if project.service %}
-                    <span class="badge badge-secondary text-white mb-2">{{ project.service.title }}</span>
+                    <span class="badge bg-secondary text-white mb-2">{{ project.service.title }}</span>
                   {% endif %}
                   {% if project.location %}
                     <p class="text-muted small mb-0">
-                      <i class="fas fa-map-marker-alt mr-1"></i>{{ project.location }}
+                      <i class="fas fa-map-marker-alt me-1"></i>{{ project.location }}
                     </p>
                   {% endif %}
                 </div>
@@ -120,16 +120,14 @@
           {% if 'testimonial' in message.tags or message.level_tag == 'success' or message.level_tag == 'error' %}
             <div class="alert alert-{{ message.level_tag }} alert-dismissible fade show mb-4" role="alert">
               {{ message }}
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
           {% endif %}
         {% endfor %}
       {% endif %}
       <div class="row align-items-center">
         <div class="col-lg-5 mb-4 mb-lg-0">
-          <h2 class="text-primary font-weight-bold mb-3">Worked with us?</h2>
+          <h2 class="text-primary fw-bold mb-3">Worked with us?</h2>
           <p class="text-muted lead mb-3">We'd love to hear about your experience. Your feedback helps us improve and helps others make confident decisions.</p>
           <p class="text-muted small">Submissions are reviewed before being published.</p>
         </div>
@@ -138,23 +136,23 @@
             <div class="card-body p-4">
               <form id="testimonialForm" action="{% url 'inquiry:testimonial_submission' %}" method="post">
                 {% csrf_token %}
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <label for="testimonialName" class="small font-weight-bold text-muted text-uppercase">Your Name <span class="text-danger">*</span></label>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label for="testimonialName" class="small fw-bold text-muted text-uppercase">Your Name <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="testimonialName" name="author_name" placeholder="Jane Smith" required>
                   </div>
-                  <div class="form-group col-md-6">
-                    <label for="testimonialRole" class="small font-weight-bold text-muted text-uppercase">Your Role</label>
+                  <div class="col-md-6">
+                    <label for="testimonialRole" class="small fw-bold text-muted text-uppercase">Your Role</label>
                     <input type="text" class="form-control" id="testimonialRole" name="author_role" placeholder="e.g. Homeowner, Business Owner">
                   </div>
                 </div>
-                <div class="form-group">
-                  <label class="small font-weight-bold text-muted text-uppercase">Your Testimonial <span class="text-danger">*</span></label>
+                <div class="mb-3">
+                  <label class="small fw-bold text-muted text-uppercase">Your Testimonial <span class="text-danger">*</span></label>
                   <div id="testimonialBodyEditor" style="height: 140px; background: #fff;"></div>
                   <textarea id="testimonialBodyInput" name="body" class="d-none"></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary px-4">
-                  <i class="fas fa-paper-plane mr-2"></i>Submit Testimonial
+                  <i class="fas fa-paper-plane me-2"></i>Submit Testimonial
                 </button>
               </form>
             </div>

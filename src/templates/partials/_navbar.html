@@ -10,7 +10,7 @@
         <img src="{% static 'img/logo.png' %}" class="nav-logo" alt="">
       {% endif %}
     </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -19,7 +19,7 @@
         <li class="nav-item dropdown {% if request.path|startswith:'/services/' %}active{% endif %}">
           <a class="nav-link dropdown-toggle" href="/services/"
              id="servicesDropdown" role="button"
-             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+             data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Services
           </a>
           <div class="dropdown-menu" aria-labelledby="servicesDropdown">
@@ -43,7 +43,7 @@
         </li>
       </ul>
 
-      <ul class="navbar-nav ml-auto align-items-center">
+      <ul class="navbar-nav ms-auto align-items-center">
         {% if user.is_authenticated %}
           <li class="nav-item {% if request.path|startswith:'/cms/' %}active{% endif %}">
             {% if user.is_staff or user.is_superuser %}

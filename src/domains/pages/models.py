@@ -316,6 +316,17 @@ class BrandingSettings(BaseSiteSetting):
         help_text='Google Maps embed URL for the iframe — get it from Google Maps → Share → Embed a map → copy the iframe src',
     )
 
+    BREADCRUMB_STYLE_CHOICES = [
+        ('bar', 'Context Bar — light strip below nav (default)'),
+        ('overlay', 'Hero Overlay — dark band that flows into the hero'),
+    ]
+    breadcrumb_style = models.CharField(
+        max_length=10,
+        choices=BREADCRUMB_STYLE_CHOICES,
+        default='bar',
+        help_text='Controls how breadcrumbs are displayed on interior pages',
+    )
+
     panels = [
         MultiFieldPanel(
             [FieldPanel('site_name'), FieldPanel('logo')],
@@ -345,6 +356,10 @@ class BrandingSettings(BaseSiteSetting):
                 FieldPanel('tiktok_url'),
             ],
             heading='Social Links',
+        ),
+        MultiFieldPanel(
+            [FieldPanel('breadcrumb_style')],
+            heading='Layout',
         ),
     ]
 

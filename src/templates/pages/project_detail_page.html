@@ -19,19 +19,19 @@
       <div class="row text-center text-md-left">
         {% if page.location %}
           <div class="col-md-4 py-2">
-            <i class="fas fa-map-marker-alt text-secondary mr-1"></i>
+            <i class="fas fa-map-marker-alt text-secondary me-1"></i>
             <strong>Location:</strong> {{ page.location }}
           </div>
         {% endif %}
         {% if page.completion_date %}
           <div class="col-md-4 py-2">
-            <i class="fas fa-calendar-check text-secondary mr-1"></i>
+            <i class="fas fa-calendar-check text-secondary me-1"></i>
             <strong>Completed:</strong> {{ page.completion_date|date:"F Y" }}
           </div>
         {% endif %}
         {% if page.service %}
           <div class="col-md-4 py-2">
-            <i class="fas fa-tools text-secondary mr-1"></i>
+            <i class="fas fa-tools text-secondary me-1"></i>
             <strong>Service:</strong>
             <a href="{{ page.service.url }}" class="text-primary">{{ page.service.title }}</a>
           </div>
@@ -63,7 +63,7 @@
   <!-- Back to Projects -->
   <section class="py-4">
     <div class="container">
-      <a href="{{ page.get_parent.url }}" class="btn btn-outline-primary">
+      <a href="{{ page.get_parent.url }}" class="btn-outline-brand">
         &larr; Back to Projects
       </a>
     </div>

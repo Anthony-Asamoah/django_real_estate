@@ -27,7 +27,7 @@
                 <!-- Price badge -->
                 {% if project.price %}
                   <div style="position:absolute;top:12px;left:12px;">
-                    <span class="badge badge-secondary text-white" style="font-size:.85rem;padding:6px 10px;">
+                    <span class="badge bg-secondary text-white" style="font-size:.85rem;padding:6px 10px;">
                       ${{ project.price|intcomma }}
                     </span>
                   </div>
@@ -59,7 +59,7 @@
                 {% endif %}
 
                 <a href="{% url 'projects:project' project.id %}"
-                   class="btn btn-outline-primary btn-sm mt-auto">View Project</a>
+                   class="btn-outline-brand btn-sm mt-auto">View Project</a>
               </div>
 
             </div>

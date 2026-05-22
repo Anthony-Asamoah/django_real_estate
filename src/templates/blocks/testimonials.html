@@ -25,8 +25,8 @@
                   {% if body_text|length > 220 %}
                     <p class="testimonial-body">{{ body_text|slice:":220" }}&hellip;
                       <button class="testimonial-read-more"
-                              data-toggle="modal"
-                              data-target="#tModal{{ t.pk }}"
+                              data-bs-toggle="modal"
+                              data-bs-target="#tModal{{ t.pk }}"
                               type="button">Read more</button>
                     </p>
                   {% else %}
@@ -73,9 +73,7 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content testimonial-modal-content">
         <div class="modal-header border-0 pb-0">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body pt-0 px-4 pb-4">
           <div class="testimonial-modal-quote">&ldquo;</div>

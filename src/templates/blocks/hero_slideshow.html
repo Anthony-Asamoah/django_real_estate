@@ -3,28 +3,29 @@
 <section id="showcase" style="position:relative;overflow:hidden;background:none;padding-top:0;">
   <div
     id="heroCarousel"
-    class="carousel{% if value.transition_type == 'fade' %} carousel-fade{% endif %} slide"
-    data-ride="carousel"
-    data-interval="{{ value.interval }}"
-    style="min-height:650px;"
+    class="carousel{% if value.transition_type == 'fade' %} carousel-fade{% endif %} slide hero-carousel"
+    data-bs-ride="carousel"
+    data-bs-interval="{{ value.interval }}"
   >
 
-    <ol class="carousel-indicators" style="z-index:15;">
+    <div class="carousel-indicators" style="z-index:15;">
       {% for slide in value.slides %}
-        <li data-target="#heroCarousel" data-slide-to="{{ forloop.counter0 }}"{% if forloop.first %} class="active"{% endif %}></li>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ forloop.counter0 }}"
+          {% if forloop.first %}class="active" aria-current="true"{% endif %}
+          aria-label="Slide {{ forloop.counter }}"></button>
       {% endfor %}
-    </ol>
+    </div>
 
-    <div class="carousel-inner" style="min-height:650px;">
+    <div class="carousel-inner hero-carousel-inner">
       {% for slide in value.slides %}
         {% image slide.image width-1920 as slide_img %}
         <div
-          class="carousel-item{% if forloop.first %} active{% endif %}"
-          style="min-height:650px;background-image:url('{{ slide_img.url }}');background-size:cover;background-position:center;"
+          class="carousel-item hero-carousel-item{% if forloop.first %} active{% endif %}"
+          style="background-image:url('{{ slide_img.url }}');background-size:cover;background-position:center;"
         >
           {% if slide.caption %}
-            <div class="carousel-caption d-none d-md-block" style="bottom:80px;z-index:15;">
-              <p class="mb-0" style="font-size:.95rem;text-shadow:0 1px 3px rgba(0,0,0,.6);">{{ slide.caption }}</p>
+            <div class="carousel-caption hero-slide-caption" style="bottom:80px;z-index:15;">
+              <p class="mb-0 hero-caption-text" style="text-shadow:0 1px 3px rgba(0,0,0,.6);">{{ slide.caption }}</p>
             </div>
           {% endif %}
         </div>
@@ -37,7 +38,7 @@
     <!-- Heading + search card -->
     <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:12;">
       <div class="text-center text-white mb-4 px-3">
-        <h1 class="display-4 font-weight-bold" style="text-shadow:0 2px 6px rgba(0,0,0,.5);">{{ value.heading }}</h1>
+        <h1 class="display-4 fw-bold" style="text-shadow:0 2px 6px rgba(0,0,0,.5);">{{ value.heading }}</h1>
         {% if value.subtext %}
           <p class="lead mb-0" style="text-shadow:0 1px 4px rgba(0,0,0,.4);">{{ value.subtext }}</p>
         {% endif %}
@@ -47,21 +48,19 @@
         <div class="card border-0 shadow-lg mx-auto" style="max-width:860px;border-radius:12px;overflow:visible;">
           <div class="card-body p-4">
             <form method="get" action="{% url 'projects:projects' %}">
-              <div class="form-row align-items-end">
+              <div class="row g-3 align-items-end">
 
-                <div class="col-md-4 mb-3 mb-md-0">
-                  <label class="small font-weight-bold text-muted mb-1 text-uppercase" style="font-size:.7rem;letter-spacing:.06em;">Keyword</label>
+                <div class="col-md-4">
+                  <label class="small fw-bold text-muted mb-1 text-uppercase" style="font-size:.7rem;letter-spacing:.06em;">Keyword</label>
                   <div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text bg-white border-right-0"><i class="fas fa-search text-muted" style="font-size:.85rem;"></i></span>
-                    </div>
-                    <input type="text" name="q" class="form-control border-left-0 pl-0" placeholder="Search projects…" style="border-radius:0 6px 6px 0;">
+                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted" style="font-size:.85rem;"></i></span>
+                    <input type="text" name="q" class="form-control border-start-0 ps-0" placeholder="Search projects…" style="border-radius:0 6px 6px 0;">
                   </div>
                 </div>
 
-                <div class="col-md-3 mb-3 mb-md-0">
-                  <label class="small font-weight-bold text-muted mb-1 text-uppercase" style="font-size:.7rem;letter-spacing:.06em;">Service</label>
-                  <select name="service" class="form-control" style="border-radius:6px;">
+                <div class="col-md-3">
+                  <label class="small fw-bold text-muted mb-1 text-uppercase" style="font-size:.7rem;letter-spacing:.06em;">Service</label>
+                  <select name="service" class="form-select" style="border-radius:6px;">
                     <option value="">All Services</option>
                     {% for svc in service_pages %}
                       <option value="{{ svc.id }}">{{ svc.title }}</option>
@@ -69,9 +68,9 @@
                   </select>
                 </div>
 
-                <div class="col-md-3 mb-3 mb-md-0">
-                  <label class="small font-weight-bold text-muted mb-1 text-uppercase" style="font-size:.7rem;letter-spacing:.06em;">Status</label>
-                  <select name="status" class="form-control" style="border-radius:6px;">
+                <div class="col-md-3">
+                  <label class="small fw-bold text-muted mb-1 text-uppercase" style="font-size:.7rem;letter-spacing:.06em;">Status</label>
+                  <select name="status" class="form-select" style="border-radius:6px;">
                     <option value="all">All Projects</option>
                     <option value="past">Past Works</option>
                     <option value="active">Active</option>
@@ -80,9 +79,9 @@
                   </select>
                 </div>
 
-                <div class="col-md-2 mb-0">
-                  <button type="submit" class="btn btn-secondary btn-block" style="border-radius:6px;font-weight:600;letter-spacing:.03em;">
-                    <i class="fas fa-search mr-1"></i> Explore
+                <div class="col-md-2 d-grid">
+                  <button type="submit" class="btn-accent">
+                    <i class="fas fa-search me-1"></i> Explore
                   </button>
                 </div>
 
@@ -93,14 +92,14 @@
       </div>
     </div>
 
-    <a class="carousel-control-prev" href="#heroCarousel" role="button" data-slide="prev" style="z-index:13;width:5%;">
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev" style="z-index:13;width:5%;">
       <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="sr-only">Previous</span>
-    </a>
-    <a class="carousel-control-next" href="#heroCarousel" role="button" data-slide="next" style="z-index:13;width:5%;">
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next" style="z-index:13;width:5%;">
       <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="sr-only">Next</span>
-    </a>
+      <span class="visually-hidden">Next</span>
+    </button>
   </div>
 </section>
 
