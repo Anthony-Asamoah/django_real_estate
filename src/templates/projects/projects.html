@@ -58,6 +58,10 @@
 .rf-btn-apply:hover{filter:brightness(1.12)}
 .rf-btn-apply:active{transform:translateY(1px)}
 
+/* Fix: form must be a flex column so rf-body scrolls and rf-footer sticks */
+.rf-panel{overflow:hidden}
+.rf-panel>form{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+
 /* Mobile – bottom sheet */
 @media(max-width:600px){
   .rf-backdrop{align-items:flex-end;padding:0}
@@ -68,6 +72,30 @@
   .rf-footer{padding:1rem 1.25rem;padding-bottom:calc(1rem + env(safe-area-inset-bottom))}
   .rf-field-grid{grid-template-columns:1fr}
 }
+
+/* ── Quick filter bar — mobile ──────────────────────────────────────── */
+@media(max-width:767px){
+  /* Float action buttons to the top of the form, side-by-side */
+  #quickFilterForm .row>.col-auto{
+    order:-1;
+    flex:1 1 0;
+    min-width:0;
+  }
+  #quickFilterForm .row>.col-auto>*{
+    width:100%;
+    text-align:center;
+    justify-content:center;
+    display:flex;
+    align-items:center;
+  }
+  /* Collapse 3 selects into a 2-column grid instead of full-width stacks */
+  #quickFilterForm .row>.col-md-3,
+  #quickFilterForm .row>.col-md-2{
+    flex:0 0 50%;
+    max-width:50%;
+    width:50%;
+  }
+}
 </style>
 {% endblock %}
 
@@ -75,8 +103,9 @@
 
 {% block content %}
 
-  <!-- Breadcrumb -->
-  <section id="bc" {% if settings.pages.BrandingSettings.breadcrumb_style == 'overlay' %}class="bc-hero-overlay"{% endif %}>
+  {% if settings.pages.BrandingSettings.breadcrumb_style != 'overlay' %}
+  <!-- Breadcrumb — bar style -->
+  <section id="bc">
     <div class="container">
       <nav aria-label="breadcrumb">
         <ol class="bc-trail">
@@ -86,9 +115,22 @@
       </nav>
     </div>
   </section>
+  {% endif %}
 
   <section id="showcase-inner" class="py-5 text-white text-center">
     <div class="overlay-black" style="position:absolute;inset:0;opacity:0.55;pointer-events:none;"></div>
+    {% if settings.pages.BrandingSettings.breadcrumb_style == 'overlay' %}
+    <div class="bc-in-hero">
+      <div class="container">
+        <nav aria-label="breadcrumb">
+          <ol class="bc-trail">
+            <li class="bc-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
+            <li class="bc-item bc-item--active">Projects</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+    {% endif %}
     <div class="container" style="position:relative;z-index:1;">
       <div class="row text-center">
         <div class="col-md-12">

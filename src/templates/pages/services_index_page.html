@@ -5,13 +5,13 @@
 
 {% block content %}
 
-  {% include 'partials/_breadcrumbs.html' %}
-
   {% for block in page.body %}
     {% if block.block_type == 'hero_banner' %}
       {% include_block block %}
     {% endif %}
   {% endfor %}
+
+  {% include 'partials/_breadcrumbs.html' %}
 
   <!-- Services Grid -->
   <section class="py-5">
@@ -29,7 +29,7 @@
                   <p class="text-muted small">{{ service.search_description|default:"Learn more about this service." }}</p>
                 </div>
                 <div class="card-footer bg-white border-0 text-center pb-4">
-                  <span class="btn btn-outline-primary btn-sm">Learn More &rarr;</span>
+                  <span class="btn-outline-brand btn-sm">Learn More &rarr;</span>
                 </div>
               </div>
             </a>

@@ -5,13 +5,13 @@
 
 {% block content %}
 
-  {% include 'partials/_breadcrumbs.html' %}
-
   {% for block in page.body %}
     {% if block.block_type == 'hero_banner' %}
       {% include_block block %}
     {% endif %}
   {% endfor %}
+
+  {% include 'partials/_breadcrumbs.html' %}
 
   <section class="contact-section">
     <div class="container">

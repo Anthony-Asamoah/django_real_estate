@@ -11,12 +11,14 @@
 
     <div class="faq-layout">
 
-      <!-- Question list (left / top on mobile) -->
+      <!-- Question list -->
       <nav class="faq-nav" aria-label="FAQ navigation">
         {% for item in value.items %}
           <button
             class="faq-nav-btn{% if forloop.first %} is-active{% endif %}"
             data-faq="{{ forloop.counter }}"
+            aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
+            aria-controls="faq-panel-{{ forloop.counter }}"
             type="button"
           >
             <span class="faq-nav-num">{{ forloop.counter|stringformat:"02d" }}</span>
@@ -26,7 +28,7 @@
         {% endfor %}
       </nav>
 
-      <!-- Answer panel (right / bottom on mobile) -->
+      <!-- Answer panel -->
       <div class="faq-answers" aria-live="polite">
         {% for item in value.items %}
           <div
@@ -129,8 +131,7 @@
 }
 
 .faq-nav-btn {
-  display: grid;
-  grid-template-columns: 2.6rem 1fr 1.25rem;
+  display: flex;
   align-items: center;
   gap: 0.75rem;
   width: 100%;
@@ -159,6 +160,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 2rem;
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
@@ -167,7 +169,6 @@
   font-weight: 700;
   letter-spacing: 0.04em;
   color: rgba(255, 255, 255, 0.55);
-  flex-shrink: 0;
   transition: background 0.2s, color 0.2s;
 }
 
@@ -177,17 +178,19 @@
 }
 
 .faq-nav-text {
+  flex: 1;
+  min-width: 0;
   font-size: 0.88rem;
   font-weight: 500;
   line-height: 1.4;
 }
 
 .faq-nav-arrow {
+  flex: 0 0 1rem;
   width: 1rem;
   height: 1rem;
   color: rgba(255, 255, 255, 0.25);
-  flex-shrink: 0;
-  transition: color 0.2s, transform 0.2s;
+  transition: color 0.2s, transform 0.3s ease;
 }
 
 .faq-nav-btn.is-active .faq-nav-arrow {
@@ -245,27 +248,50 @@
   margin: 0;
 }
 
-/* ── Responsive ──────────────────────────────────────────── */
+/* ── Mobile ──────────────────────────────────────────────── */
 @media (max-width: 767px) {
   .faq-layout {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
+    display: block;
   }
 
+  /* Answers container hidden — answers are moved inline by JS */
   .faq-answers {
+    display: none;
     min-height: unset;
+  }
+
+  .faq-nav {
+    gap: 0.5rem;
   }
 
   .faq-nav-btn {
     padding: 0.85rem 0.85rem 0.85rem 0.75rem;
+    border-radius: 10px;
   }
 
   .faq-nav-text {
     font-size: 0.85rem;
   }
 
-  .faq-answer {
+  /* Inline answers (moved into .faq-nav by JS) */
+  .faq-nav .faq-answer {
+    display: block;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    padding: 0 1.25rem;
+    margin-top: 0;
+    border-radius: 0 0 10px 10px;
+    animation: none;
+    transition: max-height 0.35s ease, opacity 0.25s ease,
+                padding 0.25s ease, margin 0.25s ease;
+  }
+
+  .faq-nav .faq-answer.is-active {
+    max-height: 600px;
+    opacity: 1;
     padding: 1.5rem 1.25rem;
+    margin-top: 0.35rem;
   }
 
   .faq-answer-num {
@@ -275,23 +301,82 @@
   .faq-answer-q {
     font-size: 1.05rem;
   }
+
+  /* Arrow rotates down when open on mobile */
+  .faq-nav-btn.is-active .faq-nav-arrow {
+    transform: rotate(90deg);
+  }
 }
 </style>
 
 <script>
 (function () {
-  document.querySelectorAll('#faqAccordion .faq-nav-btn, .faq-section .faq-nav-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var section = btn.closest('.faq-section');
-      var idx = btn.dataset.faq;
+  document.querySelectorAll('.faq-section').forEach(function (section) {
+    var nav = section.querySelector('.faq-nav');
+    var answersContainer = section.querySelector('.faq-answers');
+    var mobileActive = false;
 
-      section.querySelectorAll('.faq-nav-btn').forEach(function (b) { b.classList.remove('is-active'); });
-      section.querySelectorAll('.faq-answer').forEach(function (a) { a.classList.remove('is-active'); });
+    function toMobile() {
+      if (mobileActive) return;
+      mobileActive = true;
+      // Insert each answer panel right after its button
+      nav.querySelectorAll('.faq-nav-btn').forEach(function (btn) {
+        var panel = section.querySelector('#faq-panel-' + btn.dataset.faq);
+        if (panel) btn.insertAdjacentElement('afterend', panel);
+      });
+      answersContainer.style.display = 'none';
+    }
 
-      btn.classList.add('is-active');
-      var panel = section.querySelector('#faq-panel-' + idx);
-      if (panel) panel.classList.add('is-active');
+    function toDesktop() {
+      if (!mobileActive) return;
+      mobileActive = false;
+      // Return panels to the answers container in original order
+      var panels = Array.from(section.querySelectorAll('.faq-answer'));
+      panels.sort(function (a, b) {
+        return parseInt(a.id.replace('faq-panel-', ''), 10) -
+               parseInt(b.id.replace('faq-panel-', ''), 10);
+      });
+      panels.forEach(function (p) { answersContainer.appendChild(p); });
+      answersContainer.style.display = '';
+    }
+
+    function syncLayout() {
+      window.innerWidth < 768 ? toMobile() : toDesktop();
+    }
+
+    // Click handler works for both desktop and mobile
+    nav.addEventListener('click', function (e) {
+      var btn = e.target.closest('.faq-nav-btn');
+      if (!btn) return;
+
+      var idx       = btn.dataset.faq;
+      var wasActive = btn.classList.contains('is-active');
+
+      section.querySelectorAll('.faq-nav-btn').forEach(function (b) {
+        b.classList.remove('is-active');
+        b.setAttribute('aria-expanded', 'false');
+      });
+      section.querySelectorAll('.faq-answer').forEach(function (a) {
+        a.classList.remove('is-active');
+      });
+
+      if (!wasActive) {
+        btn.classList.add('is-active');
+        btn.setAttribute('aria-expanded', 'true');
+        var panel = section.querySelector('#faq-panel-' + idx);
+        if (panel) {
+          panel.classList.add('is-active');
+          if (mobileActive) {
+            setTimeout(function () {
+              panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 50);
+          }
+        }
+      }
     });
+
+    window.addEventListener('resize', syncLayout);
+    syncLayout();
   });
 })();
 </script>

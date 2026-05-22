@@ -9,13 +9,13 @@
 
 {% block content %}
 
-  {% include 'partials/_breadcrumbs.html' %}
-
   {% for block in page.body %}
     {% if block.block_type == 'hero_banner' %}
       {% include_block block %}
     {% endif %}
   {% endfor %}
+
+  {% include 'partials/_breadcrumbs.html' %}
 
   <!-- Projects Grid -->
   <section class="py-5">
@@ -151,7 +151,7 @@
                   <div id="testimonialBodyEditor" style="height: 140px; background: #fff;"></div>
                   <textarea id="testimonialBodyInput" name="body" class="d-none"></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary px-4">
+                <button type="submit" class="btn-brand">
                   <i class="fas fa-paper-plane me-2"></i>Submit Testimonial
                 </button>
               </form>

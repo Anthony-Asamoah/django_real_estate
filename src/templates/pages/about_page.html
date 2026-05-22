@@ -5,8 +5,17 @@
 {% block title %} | About{% endblock %}
 
 {% block content %}
-  {% include 'partials/_breadcrumbs.html' %}
   {% for block in page.body %}
-    {% include_block block %}
+    {% if block.block_type == 'hero_banner' %}
+      {% include_block block %}
+    {% endif %}
+  {% endfor %}
+
+  {% include 'partials/_breadcrumbs.html' %}
+
+  {% for block in page.body %}
+    {% if block.block_type != 'hero_banner' %}
+      {% include_block block %}
+    {% endif %}
   {% endfor %}
 {% endblock %}
