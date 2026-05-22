@@ -9,7 +9,27 @@
       {% else %}
         <img src="{% static 'img/logo.png' %}" class="nav-logo" alt="">
       {% endif %}
+      <span class="nav-brand-name d-none d-lg-inline">
+        {% if settings.pages.BrandingSettings.site_name %}
+          {{ settings.pages.BrandingSettings.site_name }}
+        {% else %}
+          Numiral
+        {% endif %}
+      </span>
     </a>
+
+    <div class="mobile-top-cta d-flex align-items-center d-lg-none ms-auto me-2 gap-2">
+      {% if user.is_authenticated %}
+        {% if user.is_staff or user.is_superuser %}
+          <a href="/cms/" class="btn-quote btn-quote--sm">Dashboard</a>
+        {% else %}
+          <a href="{% url 'accounts:dashboard' %}" class="btn-quote btn-quote--sm">Dashboard</a>
+        {% endif %}
+      {% else %}
+        <a href="/contact/" class="btn-quote btn-quote--sm">Get a Quote</a>
+      {% endif %}
+    </div>
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -45,7 +65,7 @@
 
       <ul class="navbar-nav ms-auto align-items-center">
         {% if user.is_authenticated %}
-          <li class="nav-item {% if request.path|startswith:'/cms/' %}active{% endif %}">
+          <li class="nav-item d-none d-lg-flex {% if request.path|startswith:'/cms/' %}active{% endif %}">
             {% if user.is_staff or user.is_superuser %}
               <a class="nav-link" href="/cms/">Dashboard</a>
             {% else %}
@@ -61,10 +81,11 @@
               <input type="hidden">
             </form>
           </li>
+        {% else %}
+          <li class="nav-item nav-cta d-none d-lg-flex align-items-center">
+            <a href="/contact/" class="btn-quote">Get a Quote</a>
+          </li>
         {% endif %}
-        <li class="nav-item nav-cta">
-          <a href="/contact/" class="btn-quote">Get a Quote</a>
-        </li>
       </ul>
     </div>
   </div>

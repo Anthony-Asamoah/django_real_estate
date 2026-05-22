@@ -41,8 +41,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     background: rgba(255,255,255,0.08);
     color: rgba(255,255,255,0.6);
@@ -113,7 +113,7 @@
   .ft-cta {
     display: inline-block;
     margin-top: 1.25rem;
-    padding: 0.6rem 1.5rem;
+    padding: 0.75rem 1.5rem;
     background: var(--brand-secondary);
     color: #fff;
     font-size: 0.85rem;
@@ -156,11 +156,44 @@
   }
   @media (max-width: 560px) {
     .ft-grid {
-      grid-template-columns: 1fr;
-      gap: 2rem;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
       padding: 3rem 1.5rem 2rem;
     }
     .ft-tagline { max-width: none; }
+
+    /* Reorder: Brand → Contact (CTA) → Company + Services side by side */
+    .ft-grid > div:nth-child(1) { order: 1; grid-column: span 2; }
+    .ft-grid > div:nth-child(2) { order: 3; }
+    .ft-grid > div:nth-child(3) { order: 4; }
+    .ft-grid > div:nth-child(4) { order: 2; grid-column: span 2; }
+
+    /* Section separators */
+    .ft-grid > div {
+      padding-bottom: 2rem;
+    }
+    .ft-grid > div + div {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 2rem;
+    }
+
+    /* Larger font sizes */
+    .ft-links a {
+      font-size: 1rem;
+      padding: 0.55rem 0;
+      display: flex;
+      align-items: center;
+    }
+    .ft-contact-item a,
+    .ft-contact-item span {
+      font-size: 1rem;
+    }
+
+    /* Minimum touch target for contact rows */
+    .ft-contact-item {
+      min-height: 44px;
+      align-items: center;
+    }
   }
 </style>
 

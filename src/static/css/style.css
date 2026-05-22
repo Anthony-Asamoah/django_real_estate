@@ -133,6 +133,25 @@ img {
   box-shadow: 0 5px 18px color-mix(in srgb, var(--brand-secondary) 40%, transparent);
 }
 
+/* Brand name next to logo */
+.nav-brand-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fff;
+  margin-left: 0.55rem;
+  vertical-align: middle;
+}
+
+/* Mobile top-bar CTA (compact variant) */
+.btn-quote--sm {
+  font-size: 0.7rem;
+  padding: 0.28rem 0.7rem;
+  letter-spacing: 0.06em;
+}
+
+
 /* Hamburger */
 #main-nav .navbar-toggler {
   border: 1px solid rgba(255, 255, 255, 0.22);
@@ -154,7 +173,7 @@ img {
 
 @media (max-width: 991px) {
   #main-nav .navbar-nav {
-    align-items: flex-end;
+    align-items: flex-end !important;
   }
 
   #main-nav .nav-item {
@@ -202,11 +221,8 @@ img {
     padding-left: 1rem;
   }
 
-  #main-nav .nav-cta {
-    margin-top: 0.75rem;
-    padding-bottom: 0.25rem;
-  }
 }
+
 
 .social a {
   margin-right: 0.4rem; }
