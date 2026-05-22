@@ -38,7 +38,88 @@ def _img(filename: str) -> WagtailImage | None:
 
 
 PROJECTS = [
-    # ── SOLD ────────────────────────────────────────────────────────────────
+    # ── LAND ACQUISITION & SALES ────────────────────────────────────────────
+    {
+        'title': 'Serviced Plot — Tamale Road',
+        'address': 'Plot 22A, Tamale Road Corridor',
+        'city': 'Bolgatanga',
+        'state_or_region': 'Upper East Region',
+        'zipcode': '',
+        'description': (
+            'Quarter-acre serviced plot along the busy Tamale–Bolgatanga highway corridor. '
+            'Water, electricity, and paved road access all in place. Title deed available.'
+        ),
+        'price': 95000,
+        'land_area_sqft': 10890,
+        'status': STATUS_SOLD,
+        'is_published': True,
+        'project_date': pendulum.datetime(2022, 9, 18),
+        'photo_main': 'land-site-1.webp',
+        'photo_1': 'land-site-2.jpg',
+        'employee_name': 'Ama Boateng',
+        'service_slug': 'land',
+    },
+    {
+        'title': 'Serviced Plots — Zuarungu Extension',
+        'address': 'Zuarungu Extension, Phase 2',
+        'city': 'Bolgatanga',
+        'state_or_region': 'Upper East Region',
+        'zipcode': '',
+        'description': (
+            '6 individually titled serviced plots ranging from 0.2 to 0.3 acres. '
+            'Water and electricity at the boundary, internal access road complete. '
+            'Indenture and site plan provided on purchase.'
+        ),
+        'price': 88000,
+        'land_area_sqft': 12000,
+        'status': STATUS_AVAILABLE,
+        'is_published': True,
+        'project_date': pendulum.datetime(2025, 12, 1),
+        'photo_main': 'land-site-2.jpg',
+        'photo_1': 'land-site-1.webp',
+        'employee_name': 'Ama Boateng',
+        'service_slug': 'land',
+    },
+    {
+        'title': 'Corner Plot — Bolgatanga Ring Road',
+        'address': 'Plot 4, Ring Road Extension',
+        'city': 'Bolgatanga',
+        'state_or_region': 'Upper East Region',
+        'zipcode': '',
+        'description': (
+            'Prime corner plot on the Ring Road extension, ideal for commercial or residential development. '
+            'Elevated location with good drainage. Registered title deed and survey plan included.'
+        ),
+        'price': 115000,
+        'land_area_sqft': 13200,
+        'status': STATUS_AVAILABLE,
+        'is_published': True,
+        'project_date': pendulum.datetime(2026, 1, 20),
+        'photo_main': 'land-site-1.webp',
+        'employee_name': 'Ama Boateng',
+        'service_slug': 'land',
+    },
+    {
+        'title': 'Commercial Plot — Zuarungu Main Road',
+        'address': 'Zuarungu Main Road, Near Market Junction',
+        'city': 'Bolgatanga',
+        'state_or_region': 'Upper East Region',
+        'zipcode': '',
+        'description': (
+            'Half-acre commercial plot fronting Zuarungu Main Road, sold to a retail developer. '
+            'High-traffic location with existing utility connections. Title transfer completed.'
+        ),
+        'price': 210000,
+        'land_area_sqft': 21780,
+        'status': STATUS_SOLD,
+        'is_published': True,
+        'project_date': pendulum.datetime(2025, 6, 14),
+        'photo_main': 'land-site-2.jpg',
+        'employee_name': 'Ama Boateng',
+        'service_slug': 'land',
+    },
+
+    # ── PROPERTY SALES ──────────────────────────────────────────────────────
     {
         'title': '3-Bedroom House — Zuarungu',
         'address': 'Plot 14, Zuarungu Road',
@@ -58,11 +139,12 @@ PROJECTS = [
         'status': STATUS_SOLD,
         'is_published': True,
         'project_date': pendulum.datetime(2022, 3, 10),
-        'photo_main': 'house-1.jpg',
-        'photo_1': 'house-2.jpg',
-        'photo_2': 'interior-1.jpg',
-        'photo_3': 'interior-2.jpg',
+        'photo_main': 'completed-house-white-with-porch.jpg',
+        'photo_1': 'completed-interior-white-living-space.jpg',
+        'photo_2': 'completed-interior-white-bedroom.jpg',
+        'photo_3': 'completed-interior-white-bathroom.jpg',
         'employee_name': 'Abena Mensah',
+        'service_slug': 'property-sales',
     },
     {
         'title': '2-Bedroom Bungalow — Sumbrungu',
@@ -81,108 +163,10 @@ PROJECTS = [
         'status': STATUS_SOLD,
         'is_published': True,
         'project_date': pendulum.datetime(2022, 6, 5),
-        'photo_main': 'house-7.jpg',
-        'photo_1': 'interior-3.jpg',
+        'photo_main': 'completed-house-with-hedge.webp',
+        'photo_1': 'completed-interior-white-bedroom.jpg',
         'employee_name': 'Ama Boateng',
-    },
-    {
-        'title': 'Serviced Plot — Tamale Road',
-        'address': 'Plot 22A, Tamale Road Corridor',
-        'city': 'Bolgatanga',
-        'state_or_region': 'Upper East Region',
-        'zipcode': '',
-        'description': (
-            'Quarter-acre serviced plot along the busy Tamale–Bolgatanga highway corridor. '
-            'Water, electricity, and paved road access all in place. Title deed available.'
-        ),
-        'price': 95000,
-        'land_area_sqft': 10890,
-        'status': STATUS_SOLD,
-        'is_published': True,
-        'project_date': pendulum.datetime(2022, 9, 18),
-        'photo_main': 'showcase.jpg',
-        'employee_name': 'Ama Boateng',
-    },
-    # ── COMPLETED ───────────────────────────────────────────────────────────
-    {
-        'title': 'Borehole Installation — Nangodi Road Clinic',
-        'address': 'Nangodi Road, near Health Centre',
-        'city': 'Bolgatanga',
-        'state_or_region': 'Upper East Region',
-        'zipcode': '',
-        'description': (
-            '120-metre mechanised borehole installed for the Nangodi Road community health clinic. '
-            'Includes solar-powered pump, overhead tank, and reticulation to all water points. '
-            'Now serving over 800 patients and staff monthly.'
-        ),
-        'price': 48000,
-        'land_area_sqft': 500,
-        'status': STATUS_COMPLETED,
-        'is_published': True,
-        'project_date': pendulum.datetime(2022, 11, 3),
-        'photo_main': 'construction.jpg',
-        'photo_1': 'building.jpg',
-        'employee_name': 'Kofi Asante',
-    },
-    {
-        'title': 'Roof Replacement — Bolga Central Secondary School',
-        'address': 'Bolgatanga Central Secondary School',
-        'city': 'Bolgatanga',
-        'state_or_region': 'Upper East Region',
-        'zipcode': '',
-        'description': (
-            'Full aluminium roof replacement across 6 classroom blocks and the administration wing. '
-            'Completed during school vacation to avoid disruption. '
-            'Comes with a 15-year workmanship warranty.'
-        ),
-        'price': 72000,
-        'sqft': 9500,
-        'status': STATUS_COMPLETED,
-        'is_published': True,
-        'project_date': pendulum.datetime(2023, 1, 20),
-        'photo_main': 'building.jpg',
-        'photo_1': 'showcase.jpg',
-        'employee_name': 'Kofi Asante',
-    },
-    {
-        'title': 'Internal Road Network — Gambibgo New Estate',
-        'address': 'Gambibgo Estate, Off Bongo Road',
-        'city': 'Bolgatanga',
-        'state_or_region': 'Upper East Region',
-        'zipcode': '',
-        'description': (
-            '1.8 km of engineered internal roads with concrete kerbing, drainage channels, '
-            'and street lighting for a 42-plot residential estate. '
-            'Project delivered 3 weeks ahead of schedule.'
-        ),
-        'price': 385000,
-        'land_area_sqft': 210000,
-        'status': STATUS_COMPLETED,
-        'is_published': True,
-        'project_date': pendulum.datetime(2023, 4, 14),
-        'photo_main': 'showcase.jpg',
-        'photo_1': 'construction.jpg',
-        'employee_name': 'Kofi Asante',
-    },
-    {
-        'title': 'Drainage System — SSNIT Residential Zone',
-        'address': 'SSNIT Flats, Hospital Road',
-        'city': 'Bolgatanga',
-        'state_or_region': 'Upper East Region',
-        'zipcode': '',
-        'description': (
-            'Design and construction of a storm-water drainage system covering 320 metres '
-            'to eliminate annual flooding in the SSNIT residential zone. '
-            'Includes concrete channels, culverts, and catchment pits.'
-        ),
-        'price': 210000,
-        'land_area_sqft': 85000,
-        'status': STATUS_COMPLETED,
-        'is_published': True,
-        'project_date': pendulum.datetime(2023, 7, 30),
-        'photo_main': 'construction.jpg',
-        'photo_1': 'showcase.jpg',
-        'employee_name': 'Kofi Asante',
+        'service_slug': 'property-sales',
     },
     {
         'title': '4-Bedroom House — Tanga Junction',
@@ -203,73 +187,13 @@ PROJECTS = [
         'status': STATUS_SOLD,
         'is_published': True,
         'project_date': pendulum.datetime(2023, 10, 5),
-        'photo_main': 'house-3.jpg',
-        'photo_1': 'house-4.jpg',
-        'photo_2': 'interior-4.jpg',
-        'photo_3': 'interior-5.jpg',
+        'photo_main': 'completed-house-2-story-deluxe.jpg',
+        'photo_1': 'completed-interior-white-bathroom.jpg',
+        'photo_2': 'completed-interior-white-bedroom.jpg',
+        'photo_3': 'completed-interior-bedroom-closet-1.jpg',
         'employee_name': 'Abena Mensah',
+        'service_slug': 'property-sales',
     },
-    # ── IN PROGRESS ─────────────────────────────────────────────────────────
-    {
-        'title': 'Semi-Detached Duplex (2 Units) — Bongo Road',
-        'address': 'Plot 9, Bongo Road',
-        'city': 'Bolgatanga',
-        'state_or_region': 'Upper East Region',
-        'zipcode': '',
-        'description': (
-            'Two mirror-image 3-bedroom semi-detached units currently at lintel level. '
-            'Each unit has a private compound, 2 bathrooms, and covered car park. '
-            'Expected handover in Q3 2026.'
-        ),
-        'price': 520000,
-        'bedrooms': 3,
-        'bathrooms': 2.0,
-        'sqft': 2200,
-        'status': STATUS_IN_PROGRESS,
-        'is_published': True,
-        'project_date': pendulum.datetime(2025, 11, 1),
-        'photo_main': 'house-5.jpg',
-        'photo_1': 'house-6.jpg',
-        'employee_name': 'Abena Mensah',
-    },
-    {
-        'title': 'Borehole Drilling — Sumbrungu Community School',
-        'address': 'Sumbrungu, Off Bolgatanga–Navrongo Road',
-        'city': 'Bolgatanga',
-        'state_or_region': 'Upper East Region',
-        'zipcode': '',
-        'description': (
-            '150-metre deep mechanised borehole for a community primary school. '
-            'Work ongoing — casing, pump installation, and solar system to follow. '
-            'Target completion: May 2026.'
-        ),
-        'price': 52000,
-        'status': STATUS_IN_PROGRESS,
-        'is_published': True,
-        'project_date': pendulum.datetime(2026, 3, 1),
-        'photo_main': 'construction.jpg',
-        'employee_name': 'Kofi Asante',
-    },
-    {
-        'title': 'Road & Kerbing — Frafra Estate, Nangodi Road',
-        'address': 'Frafra Estate, Nangodi Road',
-        'city': 'Bolgatanga',
-        'state_or_region': 'Upper East Region',
-        'zipcode': '',
-        'description': (
-            'Earthworks, grading, gravel surfacing, and concrete kerbing for a new 28-plot estate. '
-            '60% complete. Full project includes drainage and signage.'
-        ),
-        'price': 295000,
-        'land_area_sqft': 145000,
-        'status': STATUS_IN_PROGRESS,
-        'is_published': True,
-        'project_date': pendulum.datetime(2026, 2, 14),
-        'photo_main': 'showcase.jpg',
-        'photo_1': 'construction.jpg',
-        'employee_name': 'Kofi Asante',
-    },
-    # ── AVAILABLE ───────────────────────────────────────────────────────────
     {
         'title': '4-Bedroom Executive Home — Tamale Road',
         'address': 'Plot 1, Tamale Road Executive Estate',
@@ -290,12 +214,13 @@ PROJECTS = [
         'status': STATUS_AVAILABLE,
         'is_published': True,
         'project_date': pendulum.datetime(2025, 8, 20),
-        'photo_main': 'house-2.jpg',
-        'photo_1': 'house-3.jpg',
-        'photo_2': 'interior-1.jpg',
-        'photo_3': 'interior-2.jpg',
-        'photo_4': 'interior-6.jpg',
+        'photo_main': 'completed-house-deluxe.jpg',
+        'photo_1': 'compeleted-interior-white-kitchen.jpg',
+        'photo_2': 'completed-interior-white-living-space.jpg',
+        'photo_3': 'completed-interior-white-bathroom.jpg',
+        'photo_4': 'completed-interior-bedroom-closet-1.jpg',
         'employee_name': 'Abena Mensah',
+        'service_slug': 'property-sales',
     },
     {
         'title': '3-Bedroom Townhouse — Bolgatanga Central',
@@ -316,31 +241,12 @@ PROJECTS = [
         'status': STATUS_AVAILABLE,
         'is_published': True,
         'project_date': pendulum.datetime(2025, 10, 10),
-        'photo_main': 'house-4.jpg',
-        'photo_1': 'house-5.jpg',
-        'photo_2': 'interior-3.jpg',
-        'photo_3': 'interior-4.jpg',
+        'photo_main': 'completed-house-white-2-story.jpg',
+        'photo_1': 'completed-interior-white-bedroom.jpg',
+        'photo_2': 'completed-interior-white-bathroom.jpg',
+        'photo_3': 'completed-interior-white-living-space.jpg',
         'employee_name': 'Abena Mensah',
-    },
-    {
-        'title': 'Serviced Plots — Zuarungu Extension',
-        'address': 'Zuarungu Extension, Phase 2',
-        'city': 'Bolgatanga',
-        'state_or_region': 'Upper East Region',
-        'zipcode': '',
-        'description': (
-            '6 individually titled serviced plots ranging from 0.2 to 0.3 acres. '
-            'Water and electricity at the boundary, internal access road complete. '
-            'Indenture and site plan provided on purchase.'
-        ),
-        'price': 88000,
-        'land_area_sqft': 12000,
-        'status': STATUS_AVAILABLE,
-        'is_published': True,
-        'project_date': pendulum.datetime(2025, 12, 1),
-        'photo_main': 'showcase.jpg',
-        'photo_1': 'house-6.jpg',
-        'employee_name': 'Ama Boateng',
+        'service_slug': 'property-sales',
     },
     {
         'title': '2-Bedroom Starter Home — Gambibgo',
@@ -360,11 +266,11 @@ PROJECTS = [
         'status': STATUS_AVAILABLE,
         'is_published': True,
         'project_date': pendulum.datetime(2026, 1, 15),
-        'photo_main': 'house-7.jpg',
-        'photo_1': 'interior-5.jpg',
+        'photo_main': 'completed-estate-white.jpg',
+        'photo_1': 'completed-interior-white-bathroom.jpg',
         'employee_name': 'Ama Boateng',
+        'service_slug': 'property-sales',
     },
-    # ── EXTRA ENTRIES (to reach 20) ────────────────────────────────────────
     {
         'title': '5-Bedroom Mansion — Navrongo Road',
         'address': 'Plot 2, Navrongo Road Executive Area',
@@ -384,31 +290,12 @@ PROJECTS = [
         'status': STATUS_AVAILABLE,
         'is_published': True,
         'project_date': pendulum.datetime(2026, 4, 1),
-        'photo_main': 'house-1.jpg',
-        'photo_1': 'house-2.jpg',
-        'photo_2': 'interior-6.jpg',
-        'photo_3': 'interior-1.jpg',
+        'photo_main': 'completed-house-tall-with-lawn.jpg',
+        'photo_1': 'completed-interior-bedroom-closet-1.jpg',
+        'photo_2': 'completed-interior-white-living-space.jpg',
+        'photo_3': 'completed-interior-white-bathroom.jpg',
         'employee_name': 'Abena Mensah',
-    },
-    {
-        'title': 'Perimeter Wall & Gate — Kalbeo Residential Plot',
-        'address': 'Plot 11, Kalbeo Junction',
-        'city': 'Bolgatanga',
-        'state_or_region': 'Upper East Region',
-        'zipcode': '',
-        'description': (
-            'Full perimeter blockwall, 4-metre sliding steel gate, and security lighting '
-            'for a corner residential plot. Project includes concrete coping and plastered finish. '
-            'Completed in 6 weeks.'
-        ),
-        'price': 38000,
-        'land_area_sqft': 8700,
-        'status': STATUS_COMPLETED,
-        'is_published': True,
-        'project_date': pendulum.datetime(2024, 2, 12),
-        'photo_main': 'building.jpg',
-        'photo_1': 'showcase.jpg',
-        'employee_name': 'Kofi Asante',
+        'service_slug': 'property-sales',
     },
     {
         'title': '3-Bedroom Duplex — Bolgatanga New Town',
@@ -428,11 +315,144 @@ PROJECTS = [
         'status': STATUS_SOLD,
         'is_published': True,
         'project_date': pendulum.datetime(2024, 5, 22),
-        'photo_main': 'house-3.jpg',
-        'photo_1': 'house-4.jpg',
-        'photo_2': 'interior-2.jpg',
-        'photo_3': 'interior-3.jpg',
+        'photo_main': 'completed-white-and-brown-2-story.jpg',
+        'photo_1': 'completed-interior-white-living-space.jpg',
+        'photo_2': 'completed-interior-white-bedroom.jpg',
         'employee_name': 'Abena Mensah',
+        'service_slug': 'property-sales',
+    },
+    {
+        'title': '2-Story Family Home — Bolgatanga East',
+        'address': 'Plot 9, Bolgatanga East New Estate',
+        'city': 'Bolgatanga',
+        'state_or_region': 'Upper East Region',
+        'zipcode': '',
+        'description': (
+            'Newly completed 3-bedroom 2-storey family home with generous living spaces, '
+            'modern kitchen, and a fully tiled master en-suite. '
+            'Secure compound with car parking. Available for immediate purchase.'
+        ),
+        'price': 370000,
+        'bedrooms': 3,
+        'bathrooms': 2.0,
+        'garage': 1,
+        'sqft': 2300,
+        'status': STATUS_AVAILABLE,
+        'is_published': True,
+        'project_date': pendulum.datetime(2026, 3, 10),
+        'photo_main': 'completed-estate-2-stories.webp',
+        'photo_1': 'compeleted-interior-white-kitchen.jpg',
+        'photo_2': 'completed-interior-white-bedroom.jpg',
+        'employee_name': 'Abena Mensah',
+        'service_slug': 'property-sales',
+    },
+
+    # ── CONSTRUCTION ────────────────────────────────────────────────────────
+    {
+        'title': 'Semi-Detached Duplex (2 Units) — Bongo Road',
+        'address': 'Plot 9, Bongo Road',
+        'city': 'Bolgatanga',
+        'state_or_region': 'Upper East Region',
+        'zipcode': '',
+        'description': (
+            'Two mirror-image 3-bedroom semi-detached units currently at lintel level. '
+            'Each unit has a private compound, 2 bathrooms, and covered car park. '
+            'Expected handover in Q3 2026.'
+        ),
+        'price': 520000,
+        'bedrooms': 3,
+        'bathrooms': 2.0,
+        'sqft': 2200,
+        'status': STATUS_IN_PROGRESS,
+        'is_published': True,
+        'project_date': pendulum.datetime(2025, 11, 1),
+        'photo_main': 'construction-building-no-roof.jpg',
+        'photo_1': 'construction-estate-foundations.jpg',
+        'employee_name': 'Abena Mensah',
+        'service_slug': 'construction',
+    },
+    {
+        'title': 'Internal Road Network — Gambibgo New Estate',
+        'address': 'Gambibgo Estate, Off Bongo Road',
+        'city': 'Bolgatanga',
+        'state_or_region': 'Upper East Region',
+        'zipcode': '',
+        'description': (
+            '1.8 km of engineered internal roads with concrete kerbing, drainage channels, '
+            'and street lighting for a 42-plot residential estate. '
+            'Project delivered 3 weeks ahead of schedule.'
+        ),
+        'price': 385000,
+        'land_area_sqft': 210000,
+        'status': STATUS_COMPLETED,
+        'is_published': True,
+        'project_date': pendulum.datetime(2023, 4, 14),
+        'photo_main': 'construction.jpg',
+        'photo_1': 'building.jpg',
+        'employee_name': 'Kofi Asante',
+        'service_slug': 'construction',
+    },
+    {
+        'title': 'Drainage System — SSNIT Residential Zone',
+        'address': 'SSNIT Flats, Hospital Road',
+        'city': 'Bolgatanga',
+        'state_or_region': 'Upper East Region',
+        'zipcode': '',
+        'description': (
+            'Design and construction of a storm-water drainage system covering 320 metres '
+            'to eliminate annual flooding in the SSNIT residential zone. '
+            'Includes concrete channels, culverts, and catchment pits.'
+        ),
+        'price': 210000,
+        'land_area_sqft': 85000,
+        'status': STATUS_COMPLETED,
+        'is_published': True,
+        'project_date': pendulum.datetime(2023, 7, 30),
+        'photo_main': 'construction-estate-foundations.jpg',
+        'photo_1': 'construction.jpg',
+        'employee_name': 'Kofi Asante',
+        'service_slug': 'construction',
+    },
+    {
+        'title': 'Road & Kerbing — Frafra Estate, Nangodi Road',
+        'address': 'Frafra Estate, Nangodi Road',
+        'city': 'Bolgatanga',
+        'state_or_region': 'Upper East Region',
+        'zipcode': '',
+        'description': (
+            'Earthworks, grading, gravel surfacing, and concrete kerbing for a new 28-plot estate. '
+            '60% complete. Full project includes drainage and signage.'
+        ),
+        'price': 295000,
+        'land_area_sqft': 145000,
+        'status': STATUS_IN_PROGRESS,
+        'is_published': True,
+        'project_date': pendulum.datetime(2026, 2, 14),
+        'photo_main': 'construction.jpg',
+        'photo_1': 'construction-building-no-roof.jpg',
+        'employee_name': 'Kofi Asante',
+        'service_slug': 'construction',
+    },
+    {
+        'title': 'Perimeter Wall & Gate — Kalbeo Residential Plot',
+        'address': 'Plot 11, Kalbeo Junction',
+        'city': 'Bolgatanga',
+        'state_or_region': 'Upper East Region',
+        'zipcode': '',
+        'description': (
+            'Full perimeter blockwall, 4-metre sliding steel gate, and security lighting '
+            'for a corner residential plot. Project includes concrete coping and plastered finish. '
+            'Completed in 6 weeks.'
+        ),
+        'price': 38000,
+        'land_area_sqft': 8700,
+        'status': STATUS_COMPLETED,
+        'is_published': True,
+        'project_date': pendulum.datetime(2024, 2, 12),
+        'photo_main': 'building.jpg',
+        'photo_1': 'construction-estate-foundations.jpg',
+        'employee_name': 'Kofi Asante',
+        'service_slug': 'construction',
     },
     {
         'title': 'Solar Street Lighting — Zebilla Township',
@@ -452,6 +472,53 @@ PROJECTS = [
         'photo_main': 'construction.jpg',
         'photo_1': 'building.jpg',
         'employee_name': 'Kofi Asante',
+        'service_slug': 'construction',
+    },
+    {
+        'title': 'Foundation & Shell — Soe Estate, Bolgatanga',
+        'address': 'Plot 3, Soe Estate Extension',
+        'city': 'Bolgatanga',
+        'state_or_region': 'Upper East Region',
+        'zipcode': '',
+        'description': (
+            'Foundation, blockwork, and shell construction for a 4-bedroom family home. '
+            'Currently at roof level — roofing and finishing works to follow. '
+            'Client-supervised project with full milestone reporting.'
+        ),
+        'price': 230000,
+        'bedrooms': 4,
+        'bathrooms': 2.0,
+        'sqft': 2400,
+        'status': STATUS_IN_PROGRESS,
+        'is_published': True,
+        'project_date': pendulum.datetime(2026, 5, 1),
+        'photo_main': 'construction-estate-foundations.jpg',
+        'photo_1': 'construction-building-no-roof.jpg',
+        'employee_name': 'Kofi Asante',
+        'service_slug': 'construction',
+    },
+
+    # ── ROOFING ─────────────────────────────────────────────────────────────
+    {
+        'title': 'Roof Replacement — Bolga Central Secondary School',
+        'address': 'Bolgatanga Central Secondary School',
+        'city': 'Bolgatanga',
+        'state_or_region': 'Upper East Region',
+        'zipcode': '',
+        'description': (
+            'Full aluminium roof replacement across 6 classroom blocks and the administration wing. '
+            'Completed during school vacation to avoid disruption. '
+            'Comes with a 15-year workmanship warranty.'
+        ),
+        'price': 72000,
+        'sqft': 9500,
+        'status': STATUS_COMPLETED,
+        'is_published': True,
+        'project_date': pendulum.datetime(2023, 1, 20),
+        'photo_main': 'completed-roofing-on--unpainted-house.jpg',
+        'photo_1': 'roofing-almost-completed.avif',
+        'employee_name': 'Kofi Asante',
+        'service_slug': 'roofing',
     },
     {
         'title': 'Roofing — 6-Unit Apartment Block, Bolgatanga',
@@ -469,9 +536,94 @@ PROJECTS = [
         'status': STATUS_COMPLETED,
         'is_published': True,
         'project_date': pendulum.datetime(2024, 9, 5),
-        'photo_main': 'showcase.jpg',
-        'photo_1': 'house-5.jpg',
+        'photo_main': 'roofing-1.webp',
+        'photo_1': 'completed-roofing-on--unpainted-house.jpg',
         'employee_name': 'Ama Boateng',
+        'service_slug': 'roofing',
+    },
+    {
+        'title': 'Roof Installation — Nangodi Road Residence',
+        'address': 'Plot 17, Nangodi Road',
+        'city': 'Bolgatanga',
+        'state_or_region': 'Upper East Region',
+        'zipcode': '',
+        'description': (
+            'New aluminium sheet roof installation on a 3-bedroom residential property. '
+            'Includes full timber frame, ridge capping, guttering, and ceiling board. '
+            'Project completed on time with no disruption to the ongoing interior works.'
+        ),
+        'price': 28000,
+        'sqft': 2200,
+        'status': STATUS_COMPLETED,
+        'is_published': True,
+        'project_date': pendulum.datetime(2024, 11, 18),
+        'photo_main': 'roofing-almost-completed.avif',
+        'photo_1': 'completed-roofing-on--unpainted-house.jpg',
+        'employee_name': 'Ama Boateng',
+        'service_slug': 'roofing',
+    },
+
+    # ── BOREHOLE DRILLING ───────────────────────────────────────────────────
+    {
+        'title': 'Borehole Installation — Nangodi Road Clinic',
+        'address': 'Nangodi Road, near Health Centre',
+        'city': 'Bolgatanga',
+        'state_or_region': 'Upper East Region',
+        'zipcode': '',
+        'description': (
+            '120-metre mechanised borehole installed for the Nangodi Road community health clinic. '
+            'Includes solar-powered pump, overhead tank, and reticulation to all water points. '
+            'Now serving over 800 patients and staff monthly.'
+        ),
+        'price': 48000,
+        'land_area_sqft': 500,
+        'status': STATUS_COMPLETED,
+        'is_published': True,
+        'project_date': pendulum.datetime(2022, 11, 3),
+        'photo_main': 'borehole-site-1.webp',
+        'photo_1': 'borehole-2.webp',
+        'employee_name': 'Kofi Asante',
+        'service_slug': 'borehole',
+    },
+    {
+        'title': 'Borehole Drilling — Sumbrungu Community School',
+        'address': 'Sumbrungu, Off Bolgatanga–Navrongo Road',
+        'city': 'Bolgatanga',
+        'state_or_region': 'Upper East Region',
+        'zipcode': '',
+        'description': (
+            '150-metre deep mechanised borehole for a community primary school. '
+            'Work ongoing — casing, pump installation, and solar system to follow. '
+            'Target completion: May 2026.'
+        ),
+        'price': 52000,
+        'status': STATUS_IN_PROGRESS,
+        'is_published': True,
+        'project_date': pendulum.datetime(2026, 3, 1),
+        'photo_main': 'borehole-2.webp',
+        'photo_1': 'borehole-site-1.webp',
+        'employee_name': 'Kofi Asante',
+        'service_slug': 'borehole',
+    },
+    {
+        'title': 'Borehole — Kalbeo Community Centre',
+        'address': 'Kalbeo Junction Community Centre',
+        'city': 'Bolgatanga',
+        'state_or_region': 'Upper East Region',
+        'zipcode': '',
+        'description': (
+            '100-metre borehole drilled and equipped for the Kalbeo Community Centre. '
+            'Submersible pump connected to a 5,000-litre overhead tank serving the centre '
+            'and surrounding households. Hydro-survey completed before drilling.'
+        ),
+        'price': 42000,
+        'status': STATUS_COMPLETED,
+        'is_published': True,
+        'project_date': pendulum.datetime(2025, 4, 22),
+        'photo_main': 'borehole-site-1.webp',
+        'photo_1': 'borehole-2.webp',
+        'employee_name': 'Kofi Asante',
+        'service_slug': 'borehole',
     },
 ]
 
@@ -479,11 +631,15 @@ _PHOTO_FIELDS = ['photo_main', 'photo_1', 'photo_2', 'photo_3', 'photo_4', 'phot
 
 
 def seed_projects():
+    from domains.pages.models import ServiceDetailPage
+
     employee_cache = {e.name: e for e in Employee.objects.all()}
+    service_cache = {s.slug: s for s in ServiceDetailPage.objects.live()}
     created = 0
 
     for data in PROJECTS:
         employee_name = data.pop('employee_name')
+        service_slug = data.pop('service_slug', None)
         employee_obj = employee_cache.get(employee_name)
         if not employee_obj:
             print(f'  Employee "{employee_name}" not found — skipping "{data["title"]}"')
@@ -498,20 +654,30 @@ def seed_projects():
             defaults={**data, 'employee': employee_obj},
         )
 
+        # Assign photos and service on create; update service on existing records
+        dirty = False
         if was_created:
-            # Assign Wagtail images
-            dirty = False
             for field, filename in photo_files.items():
                 if filename:
                     img = _img(filename)
                     if img:
                         setattr(obj, field, img)
                         dirty = True
-            if dirty:
-                obj.save()
             created += 1
             print(f'  Created project: {obj.title}')
         else:
             print(f'  Skipped (exists): {obj.title}')
+
+        if service_slug:
+            service_obj = service_cache.get(service_slug)
+            if service_obj:
+                if obj.service_id != service_obj.pk:
+                    obj.service = service_obj
+                    dirty = True
+            else:
+                print(f'  Warning: ServiceDetailPage slug="{service_slug}" not found — service not assigned')
+
+        if dirty:
+            obj.save()
 
     return created

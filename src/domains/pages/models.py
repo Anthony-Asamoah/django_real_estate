@@ -1,6 +1,5 @@
 import pendulum
 from django.conf import settings as django_settings
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
@@ -141,17 +140,14 @@ class ProjectsIndexPage(Page):
 
     def get_context(self, request):
         context = super().get_context(request)
-        all_projects = self.get_children().live().specific().order_by('-first_published_at')
-        paginator = Paginator(all_projects, 9)
-        page_num = request.GET.get('page')
-        try:
-            projects = paginator.page(page_num)
-        except PageNotAnInteger:
-            projects = paginator.page(1)
-        except EmptyPage:
-            projects = paginator.page(paginator.num_pages)
-        context['projects'] = projects
-        context['paginator'] = paginator
+        from domains.projects.models import Project
+        services = ServiceDetailPage.objects.live().public().order_by('title')
+        services_with_projects = []
+        for service in services:
+            qs = Project.objects.filter(service=service, is_published=True).order_by('-project_date')
+            if qs.exists():
+                services_with_projects.append({'service': service, 'projects': qs})
+        context['services_with_projects'] = services_with_projects
         return context
 
     class Meta:

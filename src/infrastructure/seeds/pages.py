@@ -186,6 +186,141 @@ def seed_pages():
         print('  Updated AboutPage body.')
 
     # Services Index
+    _service_data = [
+        {
+            'title': 'Land Acquisition & Sales',
+            'slug': 'land',
+            'hero_heading': 'Land Acquisition & Sales',
+            'hero_subtext': 'Find the right plot. We handle valuation, documentation, and transfer.',
+            'body_text': (
+                '<p>Whether you are looking to purchase land for personal development or investment, '
+                'we guide you through every step — site visits, valuations, title verification, '
+                'and transfer documentation.</p>'
+                '<p>We also list plots for sale from our portfolio of pre-vetted land across the region.</p>'
+            ),
+            'steps': [
+                {'step_number': '01', 'title': 'Site Identification',
+                 'body': 'We match you with plots that fit your size, location, and budget requirements.'},
+                {'step_number': '02', 'title': 'Due Diligence',
+                 'body': 'Full title search, encumbrance checks, and land use verification.'},
+                {'step_number': '03', 'title': 'Valuation & Negotiation',
+                 'body': 'Independent valuation and expert negotiation to protect your investment.'},
+                {'step_number': '04', 'title': 'Transfer & Documentation',
+                 'body': 'We manage the full legal transfer and land registration process.'},
+            ],
+        },
+        {
+            'title': 'Construction',
+            'slug': 'construction',
+            'hero_heading': 'Construction Services',
+            'hero_subtext': 'From foundation to finishing — built right, built to last.',
+            'body_text': (
+                '<p>We build residential and commercial structures from the ground up. '
+                'Our construction teams are experienced in all structural types and work '
+                'closely with clients from design through to handover.</p>'
+                '<p>Every project is managed end-to-end with transparent milestones and no hidden costs.</p>'
+            ),
+            'steps': [
+                {'step_number': '01', 'title': 'Design & Planning',
+                 'body': 'We work with your architect or connect you with ours to finalise plans and permits.'},
+                {'step_number': '02', 'title': 'Foundation & Structure',
+                 'body': 'Solid foundations using certified materials and experienced structural teams.'},
+                {'step_number': '03', 'title': 'Build & Finishing',
+                 'body': 'Full construction including masonry, plastering, tiling, and all interior finishes.'},
+                {'step_number': '04', 'title': 'Handover',
+                 'body': 'Final inspection, snag resolution, and formal handover with full documentation.'},
+            ],
+        },
+        {
+            'title': 'Roofing',
+            'slug': 'roofing',
+            'hero_heading': 'Roofing Services',
+            'hero_subtext': 'New installations, re-roofing, and repairs — done right the first time.',
+            'body_text': (
+                '<p>We supply and install a full range of roofing systems for both new builds and '
+                'existing structures. Whether you need a complete new roof, a partial replacement, '
+                'or urgent leak repairs, our roofing team responds quickly with lasting solutions.</p>'
+            ),
+            'steps': [
+                {'step_number': '01', 'title': 'Assessment',
+                 'body': 'Thorough roof inspection to identify damage, structural issues, or design requirements.'},
+                {'step_number': '02', 'title': 'Material Selection',
+                 'body': 'We recommend the right roofing system for your structure, climate, and budget.'},
+                {'step_number': '03', 'title': 'Installation',
+                 'body': 'Professional installation by certified roofers with full site safety measures.'},
+                {'step_number': '04', 'title': 'Warranty & Maintenance',
+                 'body': 'All installations come with a workmanship warranty and optional maintenance plans.'},
+            ],
+        },
+        {
+            'title': 'Borehole Drilling',
+            'slug': 'borehole',
+            'hero_heading': 'Borehole Drilling',
+            'hero_subtext': 'Reliable water supply for homes, farms, and commercial sites.',
+            'body_text': (
+                '<p>We provide professional borehole drilling and installation services for '
+                'residential, agricultural, and commercial clients. Our hydrogeological surveys '
+                'ensure we drill in the right location every time, minimising dry holes and cost overruns.</p>'
+            ),
+            'steps': [
+                {'step_number': '01', 'title': 'Hydrogeological Survey',
+                 'body': 'Site survey to identify the best drilling location and estimate expected yield.'},
+                {'step_number': '02', 'title': 'Drilling',
+                 'body': 'Precision drilling using modern equipment to reach the water table safely.'},
+                {'step_number': '03', 'title': 'Casing & Development',
+                 'body': 'Borehole cased, developed, and tested for sustainable yield and water quality.'},
+                {'step_number': '04', 'title': 'Pump Installation',
+                 'body': 'Submersible pump fitted and connected to your storage or distribution system.'},
+            ],
+        },
+        {
+            'title': 'Property Sales',
+            'slug': 'property-sales',
+            'hero_heading': 'Property Sales',
+            'hero_subtext': 'Buy a completed home — no construction stress, just move in.',
+            'body_text': (
+                '<p>We sell completed properties built to our quality standards. '
+                'Each property has been through our full construction process and is '
+                'ready for immediate occupation. Browse our current listings for available homes.</p>'
+            ),
+            'steps': [
+                {'step_number': '01', 'title': 'Browse Listings',
+                 'body': 'View our portfolio of completed properties available for sale.'},
+                {'step_number': '02', 'title': 'Site Visit',
+                 'body': 'Schedule a viewing — our team will walk you through every detail.'},
+                {'step_number': '03', 'title': 'Offer & Agreement',
+                 'body': 'We handle the sale agreement, valuation, and legal documentation.'},
+                {'step_number': '04', 'title': 'Keys in Hand',
+                 'body': 'Smooth transfer of ownership — you move in, we follow up.'},
+            ],
+        },
+    ]
+
+    def _service_body(svc):
+        return [
+            ('hero_banner', {
+                'heading': svc['hero_heading'],
+                'subtext': svc['hero_subtext'],
+                'overlay_color': 'black',
+                'overlay_opacity': '0.55',
+            }),
+            ('rich_text', svc['body_text']),
+            ('process_steps', {
+                'heading': 'How It Works',
+                'steps': svc['steps'],
+            }),
+            ('projects_grid', {
+                'heading': 'Our Projects',
+                'empty_message': 'Projects in this category coming soon.',
+            }),
+            ('cta_banner', {
+                'heading': 'Ready to Get Started?',
+                'subtext': 'Contact us for a free consultation.',
+                'button_text': 'Contact Us',
+                'button_url': '/contact/',
+            }),
+        ]
+
     if not ServicesIndexPage.objects.exists():
         services_index = ServicesIndexPage(
             title='Services',
@@ -204,146 +339,24 @@ def seed_pages():
         created += 1
         print(f'  Created ServicesIndexPage: {services_index.title}')
 
-        service_data = [
-            {
-                'title': 'Land Acquisition & Sales',
-                'slug': 'land',
-                'hero_heading': 'Land Acquisition & Sales',
-                'hero_subtext': 'Find the right plot. We handle valuation, documentation, and transfer.',
-                'body_text': (
-                    '<p>Whether you are looking to purchase land for personal development or investment, '
-                    'we guide you through every step — site visits, valuations, title verification, '
-                    'and transfer documentation.</p>'
-                    '<p>We also list plots for sale from our portfolio of pre-vetted land across the region.</p>'
-                ),
-                'steps': [
-                    {'step_number': '01', 'title': 'Site Identification',
-                     'body': 'We match you with plots that fit your size, location, and budget requirements.'},
-                    {'step_number': '02', 'title': 'Due Diligence',
-                     'body': 'Full title search, encumbrance checks, and land use verification.'},
-                    {'step_number': '03', 'title': 'Valuation & Negotiation',
-                     'body': 'Independent valuation and expert negotiation to protect your investment.'},
-                    {'step_number': '04', 'title': 'Transfer & Documentation',
-                     'body': 'We manage the full legal transfer and land registration process.'},
-                ],
-            },
-            {
-                'title': 'Construction',
-                'slug': 'construction',
-                'hero_heading': 'Construction Services',
-                'hero_subtext': 'From foundation to finishing — built right, built to last.',
-                'body_text': (
-                    '<p>We build residential and commercial structures from the ground up. '
-                    'Our construction teams are experienced in all structural types and work '
-                    'closely with clients from design through to handover.</p>'
-                    '<p>Every project is managed end-to-end with transparent milestones and no hidden costs.</p>'
-                ),
-                'steps': [
-                    {'step_number': '01', 'title': 'Design & Planning',
-                     'body': 'We work with your architect or connect you with ours to finalise plans and permits.'},
-                    {'step_number': '02', 'title': 'Foundation & Structure',
-                     'body': 'Solid foundations using certified materials and experienced structural teams.'},
-                    {'step_number': '03', 'title': 'Build & Finishing',
-                     'body': 'Full construction including masonry, plastering, tiling, and all interior finishes.'},
-                    {'step_number': '04', 'title': 'Handover',
-                     'body': 'Final inspection, snag resolution, and formal handover with full documentation.'},
-                ],
-            },
-            {
-                'title': 'Roofing',
-                'slug': 'roofing',
-                'hero_heading': 'Roofing Services',
-                'hero_subtext': 'New installations, re-roofing, and repairs — done right the first time.',
-                'body_text': (
-                    '<p>We supply and install a full range of roofing systems for both new builds and '
-                    'existing structures. Whether you need a complete new roof, a partial replacement, '
-                    'or urgent leak repairs, our roofing team responds quickly with lasting solutions.</p>'
-                ),
-                'steps': [
-                    {'step_number': '01', 'title': 'Assessment',
-                     'body': 'Thorough roof inspection to identify damage, structural issues, or design requirements.'},
-                    {'step_number': '02', 'title': 'Material Selection',
-                     'body': 'We recommend the right roofing system for your structure, climate, and budget.'},
-                    {'step_number': '03', 'title': 'Installation',
-                     'body': 'Professional installation by certified roofers with full site safety measures.'},
-                    {'step_number': '04', 'title': 'Warranty & Maintenance',
-                     'body': 'All installations come with a workmanship warranty and optional maintenance plans.'},
-                ],
-            },
-            {
-                'title': 'Borehole Drilling',
-                'slug': 'borehole',
-                'hero_heading': 'Borehole Drilling',
-                'hero_subtext': 'Reliable water supply for homes, farms, and commercial sites.',
-                'body_text': (
-                    '<p>We provide professional borehole drilling and installation services for '
-                    'residential, agricultural, and commercial clients. Our hydrogeological surveys '
-                    'ensure we drill in the right location every time, minimising dry holes and cost overruns.</p>'
-                ),
-                'steps': [
-                    {'step_number': '01', 'title': 'Hydrogeological Survey',
-                     'body': 'Site survey to identify the best drilling location and estimate expected yield.'},
-                    {'step_number': '02', 'title': 'Drilling',
-                     'body': 'Precision drilling using modern equipment to reach the water table safely.'},
-                    {'step_number': '03', 'title': 'Casing & Development',
-                     'body': 'Borehole cased, developed, and tested for sustainable yield and water quality.'},
-                    {'step_number': '04', 'title': 'Pump Installation',
-                     'body': 'Submersible pump fitted and connected to your storage or distribution system.'},
-                ],
-            },
-            {
-                'title': 'Property Sales',
-                'slug': 'property-sales',
-                'hero_heading': 'Property Sales',
-                'hero_subtext': 'Buy a completed home — no construction stress, just move in.',
-                'body_text': (
-                    '<p>We sell completed properties built to our quality standards. '
-                    'Each property has been through our full construction process and is '
-                    'ready for immediate occupation. Browse our current listings for available homes.</p>'
-                ),
-                'steps': [
-                    {'step_number': '01', 'title': 'Browse Listings',
-                     'body': 'View our portfolio of completed properties available for sale.'},
-                    {'step_number': '02', 'title': 'Site Visit',
-                     'body': 'Schedule a viewing — our team will walk you through every detail.'},
-                    {'step_number': '03', 'title': 'Offer & Agreement',
-                     'body': 'We handle the sale agreement, valuation, and legal documentation.'},
-                    {'step_number': '04', 'title': 'Keys in Hand',
-                     'body': 'Smooth transfer of ownership — you move in, we follow up.'},
-                ],
-            },
-        ]
-
-        for svc in service_data:
+        for svc in _service_data:
             page = ServiceDetailPage(
                 title=svc['title'],
                 slug=svc['slug'],
-                body=[
-                    ('hero_banner', {
-                        'heading': svc['hero_heading'],
-                        'subtext': svc['hero_subtext'],
-                        'overlay_color': 'black',
-                        'overlay_opacity': '0.55',
-                    }),
-                    ('rich_text', svc['body_text']),
-                    ('process_steps', {
-                        'heading': 'How It Works',
-                        'steps': svc['steps'],
-                    }),
-                    ('cta_banner', {
-                        'heading': 'Ready to Get Started?',
-                        'subtext': 'Contact us for a free consultation.',
-                        'button_text': 'Contact Us',
-                        'button_url': '/contact/',
-                    }),
-                ],
+                body=_service_body(svc),
             )
             services_index.add_child(instance=page)
             page.save_revision().publish()
             created += 1
             print(f'  Created ServiceDetailPage: {page.title}')
     else:
-        print('  Skipped (exists): ServicesIndexPage')
+        # Update existing service pages to ensure projects_grid block is present
+        for svc in _service_data:
+            page = ServiceDetailPage.objects.filter(slug=svc['slug']).first()
+            if page:
+                page.body = _service_body(svc)
+                page.save_revision().publish()
+                print(f'  Updated ServiceDetailPage: {page.title}')
 
     # Projects Index
     if not ProjectsIndexPage.objects.exists():

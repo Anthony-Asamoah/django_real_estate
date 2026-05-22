@@ -170,6 +170,8 @@ class CTABannerBlock(StructBlock):
     subtext = TextBlock(required=False)
     button_text = CharBlock(required=False)
     button_url = CharBlock(required=False, help_text='Relative (/contact/) or absolute (https://...) URL')
+    button2_text = CharBlock(required=False, help_text='Secondary button label (optional)')
+    button2_url = CharBlock(required=False, help_text='Secondary button URL (optional)')
 
     class Meta:
         icon = 'link'

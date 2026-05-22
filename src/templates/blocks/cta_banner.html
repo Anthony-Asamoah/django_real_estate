@@ -1,13 +1,27 @@
 <!-- CTA Banner -->
-<section id="work" class="bg-dark text-white text-center py-5">
-  <h2 class="display-4">{{ value.heading }}</h2>
-  {% if value.subtext %}
-    <h4>{{ value.subtext }}</h4>
-  {% endif %}
-  <hr>
-  {% if value.button_text and value.button_url %}
-    <a href="{{ value.button_url }}" class="btn-accent btn-lg">{{ value.button_text }}</a>
-  {% else %}
-    <a href="{% url 'projects:projects' %}" class="btn-accent btn-lg">View Our Projects</a>
-  {% endif %}
+<section id="work" class="text-white text-center">
+  <div class="container">
+    <div class="cta-inner mx-auto">
+
+      <div class="cta-accent-bar reveal"></div>
+
+      <h2 class="display-4 reveal">{{ value.heading }}</h2>
+
+      {% if value.subtext %}
+        <p class="cta-lead reveal">{{ value.subtext }}</p>
+      {% endif %}
+
+      <div class="cta-actions reveal">
+        {% if value.button_text and value.button_url %}
+          <a href="{{ value.button_url }}" class="btn-accent btn-lg">{{ value.button_text }}</a>
+        {% else %}
+          <a href="{% url 'projects:projects' %}" class="btn-accent btn-lg">View Our Projects</a>
+        {% endif %}
+        {% if value.button2_text and value.button2_url %}
+          <a href="{{ value.button2_url }}" class="btn btn-outline-light btn-lg cta-btn-secondary">{{ value.button2_text }}</a>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
 </section>

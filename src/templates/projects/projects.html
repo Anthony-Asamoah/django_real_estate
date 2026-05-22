@@ -317,31 +317,35 @@
 
       <!-- Pagination -->
       {% if query.has_other_pages %}
-        <div class="row mt-2">
-          <div class="col-12">
-            <ul class="pagination justify-content-center">
-              {% if query.has_previous %}
-                <li class="page-item">
-                  <a href="?{{ base_qs }}&page={{ query.previous_page_number }}" class="page-link">&laquo;</a>
-                </li>
-              {% else %}
-                <li class="page-item disabled"><a class="page-link">&laquo;</a></li>
-              {% endif %}
-              {% for i in query.paginator.page_range %}
-                <li class="page-item {% if i == query.number %}active{% endif %}">
-                  <a href="?{{ base_qs }}&page={{ i }}" class="page-link">{{ i }}</a>
-                </li>
-              {% endfor %}
-              {% if query.has_next %}
-                <li class="page-item">
-                  <a href="?{{ base_qs }}&page={{ query.next_page_number }}" class="page-link">&raquo;</a>
-                </li>
-              {% else %}
-                <li class="page-item disabled"><a class="page-link">&raquo;</a></li>
-              {% endif %}
-            </ul>
-          </div>
-        </div>
+        <nav class="projects-pagination" aria-label="Project pages">
+          {% if query.has_previous %}
+            <a href="?{{ base_qs }}&page={{ query.previous_page_number }}" class="pg-btn pg-arrow" aria-label="Previous page">
+              <i class="fas fa-chevron-left"></i>
+            </a>
+          {% else %}
+            <span class="pg-btn pg-arrow pg-disabled" aria-disabled="true">
+              <i class="fas fa-chevron-left"></i>
+            </span>
+          {% endif %}
+
+          {% for i in query.paginator.page_range %}
+            {% if i == query.number %}
+              <span class="pg-btn pg-active" aria-current="page">{{ i }}</span>
+            {% else %}
+              <a href="?{{ base_qs }}&page={{ i }}" class="pg-btn">{{ i }}</a>
+            {% endif %}
+          {% endfor %}
+
+          {% if query.has_next %}
+            <a href="?{{ base_qs }}&page={{ query.next_page_number }}" class="pg-btn pg-arrow" aria-label="Next page">
+              <i class="fas fa-chevron-right"></i>
+            </a>
+          {% else %}
+            <span class="pg-btn pg-arrow pg-disabled" aria-disabled="true">
+              <i class="fas fa-chevron-right"></i>
+            </span>
+          {% endif %}
+        </nav>
       {% endif %}
 
     </div>

@@ -17,86 +17,87 @@
 
   {% include 'partials/_breadcrumbs.html' %}
 
-  <!-- Projects Grid -->
-  <section class="py-5">
-    <div class="container">
-      <h2 class="text-center text-primary mb-2">Our Work</h2>
-      <p class="text-center text-muted mb-5">A selection of completed projects across our services.</p>
-      <div class="row">
-        {% for project in projects %}
-          <div class="col-md-6 col-lg-4 mb-4">
-            <a href="{{ project.url }}" class="text-decoration-none">
-              <div class="card project-card h-100 shadow-sm border-0 overflow-hidden">
-                <div class="project-card-img-wrapper">
-                  {% if project.cover_image %}
-                    {% image project.cover_image fill-600x400 class="card-img-top" %}
-                  {% else %}
-                    <div class="project-card-placeholder d-flex align-items-center justify-content-center">
-                      <i class="fas fa-hard-hat fa-3x text-white"></i>
-                    </div>
-                  {% endif %}
-                </div>
-                <div class="card-body">
-                  <h5 class="text-primary">{{ project.title }}</h5>
-                  {% if project.service %}
-                    <span class="badge bg-secondary text-white mb-2">{{ project.service.title }}</span>
-                  {% endif %}
-                  {% if project.location %}
-                    <p class="text-muted small mb-0">
-                      <i class="fas fa-map-marker-alt me-1"></i>{{ project.location }}
-                    </p>
-                  {% endif %}
-                </div>
-              </div>
+  {% if services_with_projects %}
+    {% for section in services_with_projects %}
+      <section class="py-5 {% if not forloop.last %}border-bottom{% endif %}">
+        <div class="container">
+
+          <!-- Section header -->
+          <div class="d-flex align-items-end justify-content-between mb-4 gap-3 flex-wrap">
+            <div>
+              <h2 class="text-primary fw-bold mb-1">{{ section.service.title }}</h2>
+              <p class="text-muted mb-0 small">{{ section.projects|length }} project{{ section.projects|length|pluralize }} in this category</p>
+            </div>
+            <a href="{{ section.service.url }}" class="btn btn-outline-primary btn-sm text-nowrap">
+              About this service <i class="fas fa-arrow-right ms-1"></i>
             </a>
           </div>
-        {% empty %}
-          <div class="col-12 text-center text-muted py-5">
-            <p>Projects coming soon.</p>
-          </div>
-        {% endfor %}
-      </div>
 
-      {% if projects.paginator.num_pages > 1 %}
-        <nav aria-label="Projects pagination" class="mt-4">
-          <ul class="pagination justify-content-center">
-            {% if projects.has_previous %}
-              <li class="page-item">
-                <a class="page-link" href="?page={{ projects.previous_page_number }}" aria-label="Previous">
-                  <span aria-hidden="true">&laquo;</span>
-                </a>
-              </li>
-            {% else %}
-              <li class="page-item disabled">
-                <span class="page-link">&laquo;</span>
-              </li>
-            {% endif %}
-
-            {% for num in projects.paginator.page_range %}
-              {% if projects.number == num %}
-                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-              {% elif num >= projects.number|add:"-2" and num <= projects.number|add:"2" %}
-                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
-              {% endif %}
+          <!-- Project cards -->
+          <div class="row g-4">
+            {% for project in section.projects %}
+              <div class="col-md-6 col-lg-4">
+                <div class="card project-card h-100 shadow-sm border-0 overflow-hidden">
+                  <div class="project-card-img-wrapper">
+                    {% if project.photo_main %}
+                      {% image project.photo_main fill-600x400 class="card-img-top" %}
+                    {% else %}
+                      <div class="project-card-placeholder d-flex align-items-center justify-content-center">
+                        <i class="fas fa-hard-hat fa-3x text-white"></i>
+                      </div>
+                    {% endif %}
+                    <!-- Status badge -->
+                    <span class="position-absolute top-0 end-0 m-2 badge
+                      {% if project.status == 'available' %}bg-success
+                      {% elif project.status == 'in_progress' %}bg-warning text-dark
+                      {% elif project.status == 'completed' %}bg-primary
+                      {% elif project.status == 'sold' %}bg-secondary
+                      {% else %}bg-dark{% endif %}">
+                      {{ project.get_status_display }}
+                    </span>
+                  </div>
+                  <div class="card-body">
+                    <h5 class="text-primary mb-1">{{ project.title }}</h5>
+                    {% if project.city %}
+                      <p class="text-muted small mb-2">
+                        <i class="fas fa-map-marker-alt me-1"></i>{{ project.city }}{% if project.state_or_region %}, {{ project.state_or_region }}{% endif %}
+                      </p>
+                    {% endif %}
+                    <div class="d-flex flex-wrap gap-2 mt-auto">
+                      {% if project.price %}
+                        <span class="badge bg-light text-dark border fw-semibold">
+                          GH₵ {{ project.price|floatformat:0 }}
+                        </span>
+                      {% endif %}
+                      {% if project.sqft %}
+                        <span class="badge bg-light text-dark border">
+                          <i class="fas fa-ruler-combined me-1 text-muted"></i>{{ project.sqft }} sqft
+                        </span>
+                      {% endif %}
+                      {% if project.bedrooms %}
+                        <span class="badge bg-light text-dark border">
+                          <i class="fas fa-bed me-1 text-muted"></i>{{ project.bedrooms }} bed
+                        </span>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
             {% endfor %}
+          </div>
 
-            {% if projects.has_next %}
-              <li class="page-item">
-                <a class="page-link" href="?page={{ projects.next_page_number }}" aria-label="Next">
-                  <span aria-hidden="true">&raquo;</span>
-                </a>
-              </li>
-            {% else %}
-              <li class="page-item disabled">
-                <span class="page-link">&raquo;</span>
-              </li>
-            {% endif %}
-          </ul>
-        </nav>
-      {% endif %}
+        </div>
+      </section>
+    {% endfor %}
 
-    </div>
-  </section>
+  {% else %}
+    <section class="py-5">
+      <div class="container text-center text-muted py-5">
+        <i class="fas fa-hard-hat fa-3x mb-3"></i>
+        <p class="lead">Projects coming soon.</p>
+      </div>
+    </section>
+  {% endif %}
 
   {% for block in page.body %}
     {% if block.block_type == 'rich_text' %}
@@ -170,34 +171,37 @@
 <script src="https://www.google.com/recaptcha/api.js?render={{ RECAPTCHA_SITE_KEY }}"></script>
 {% endif %}
 <script>
-  var testimonialQuill = new Quill('#testimonialBodyEditor', {
-    theme: 'snow',
-    placeholder: 'Tell us about your experience…',
-    modules: { toolbar: [['bold', 'italic'], [{ list: 'bullet' }], ['clean']] }
-  });
-
-  var testimonialForm = document.getElementById('testimonialForm');
-  {% if RECAPTCHA_SITE_KEY %}
-  var testimonialTokenInput = document.createElement('input');
-  testimonialTokenInput.type = 'hidden';
-  testimonialTokenInput.name = 'g-recaptcha-response';
-  testimonialTokenInput.id = 'testimonial-recaptcha-token';
-  testimonialForm.appendChild(testimonialTokenInput);
-  {% endif %}
-
-  testimonialForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    document.getElementById('testimonialBodyInput').value = testimonialQuill.root.innerHTML;
-    {% if RECAPTCHA_SITE_KEY %}
-    grecaptcha.ready(function () {
-      grecaptcha.execute('{{ RECAPTCHA_SITE_KEY }}', { action: 'testimonial' }).then(function (token) {
-        document.getElementById('testimonial-recaptcha-token').value = token;
-        testimonialForm.submit();
-      });
+  var quillEditor = document.getElementById('testimonialBodyEditor');
+  if (quillEditor) {
+    var testimonialQuill = new Quill('#testimonialBodyEditor', {
+      theme: 'snow',
+      placeholder: 'Tell us about your experience…',
+      modules: { toolbar: [['bold', 'italic'], [{ list: 'bullet' }], ['clean']] }
     });
-    {% else %}
-    testimonialForm.submit();
+
+    var testimonialForm = document.getElementById('testimonialForm');
+    {% if RECAPTCHA_SITE_KEY %}
+    var testimonialTokenInput = document.createElement('input');
+    testimonialTokenInput.type = 'hidden';
+    testimonialTokenInput.name = 'g-recaptcha-response';
+    testimonialTokenInput.id = 'testimonial-recaptcha-token';
+    testimonialForm.appendChild(testimonialTokenInput);
     {% endif %}
-  });
+
+    testimonialForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      document.getElementById('testimonialBodyInput').value = testimonialQuill.root.innerHTML;
+      {% if RECAPTCHA_SITE_KEY %}
+      grecaptcha.ready(function () {
+        grecaptcha.execute('{{ RECAPTCHA_SITE_KEY }}', { action: 'testimonial' }).then(function (token) {
+          document.getElementById('testimonial-recaptcha-token').value = token;
+          testimonialForm.submit();
+        });
+      });
+      {% else %}
+      testimonialForm.submit();
+      {% endif %}
+    });
+  }
 </script>
 {% endblock %}
