@@ -95,70 +95,68 @@
   }
 
   /* ── Layout lift above orbs ── */
-  .login__container,
-  .w-login {
+  body.login main.content-wrapper {
     position: relative;
     z-index: 1;
   }
 
-  /* ── Glassmorphism card ── */
-  .login__card {
-    background: rgba(255, 255, 255, 0.04) !important;
+  /* ── Glassmorphism card ──
+     Wagtail 6.3 renders the login panel as <main class="content-wrapper">. */
+  body.login main.content-wrapper {
+    background: rgba(11, 22, 44, 0.82) !important;
     backdrop-filter: blur(22px) !important;
     -webkit-backdrop-filter: blur(22px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
     border-radius: 16px !important;
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255,255,255,0.06) inset !important;
-    color: #e2e8f0 !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255,255,255,0.08) inset !important;
+    color: #f1f5f9 !important;
   }
 
   /* ── Branding / heading text ── */
-  .login__card-header,
-  .login h1,
-  .login h2,
-  .login__branding {
-    color: #f0f4f8 !important;
+  body.login main.content-wrapper h1 {
+    color: #ffffff !important;
+    opacity: 1 !important;
+    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45) !important;
   }
 
   /* ── Labels ── */
-  .login__card label,
-  .login__card .field label,
-  .login .field label {
-    color: rgba(226, 232, 240, 0.85) !important;
+  body.login .login-form label {
+    color: #e6edf6 !important;
     font-size: 0.8rem;
+    font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }
 
   /* ── Inputs ── */
-  .login__card input[type="text"],
-  .login__card input[type="password"],
-  .login__card input[type="email"],
-  .login__card input[type="tel"] {
-    background: rgba(255, 255, 255, 0.06) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  body.login .login-form input[type="text"],
+  body.login .login-form input[type="password"],
+  body.login .login-form input[type="email"],
+  body.login .login-form input[type="tel"] {
+    background: rgba(255, 255, 255, 0.10) !important;
+    border: 1px solid rgba(255, 255, 255, 0.28) !important;
     border-radius: 8px !important;
-    color: #f0f4f8 !important;
+    color: #ffffff !important;
     padding: 10px 14px !important;
     transition: border-color 0.2s, box-shadow 0.2s !important;
   }
 
-  .login__card input[type="text"]:focus,
-  .login__card input[type="password"]:focus,
-  .login__card input[type="email"]:focus {
-    border-color: rgba(27, 168, 126, 0.7) !important;
-    box-shadow: 0 0 0 3px rgba(27, 168, 126, 0.18) !important;
+  body.login .login-form input[type="text"]:focus,
+  body.login .login-form input[type="password"]:focus,
+  body.login .login-form input[type="email"]:focus {
+    background: rgba(255, 255, 255, 0.14) !important;
+    border-color: rgba(27, 168, 126, 0.9) !important;
+    box-shadow: 0 0 0 3px rgba(27, 168, 126, 0.25) !important;
     outline: none !important;
   }
 
-  .login__card input::placeholder {
-    color: rgba(226, 232, 240, 0.35) !important;
+  body.login .login-form input::placeholder {
+    color: rgba(226, 232, 240, 0.55) !important;
   }
 
   /* ── Submit button ── */
-  .login__card .button,
-  .login__card button[type="submit"],
-  .login__card input[type="submit"] {
+  body.login .login-form button[type="submit"],
+  body.login .login-form .button {
     background: linear-gradient(135deg, #1ba87e 0%, #0d9488 100%) !important;
     border: none !important;
     border-radius: 8px !important;
@@ -167,26 +165,40 @@
     letter-spacing: 0.03em !important;
     padding: 11px 20px !important;
     transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s !important;
-    box-shadow: 0 4px 18px rgba(27, 168, 126, 0.35) !important;
+    box-shadow: 0 4px 18px rgba(27, 168, 126, 0.4) !important;
     cursor: pointer;
   }
 
-  .login__card .button:hover,
-  .login__card button[type="submit"]:hover {
-    opacity: 0.92 !important;
+  body.login .login-form button[type="submit"]:hover,
+  body.login .login-form .button:hover {
+    opacity: 0.94 !important;
     transform: translateY(-1px) !important;
-    box-shadow: 0 6px 24px rgba(27, 168, 126, 0.45) !important;
+    box-shadow: 0 6px 24px rgba(27, 168, 126, 0.5) !important;
+  }
+
+  /* ── Checkbox label (Remember me) ── */
+  body.login .login-form .remember-me,
+  body.login .login-form .remember-me label {
+    color: #e6edf6 !important;
+    text-transform: none;
+    letter-spacing: normal;
   }
 
   /* ── Error / help text ── */
-  .login__card .error-message,
-  .login__card .help {
-    color: rgba(252, 165, 165, 0.9) !important;
+  body.login .messages .error,
+  body.login .login-form .error-message,
+  body.login .login-form .help {
+    color: #fca5a5 !important;
   }
 
-  /* ── Footer / links ── */
-  .login__card a {
-    color: #1ba87e !important;
+  /* ── Links (Forgotten password, footer) ── */
+  body.login main.content-wrapper a,
+  body.login .reset-password {
+    color: #5eead4 !important;
+  }
+
+  body.login main.content-wrapper a:hover {
+    color: #99f6e4 !important;
   }
 
   /* ── Reduced motion ── */
