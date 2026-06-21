@@ -5,3 +5,4 @@ pendulum
 inflect
 python-decouple
 Pillow
+whitenoise[brotli]
