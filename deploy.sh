@@ -5,6 +5,9 @@ python -m venv .venv
 . .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
+
+python src/manage.py migrate --noinput
+
 python src/manage.py collectstatic --noinput --clear
 
 mkdir -p staticfiles_build
