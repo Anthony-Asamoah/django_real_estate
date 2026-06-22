@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block title %} | Page Not Found{% endblock %}
+
+{% block content %}
+<section class="error-section">
+  <div class="container">
+    <div class="error-card">
+      <div class="error-code" aria-hidden="true">404</div>
+      <span class="error-eyebrow">Page Not Found</span>
+      <h1 class="error-title">We couldn’t find that page</h1>
+      <p class="error-text">
+        The page you’re looking for may have been moved, renamed, or never existed.
+        Let’s get you back on track.
+      </p>
+      <div class="error-actions">
+        <a href="/" class="error-btn error-btn-primary">
+          <i class="fas fa-home"></i>
+          <span>Back to Home</span>
+        </a>
+      </div>
+
+      <span class="error-deco error-deco-1" aria-hidden="true"></span>
+      <span class="error-deco error-deco-2" aria-hidden="true"></span>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.error-section {
+  background: #f0f3f9;
+  padding: 5rem 0 6rem;
+}
+
+.error-card {
+  position: relative;
+  overflow: hidden;
+  max-width: 620px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 18px;
+  padding: 3.5rem 3rem 3.75rem;
+  text-align: center;
+  box-shadow: 0 12px 48px rgba(16, 40, 78, 0.13);
+}
+
+.error-code {
+  font-size: clamp(4.5rem, 14vw, 7.5rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--brand-primary);
+  opacity: 0.12;
+  margin-bottom: -0.35rem;
+}
+
+.error-eyebrow {
+  display: inline-block;
+  color: var(--brand-secondary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+
+.error-title {
+  color: var(--brand-primary);
+  font-size: clamp(1.5rem, 3.5vw, 2.1rem);
+  font-weight: 800;
+  margin: 0 0 0.9rem;
+  line-height: 1.2;
+}
+
+.error-text {
+  color: #4a5568;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  max-width: 440px;
+  margin: 0 auto 2rem;
+}
+
+.error-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.error-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.82rem 1.6rem;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: filter 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.error-btn-primary {
+  background: var(--brand-primary);
+  color: #fff;
+}
+
+.error-btn-primary:hover {
+  filter: brightness(1.14);
+  color: #fff;
+}
+
+.error-btn-secondary {
+  background: transparent;
+  color: var(--brand-primary);
+  border: 1.5px solid #dde3ec;
+}
+
+.error-btn-secondary:hover {
+  border-color: var(--brand-secondary);
+  color: var(--brand-secondary);
+}
+
+.error-deco {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.error-deco-1 {
+  bottom: -80px;
+  right: -80px;
+  width: 220px;
+  height: 220px;
+  border: 50px solid rgba(16, 40, 78, 0.04);
+}
+
+.error-deco-2 {
+  top: -40px;
+  left: -30px;
+  width: 140px;
+  height: 140px;
+  border: 30px solid rgba(48, 202, 160, 0.07);
+}
+
+@media (max-width: 640px) {
+  .error-card {
+    padding: 2.75rem 1.5rem 3rem;
+  }
+}
+</style>
+{% endblock %}
