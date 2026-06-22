@@ -13,6 +13,7 @@ import os.path
 from os import path
 from pathlib import Path
 
+import dj_database_url
 from decouple import config, Csv
 from django.contrib.messages import constants as messages
 
@@ -105,18 +106,22 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
-# https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default=5432, cast=int),
+DB_URL = config('DB_URL', default='')
+if DB_URL:
+    DATABASES = {
+        'default': dj_database_url.parse(DB_URL, conn_max_age=600),
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': config('DB_NAME'),
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': config('DB_HOST', default='localhost'),
+            'PORT': config('DB_PORT', default=5432, cast=int),
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
