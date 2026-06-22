@@ -18,7 +18,8 @@ class StaticStorage(TolerantManifestMixin, S3ManifestStaticStorage):
         kwargs["region_name"] = getattr(settings, "AWS_S3_REGION_NAME", "us-east-1")
         kwargs["querystring_auth"] = False
         kwargs["object_parameters"] = {"CacheControl": "max-age=31536000, immutable"}
-        custom_domain = getattr(settings, "AWS_S3_CUSTOM_DOMAIN", None)
+        kwargs["location"] = getattr(settings, "BUCKET_PREFIX", "") or ""
+        custom_domain = getattr(settings, "AWS_S3_CUSTOM_DOMAIN_STATIC", None)
         if custom_domain:
             kwargs["custom_domain"] = custom_domain
         super().__init__(*args, **kwargs)
@@ -37,8 +38,9 @@ class PublicMediaStorage(S3Boto3Storage):
         kwargs["querystring_auth"] = False
         kwargs["file_overwrite"] = False
         kwargs["object_parameters"] = {"CacheControl": "max-age=86400"}  # 1 day
-        # Optional: custom domain (CDN)
-        custom_domain = getattr(settings, "AWS_S3_CUSTOM_DOMAIN", None)
+        kwargs["location"] = getattr(settings, "BUCKET_PREFIX", "") or ""
+        # Optional: CDN hostname (Cloudflare) in front of the media bucket
+        custom_domain = getattr(settings, "AWS_S3_CUSTOM_DOMAIN_MEDIA", None)
         if custom_domain:
             kwargs["custom_domain"] = custom_domain
         super().__init__(*args, **kwargs)

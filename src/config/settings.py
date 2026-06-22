@@ -174,8 +174,14 @@ if STORAGE_BACKEND == 's3':
     AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='us-east-1')
     AWS_S3_BUCKET_STATIC = config('AWS_S3_BUCKET_STATIC')
     AWS_S3_BUCKET_PUBLIC = config('AWS_S3_BUCKET_PUBLIC')
-    # Optional CloudFront / custom domain in front of the public + static buckets.
-    AWS_S3_CUSTOM_DOMAIN = config('AWS_S3_CUSTOM_DOMAIN', default=None)
+    # Environment folder within each bucket (e.g. prod / staging / local) so all
+    # environments can share the same buckets without their keys colliding.
+    BUCKET_PREFIX = config('BUCKET_PREFIX', default='local')
+    # CDN hostnames (Cloudflare) in front of each bucket — one per bucket, no
+    # scheme or trailing slash (e.g. static.example.com). Leave blank to serve
+    # directly from the S3 endpoint.
+    AWS_S3_CUSTOM_DOMAIN_STATIC = config('AWS_S3_CUSTOM_DOMAIN_STATIC', default=None)
+    AWS_S3_CUSTOM_DOMAIN_MEDIA = config('AWS_S3_CUSTOM_DOMAIN_MEDIA', default=None)
 
     STORAGES = {
         # Media: Wagtail images & uploaded videos -> public bucket.
