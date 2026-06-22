@@ -8,4 +8,5 @@ todo
 .env
 CLAUDE.md
 .claude/
-src/media/
+src/media/staticfiles_build/
+.venv/
