@@ -6,3 +6,5 @@ inflect
 python-decouple
 Pillow
 whitenoise[brotli]
+wagtailmedia
+django-storages[s3]

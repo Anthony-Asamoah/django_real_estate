@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.forms import CharField
 from wagtail.blocks import (
     StructBlock,
@@ -9,8 +10,11 @@ from wagtail.blocks import (
     ChoiceBlock,
     IntegerBlock,
     FieldBlock,
+    StructBlockValidationError,
 )
+from wagtail.embeds.blocks import EmbedBlock
 from wagtail.images.blocks import ImageChooserBlock
+from wagtailmedia.blocks import VideoChooserBlock
 
 from .widgets import IconInput
 
@@ -210,6 +214,51 @@ class GalleryBlock(StructBlock):
         template = 'blocks/gallery.html'
 
 
+class VideoBlock(StructBlock):
+    """A single video section that accepts EITHER an external embed
+    (YouTube/Vimeo) or an uploaded video file.
+
+    The embed is preferred when both are supplied. Embeds are recommended for
+    poor/remote networks because the provider handles adaptive streaming.
+    """
+
+    heading = CharBlock(required=False)
+    embed = EmbedBlock(
+        required=False,
+        label='Embed URL',
+        help_text='Paste a YouTube/Vimeo (etc.) link. Best for poor networks — the '
+                  'provider streams adaptively. Takes priority over an uploaded file.',
+    )
+    video_file = VideoChooserBlock(
+        required=False,
+        label='Uploaded video',
+        help_text='Choose an uploaded video file. Used only when no embed URL is set.',
+    )
+    poster = ImageChooserBlock(
+        required=False,
+        help_text='Poster image shown before an uploaded video plays (optional). '
+                  'Falls back to the file’s thumbnail if available.',
+    )
+    caption = CharBlock(required=False)
+
+    class Meta:
+        icon = 'media'
+        label = 'Video'
+        template = 'blocks/video.html'
+
+    def clean(self, value):
+        result = super().clean(value)
+        if not result.get('embed') and not result.get('video_file'):
+            raise StructBlockValidationError(
+                block_errors={
+                    'embed': ValidationError(
+                        'Provide an embed URL or choose an uploaded video.'
+                    ),
+                }
+            )
+        return result
+
+
 class StatItemBlock(StructBlock):
     value = CharBlock(help_text='e.g. 200+')
     label = CharBlock(help_text='e.g. Projects Completed')
@@ -250,6 +299,7 @@ class HomePageStreamBlock(StreamBlock):
     cta_banner = CTABannerBlock()
     stats_row = StatsRowBlock()
     testimonials = TestimonialsBlock()
+    video = VideoBlock()
 
 
 class AboutIntroBlock(StructBlock):
@@ -309,6 +359,7 @@ class AboutPageStreamBlock(StreamBlock):
     team_section = TeamSectionBlock()
     testimonials = TestimonialsBlock()
     rich_text = RichTextBlock()
+    video = VideoBlock()
 
 
 class ServicesIndexStreamBlock(StreamBlock):
@@ -356,6 +407,7 @@ class ServiceDetailStreamBlock(StreamBlock):
     stats_row = StatsRowBlock()
     testimonials = TestimonialsBlock()
     cta_banner = CTABannerBlock()
+    video = VideoBlock()
 
 
 class ProjectsIndexStreamBlock(StreamBlock):
@@ -368,6 +420,7 @@ class ProjectDetailStreamBlock(StreamBlock):
     hero_banner = HeroBannerBlock()
     rich_text = RichTextBlock()
     gallery = GalleryBlock()
+    video = VideoBlock()
     cta_banner = CTABannerBlock()
 
 
