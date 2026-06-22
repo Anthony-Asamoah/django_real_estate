@@ -1,0 +1,41 @@
+{% load wagtailimages_tags %}
+
+<!-- Video -->
+<section class="py-5">
+  <div class="container">
+    {% if value.heading %}
+      <h2 class="text-center text-primary mb-4">{{ value.heading }}</h2>
+    {% endif %}
+
+    <div class="row justify-content-center">
+      <div class="col-lg-9">
+        {% if value.embed %}
+          {# External embed (YouTube/Vimeo/...). Provider handles adaptive streaming. #}
+          <div class="ratio ratio-16x9 rounded shadow-sm overflow-hidden">
+            {{ value.embed }}
+          </div>
+        {% elif value.video_file %}
+          {# Self-hosted upload. preload="none" avoids fetching bytes until play — #}
+          {# critical on poor networks. Poster shown until the user starts playback. #}
+          {% if value.poster %}{% image value.poster fill-1280x720 as poster_img %}{% endif %}
+          <video
+            controls
+            preload="none"
+            playsinline
+            class="w-100 rounded shadow-sm"
+            {% if poster_img %}poster="{{ poster_img.url }}"{% elif value.video_file.thumbnail %}poster="{{ value.video_file.thumbnail.url }}"{% endif %}
+          >
+            {% for source in value.video_file.sources %}
+              <source src="{{ source.src }}"{% if source.type %} type="{{ source.type }}"{% endif %}>
+            {% endfor %}
+            <p>Your browser does not support the video element.</p>
+          </video>
+        {% endif %}
+
+        {% if value.caption %}
+          <p class="text-muted text-center mt-2 small">{{ value.caption }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>

@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'wagtail.users',
     'wagtail.snippets',
     'wagtail.embeds',
+    'wagtailmedia',
     'wagtail.contrib.settings',
     'wagtail.contrib.redirects',
     'wagtail.contrib.routable_page',
@@ -161,21 +162,40 @@ STATICFILES_DIRS = [
     path.join(BASE_DIR, 'static'),
 ]
 
-# Static file storage & serving.
-# - Hashed filenames (manifest) give each asset a content-based URL so browsers
-#   can cache it forever and only refetch when the content actually changes.
-# - Compression precomputes .br/.gz variants WhiteNoise serves to clients.
-STORAGES = {
-    'default': {
-        'BACKEND': 'django.core.files.storage.FileSystemStorage',
-    },
-    'staticfiles': {
-        'BACKEND': 'config.storage.WhiteNoiseStaticFilesStorage',
-    },
-}
+STORAGE_BACKEND = config('STORAGE_BACKEND', default='local').lower()
 
-# Far-future cache for hashed assets; non-hashed files (if any) get this max-age.
+# Far-future cache for hashed assets served by WhiteNoise (local mode).
 WHITENOISE_MAX_AGE = 31536000  # 1 year
+
+if STORAGE_BACKEND == 's3':
+    # Credentials fall back to the instance IAM role / environment when unset.
+    AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID', default=None)
+    AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', default=None)
+    AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='us-east-1')
+    AWS_S3_BUCKET_STATIC = config('AWS_S3_BUCKET_STATIC')
+    AWS_S3_BUCKET_PUBLIC = config('AWS_S3_BUCKET_PUBLIC')
+    # Optional CloudFront / custom domain in front of the public + static buckets.
+    AWS_S3_CUSTOM_DOMAIN = config('AWS_S3_CUSTOM_DOMAIN', default=None)
+
+    STORAGES = {
+        # Media: Wagtail images & uploaded videos -> public bucket.
+        'default': {
+            'BACKEND': 'infrastructure.storage.s3_backends.PublicMediaStorage',
+        },
+        # Collected static assets -> static bucket (hashed + immutable cache).
+        'staticfiles': {
+            'BACKEND': 'infrastructure.storage.s3_backends.StaticStorage',
+        },
+    }
+else:
+    STORAGES = {
+        'default': {
+            'BACKEND': 'django.core.files.storage.FileSystemStorage',
+        },
+        'staticfiles': {
+            'BACKEND': 'config.storage.WhiteNoiseStaticFilesStorage',
+        },
+    }
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

@@ -1,18 +1,21 @@
 """Custom static files storage.
 
-``CompressedManifestStaticFilesStorage`` hashes asset filenames and rewrites
-references (``url(...)`` in CSS, ``sourceMappingURL`` in JS) to the hashed
-names. Many third-party bundles (Bootstrap, lightbox, ...) ship dangling
-references to source-map / asset files they don't actually include, which makes
-strict manifest hashing abort ``collectstatic`` with ``MissingFileError``.
+Manifest static storage hashes asset filenames and rewrites references
+(``url(...)`` in CSS, ``sourceMappingURL`` in JS) to the hashed names. Many
+third-party bundles (Bootstrap, lightbox, ...) ship dangling references to
+source-map / asset files they don't actually include, which makes strict
+manifest hashing abort ``collectstatic`` with ``MissingFileError``.
 
-This subclass keeps full hashing + compression but tolerates those dangling
-references instead of failing the whole build.
+``TolerantManifestMixin`` keeps full hashing but tolerates those dangling
+references instead of failing the whole build. It is shared by the local
+(WhiteNoise) and S3 static backends so behaviour is identical in dev and prod.
 """
 from whitenoise.storage import CompressedManifestStaticFilesStorage
 
 
-class WhiteNoiseStaticFilesStorage(CompressedManifestStaticFilesStorage):
+class TolerantManifestMixin:
+    """Make manifest hashing tolerant of dangling asset references."""
+
     # Don't raise at runtime if a name is missing from the manifest.
     manifest_strict = False
 
@@ -23,3 +26,7 @@ class WhiteNoiseStaticFilesStorage(CompressedManifestStaticFilesStorage):
             if isinstance(processed, Exception) and "could not be found" in str(processed):
                 continue
             yield name, hashed_name, processed
+
+
+class WhiteNoiseStaticFilesStorage(TolerantManifestMixin, CompressedManifestStaticFilesStorage):
+    """Local/dev static storage: hashed names + brotli/gzip, served by WhiteNoise."""
