@@ -4,7 +4,11 @@ set -e
 python -m venv .venv
 . .venv/bin/activate
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install uv
+
+# Dependencies are declared in pyproject.toml and pinned in uv.lock.
+uv export --frozen --no-dev --no-emit-project --format requirements-txt -o /tmp/requirements.txt
+pip install -r /tmp/requirements.txt
 
 python src/manage.py migrate --noinput
 
