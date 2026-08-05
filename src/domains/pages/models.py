@@ -207,6 +207,7 @@ class ContactPage(Page):
     def get_context(self, request):
         context = super().get_context(request)
         context['service_pages'] = ServiceDetailPage.objects.live().order_by('title')
+        context['contact_form_data'] = request.session.pop('contact_form_data', None)
         return context
 
     class Meta:

@@ -32,20 +32,23 @@
 
             <div class="cf-field">
               <label class="cf-label" for="cf-name">Full Name</label>
-              <input type="text" id="cf-name" name="name" class="cf-input" placeholder="e.g. Kofi Mensah" required>
+              <input type="text" id="cf-name" name="name" class="cf-input" placeholder="e.g. Kofi Mensah" value="{{ contact_form_data.name|default:'' }}" required>
+              <span class="cf-error-text" id="cfNameError"></span>
             </div>
 
             <div class="cf-row">
               <div class="cf-field">
                 <label class="cf-label" for="contactEmail">Email Address</label>
-                <input type="email" id="contactEmail" name="email" class="cf-input" placeholder="you@example.com">
+                <input type="email" id="contactEmail" name="email" class="cf-input" placeholder="you@example.com" value="{{ contact_form_data.email|default:'' }}">
+                <span class="cf-error-text" id="contactEmailError"></span>
               </div>
               <div class="cf-field">
                 <label class="cf-label" for="contactPhone">Phone Number</label>
-                <input type="tel" id="contactPhone" name="phone" class="cf-input" placeholder="0XX XXX XXXX">
+                <input type="tel" id="contactPhone" name="phone" class="cf-input" placeholder="0XX XXX XXXX" value="{{ contact_form_data.phone|default:'' }}">
+                <span class="cf-error-text" id="contactPhoneError"></span>
               </div>
             </div>
-            <p class="cf-hint">Please provide at least an email or phone number.</p>
+            <p class="cf-hint">Please provide at least an email address or phone number.</p>
 
             <div class="cf-field">
               <label class="cf-label" for="cf-service">Service of Interest</label>
@@ -53,7 +56,7 @@
                 <select id="cf-service" name="service" class="cf-input cf-select">
                   <option value="">— Select a service (optional) —</option>
                   {% for svc in service_pages %}
-                    <option value="{{ svc.title }}">{{ svc.title }}</option>
+                    <option value="{{ svc.title }}" {% if contact_form_data.service == svc.title %}selected{% endif %}>{{ svc.title }}</option>
                   {% endfor %}
                 </select>
                 <svg class="cf-select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
@@ -64,6 +67,8 @@
               <label class="cf-label">Message</label>
               <div id="contactMessageEditor"></div>
               <input type="hidden" name="message" id="contactMessageInput">
+              {% if contact_form_data.message %}{{ contact_form_data.message|json_script:"contactMessageData" }}{% endif %}
+              <span class="cf-error-text" id="contactMessageError"></span>
             </div>
 
             <button type="submit" class="cf-submit">
@@ -313,6 +318,25 @@
   color: #b0bac9;
 }
 
+.cf-input.is-invalid {
+  border-color: #dc3545;
+}
+
+.cf-input.is-invalid:focus {
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.14);
+}
+
+.cf-error-text {
+  display: none;
+  color: #dc3545;
+  font-size: 0.77rem;
+  margin-top: 0.35rem;
+}
+
+.cf-error-text.show {
+  display: block;
+}
+
 .cf-select-wrapper {
   position: relative;
 }
@@ -351,6 +375,10 @@
 #contactMessageEditor:focus-within {
   border-color: var(--brand-secondary);
   box-shadow: 0 0 0 3px rgba(48, 202, 160, 0.14);
+}
+
+#contactMessageEditor.is-invalid {
+  border-color: #dc3545;
 }
 
 #contactMessageEditor .ql-toolbar.ql-snow {
@@ -707,6 +735,7 @@
 
 {% block extra_js %}
 <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/libphonenumber-js@1/bundle/libphonenumber-js.min.js"></script>
 {% if RECAPTCHA_SITE_KEY %}
 <script src="https://www.google.com/recaptcha/api.js?render={{ RECAPTCHA_SITE_KEY }}"></script>
 {% endif %}
@@ -722,6 +751,11 @@
       ]
     }
   });
+
+  var contactMessageDataEl = document.getElementById('contactMessageData');
+  if (contactMessageDataEl) {
+    contactQuill.clipboard.dangerouslyPasteHTML(JSON.parse(contactMessageDataEl.textContent));
+  }
 
   var contactForm = document.getElementById('contactForm');
 
@@ -744,15 +778,85 @@
     });
   });
 
+  var cfNameInput = document.getElementById('cf-name');
+  var cfNameError = document.getElementById('cfNameError');
+  var contactEmailInput = document.getElementById('contactEmail');
+  var contactPhoneInput = document.getElementById('contactPhone');
+  var contactEmailError = document.getElementById('contactEmailError');
+  var contactPhoneError = document.getElementById('contactPhoneError');
+  var contactMessageEditorEl = document.getElementById('contactMessageEditor');
+  var contactMessageError = document.getElementById('contactMessageError');
+
+  function showFieldError(input, errorEl, msg) {
+    input.classList.add('is-invalid');
+    errorEl.textContent = msg;
+    errorEl.classList.add('show');
+  }
+
+  function clearFieldError(input, errorEl) {
+    input.classList.remove('is-invalid');
+    errorEl.textContent = '';
+    errorEl.classList.remove('show');
+  }
+
+  [cfNameInput, contactEmailInput, contactPhoneInput].forEach(function (input) {
+    input.addEventListener('input', function () {
+      var errorEl = input === cfNameInput ? cfNameError
+        : input === contactEmailInput ? contactEmailError
+        : contactPhoneError;
+      clearFieldError(input, errorEl);
+    });
+  });
+
+  contactQuill.on('text-change', function () {
+    clearFieldError(contactMessageEditorEl, contactMessageError);
+  });
+
   contactForm.addEventListener('submit', function (e) {
     e.preventDefault();
-    var email = document.getElementById('contactEmail').value.trim();
-    var phone = document.getElementById('contactPhone').value.trim();
+    var name = cfNameInput.value.trim();
+    var email = contactEmailInput.value.trim();
+    var phone = contactPhoneInput.value.trim();
+    var messageHtml = contactQuill.root.innerHTML;
+    var messageIsEmpty = contactQuill.getText().trim().length === 0;
+
+    clearFieldError(cfNameInput, cfNameError);
+    clearFieldError(contactEmailInput, contactEmailError);
+    clearFieldError(contactPhoneInput, contactPhoneError);
+    clearFieldError(contactMessageEditorEl, contactMessageError);
+
+    var hasError = false;
+
+    if (!name) {
+      showFieldError(cfNameInput, cfNameError, 'Please enter your name.');
+      hasError = true;
+    }
+
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showFieldError(contactEmailInput, contactEmailError, 'Please enter a valid email address.');
+      hasError = true;
+    }
+
+    if (phone && window.libphonenumber && !window.libphonenumber.isValidPhoneNumber(phone, 'GH')) {
+      showFieldError(contactPhoneInput, contactPhoneError, 'Please enter a valid phone number.');
+      hasError = true;
+    }
+
     if (!email && !phone) {
-      alert('Please provide at least an email address or phone number.');
+      showFieldError(contactEmailInput, contactEmailError, 'Please provide at least an email address or phone number.');
+      hasError = true;
+    }
+
+    if (messageIsEmpty) {
+      showFieldError(contactMessageEditorEl, contactMessageError, 'Please enter a message.');
+      hasError = true;
+    }
+
+    if (hasError) {
       return;
     }
-    document.getElementById('contactMessageInput').value = contactQuill.root.innerHTML;
+
+    document.getElementById('contactMessageInput').value = messageHtml;
     {% if RECAPTCHA_SITE_KEY %}
     grecaptcha.ready(function () {
       grecaptcha.execute('{{ RECAPTCHA_SITE_KEY }}', { action: 'contact' }).then(function (token) {

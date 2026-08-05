@@ -9,6 +9,7 @@ from wagtail.models import Site
 from domains.pages.models import BrandingSettings, Testimonial
 from infrastructure.email import get_email_provider
 from infrastructure import recaptcha
+from infrastructure.utils.validators import sanitize_message_html, validate_contact_email, validate_message, validate_phone
 from .models import GeneralInquiry, ProjectInquiry, EmailSettings
 
 _MODEL_MAP = None
@@ -71,7 +72,24 @@ def contact(request):
         listing_id = request.POST['listing_id']
         user_id = request.POST['user_id']
         listing = request.POST['listing']
-        email = request.POST['email']
+        name = request.POST['name'].strip()
+        message = sanitize_message_html(request.POST['message'])
+
+        if not name:
+            messages.error(request, 'Please enter your name.')
+            return redirect('projects:projects')
+
+        try:
+            validate_message(message)
+            email = validate_contact_email(request.POST['email'])
+            phone = validate_phone(request.POST['phone'])
+        except ValueError as exc:
+            messages.error(request, str(exc))
+            return redirect('projects:projects')
+
+        if not email or not phone:
+            messages.error(request, 'Please provide a valid email address and phone number.')
+            return redirect('projects:projects')
 
         if request.user.is_authenticated:
             user_id = request.user.id
@@ -84,10 +102,10 @@ def contact(request):
             user_id=user_id,
             listing_id=listing_id,
             listing=listing,
-            name=request.POST['name'],
+            name=name,
             email=email,
-            phone=request.POST['phone'],
-            message=request.POST['message'],
+            phone=phone,
+            message=message,
             timestamp=pendulum.now()
         )
         new_contact.save()
@@ -117,26 +135,51 @@ def contact(request):
 
 def general_inquiry(request):
     if request.method == 'POST':
-        if not recaptcha.verify(request.POST.get('g-recaptcha-response', ''), 'contact'):
-            messages.error(request, 'reCAPTCHA verification failed. Please try again.')
+        name = request.POST.get('name', '').strip()
+        raw_email = request.POST.get('email', '').strip()
+        raw_phone = request.POST.get('phone', '').strip()
+        service = request.POST.get('service', '')
+        message = sanitize_message_html(request.POST.get('message', ''))
+
+        form_data = {
+            'name': name,
+            'email': raw_email,
+            'phone': raw_phone,
+            'service': service,
+            'message': message,
+        }
+
+        def fail(error_msg):
+            messages.error(request, error_msg)
+            request.session['contact_form_data'] = form_data
             return redirect('/contact/')
 
-        email = request.POST.get('email', '').strip()
-        phone = request.POST.get('phone', '').strip()
+        if not recaptcha.verify(request.POST.get('g-recaptcha-response', ''), 'contact'):
+            return fail('reCAPTCHA verification failed. Please try again.')
+
+        if not name:
+            return fail('Please enter your name.')
+
+        try:
+            validate_message(message)
+            email = validate_contact_email(raw_email)
+            phone = validate_phone(raw_phone)
+        except ValueError as exc:
+            return fail(str(exc))
 
         if not email and not phone:
-            messages.error(request, 'Please provide at least an email address or phone number.')
-            return redirect('/contact/')
+            return fail('Please provide at least an email address or phone number.')
 
         inquiry = GeneralInquiry(
-            name=request.POST.get('name', ''),
-            email=email,
-            phone=phone,
-            service=request.POST.get('service', ''),
-            message=request.POST.get('message', ''),
+            name=name,
+            email=email or '',
+            phone=phone or '',
+            service=service,
+            message=message,
             timestamp=pendulum.now(),
         )
         inquiry.save()
+        request.session.pop('contact_form_data', None)
 
         if email:
             settings, site_name = _get_site_context(request)

@@ -53,7 +53,7 @@
     {% elif message.tags == 'success' %}background:#d1e7dd;color:#0f5132;
     {% else %}background:#cff4fc;color:#055160;
     {% endif %}">
-    <span><strong>{{ message.tags|title }}:</strong> {{ message }}</span>
+    <span>{{ message }}</span>
     <button class="toast-close" onclick="dismissToast(this)" aria-label="Close">&times;</button>
   </div>
   {% endfor %}
