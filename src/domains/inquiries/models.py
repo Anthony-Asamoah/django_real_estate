@@ -1,12 +1,34 @@
 import pendulum
 from django.db import models
+from django.utils.safestring import mark_safe
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
 from wagtail.fields import RichTextField
-from wagtail.snippets.models import register_snippet
+from wagtail.rich_text import expand_db_html
 
 
-@register_snippet
+class ReadOnlyPanel(FieldPanel):
+    """A FieldPanel that is always read-only."""
+
+    def __init__(self, *args, **kwargs):
+        kwargs['read_only'] = True
+        super().__init__(*args, **kwargs)
+
+
+class ReadOnlyRichTextPanel(ReadOnlyPanel):
+    """Read-only panel that renders RichTextField content as HTML.
+
+    Wagtail's read-only output escapes the display value, and its default
+    `format_value_for_display` only strips a `RichText` object down to plain
+    text — a RichTextField's raw value is a `str`, so it falls through and the
+    admin ends up showing literal `<p>` tags. Expanding the stored rich text
+    and marking it safe renders the sender's formatting as they wrote it.
+    """
+
+    def format_value_for_display(self, value):
+        return mark_safe(expand_db_html(value or ''))
+
+
 class ProjectInquiry(models.Model):
     listing = models.CharField(max_length=200)
     listing_id = models.IntegerField()
@@ -20,15 +42,20 @@ class ProjectInquiry(models.Model):
 
     panels = [
         MultiFieldPanel(
-            [FieldPanel('listing'), FieldPanel('listing_id')],
+            [ReadOnlyPanel('listing'), ReadOnlyPanel('listing_id')],
             heading='Listing',
         ),
         MultiFieldPanel(
-            [FieldPanel('name'), FieldPanel('email'), FieldPanel('phone')],
+            [ReadOnlyPanel('name'), ReadOnlyPanel('email'), ReadOnlyPanel('phone')],
             heading='Contact Info',
         ),
         MultiFieldPanel(
-            [FieldPanel('message'), FieldPanel('timestamp'), FieldPanel('user_id'), FieldPanel('is_read')],
+            [
+                ReadOnlyRichTextPanel('message'),
+                ReadOnlyPanel('timestamp'),
+                ReadOnlyPanel('user_id'),
+                ReadOnlyPanel('is_read'),
+            ],
             heading='Details',
         ),
     ]
@@ -43,7 +70,6 @@ class ProjectInquiry(models.Model):
         verbose_name_plural = 'Project Inquiries'
 
 
-@register_snippet
 class GeneralInquiry(models.Model):
     name = models.CharField(max_length=100)
     email = models.CharField(max_length=100, blank=True)
@@ -59,11 +85,16 @@ class GeneralInquiry(models.Model):
 
     panels = [
         MultiFieldPanel(
-            [FieldPanel('name'), FieldPanel('email'), FieldPanel('phone')],
+            [ReadOnlyPanel('name'), ReadOnlyPanel('email'), ReadOnlyPanel('phone')],
             heading='Contact Info',
         ),
         MultiFieldPanel(
-            [FieldPanel('service'), FieldPanel('message'), FieldPanel('timestamp'), FieldPanel('is_read')],
+            [
+                ReadOnlyPanel('service'),
+                ReadOnlyRichTextPanel('message'),
+                ReadOnlyPanel('timestamp'),
+                ReadOnlyPanel('is_read'),
+            ],
             heading='Details',
         ),
     ]
