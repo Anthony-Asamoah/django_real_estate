@@ -10,3 +10,4 @@ CLAUDE.md
 .claude/
 src/media/staticfiles_build/
 .venv/
+media/
