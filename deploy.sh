@@ -1,14 +1,19 @@
 #!/bin/bash
 set -e
 
-python -m venv .venv
-. .venv/bin/activate
-pip install --upgrade pip
-pip install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh || {
+  python -m venv /tmp/uv-bootstrap
+  /tmp/uv-bootstrap/bin/pip install uv
+  mkdir -p "$HOME/.local/bin"
+  ln -sf /tmp/uv-bootstrap/bin/uv "$HOME/.local/bin/uv"
+}
+export PATH="$HOME/.local/bin:$PATH"
 
 # Dependencies are declared in pyproject.toml and pinned in uv.lock.
-uv export --frozen --no-dev --no-emit-project --format requirements-txt -o /tmp/requirements.txt
-pip install -r /tmp/requirements.txt
+uv sync --frozen --no-dev --python 3.13
+. .venv/bin/activate
+
+python --version
 
 python src/manage.py migrate --noinput
 
