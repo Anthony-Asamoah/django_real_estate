@@ -33,6 +33,15 @@ wheels = [
 ]
 
 [[package]]
+name = "better-profanity"
+version = "0.7.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b5/4a/52966c1c883819f0b48540312a4a7f63b5c49f4e5b1a10838ae7f06ebb3c/better_profanity-0.7.0.tar.gz", hash = "sha256:8a6fdc8606d7471e7b5f6801917eca98ec211098262e82f62da4f5de3a73145b", size = 29977, upload-time = "2020-11-02T10:49:57.54Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f3/dd/0b074d89e903cc771721cde2c4bf3d8c9d114b5bd791af5c62bcf5fb9459/better_profanity-0.7.0-py3-none-any.whl", hash = "sha256:bd4c529ea6aa2db1aaa50524be1ed14d0fe5c664f1fd88c8bc388c7e9f9f00e8", size = 46104, upload-time = "2020-11-02T10:49:56.066Z" },
+]
+
+[[package]]
 name = "boto3"
 version = "1.43.34"
 source = { registry = "https://pypi.org/simple" }
@@ -230,11 +239,14 @@ name = "django-real-estate"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "beautifulsoup4" },
+    { name = "better-profanity" },
     { name = "dj-database-url" },
     { name = "django" },
     { name = "django-storages", extra = ["s3"] },
     { name = "inflect" },
     { name = "pendulum" },
+    { name = "phonenumbers" },
     { name = "pillow" },
     { name = "psycopg2-binary" },
     { name = "python-decouple" },
@@ -245,11 +257,14 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "beautifulsoup4", specifier = ">=4.12.3" },
+    { name = "better-profanity", specifier = ">=0.7.0" },
     { name = "dj-database-url", specifier = ">=2.3.0" },
     { name = "django", specifier = ">=4.2,<5.0" },
     { name = "django-storages", extras = ["s3"], specifier = ">=1.14.6" },
     { name = "inflect", specifier = ">=7.5.0" },
     { name = "pendulum", specifier = ">=3.2.0" },
+    { name = "phonenumbers", specifier = ">=9.0.0" },
     { name = "pillow", specifier = ">=12.2.0" },
     { name = "psycopg2-binary", specifier = ">=2.9.12" },
     { name = "python-decouple", specifier = ">=3.8" },
@@ -446,6 +461,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/a0/9e/567376582da58f5fe8e4f579db2bcfbf243cf619a5825bdf1023ad1436b3/pendulum-3.2.0-cp314-cp314-win_amd64.whl", hash = "sha256:e5bbb92b155cd5018b3cf70ee49ed3b9c94398caaaa7ed97fe41e5bb5a968418", size = 258817, upload-time = "2026-01-30T11:21:53.074Z" },
     { url = "https://files.pythonhosted.org/packages/95/67/dfffd7eb50d67fa821cd4d92cf71575ead6162930202bc40dfcedf78c38c/pendulum-3.2.0-cp314-cp314-win_arm64.whl", hash = "sha256:d53134418e04335c3029a32e9341cccc9b085a28744fb5ee4e6a8f5039363b1a", size = 253292, upload-time = "2026-01-30T11:21:54.484Z" },
     { url = "https://files.pythonhosted.org/packages/02/fb/d65db067a67df7252f18b0cb7420dda84078b9e8bfb375215469c14a50be/pendulum-3.2.0-py3-none-any.whl", hash = "sha256:f3a9c18a89b4d9ef39c5fa6a78722aaff8d5be2597c129a3b16b9f40a561acf3", size = 114111, upload-time = "2026-01-30T11:22:22.361Z" },
+]
+
+[[package]]
+name = "phonenumbers"
+version = "9.0.36"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/0f/21/3f1561d3527b27121d6872aeecb6df2a8de8e11af9c36f5a0bd3483d2655/phonenumbers-9.0.36.tar.gz", hash = "sha256:60ca2a6870d2532d6e960105790e85e9d69270ede81746d10cf57f5e437b93ec", size = 2307271, upload-time = "2026-08-01T06:13:44.954Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/39/5d/74fbcb16b29927bf378f4ec4d47c7b48488b93e1f1af64b26544daf1d55f/phonenumbers-9.0.36-py2.py3-none-any.whl", hash = "sha256:c16a5b95178345ec2df1954578a4ac09e937443b2ee992dd7b15a8e8c81f4acf", size = 2595528, upload-time = "2026-08-01T06:13:41.591Z" },
 ]
 
 [[package]]
