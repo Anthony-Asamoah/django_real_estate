@@ -1,32 +1,10 @@
 import pendulum
 from django.db import models
-from django.utils.safestring import mark_safe
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
 from wagtail.fields import RichTextField
-from wagtail.rich_text import expand_db_html
 
-
-class ReadOnlyPanel(FieldPanel):
-    """A FieldPanel that is always read-only."""
-
-    def __init__(self, *args, **kwargs):
-        kwargs['read_only'] = True
-        super().__init__(*args, **kwargs)
-
-
-class ReadOnlyRichTextPanel(ReadOnlyPanel):
-    """Read-only panel that renders RichTextField content as HTML.
-
-    Wagtail's read-only output escapes the display value, and its default
-    `format_value_for_display` only strips a `RichText` object down to plain
-    text — a RichTextField's raw value is a `str`, so it falls through and the
-    admin ends up showing literal `<p>` tags. Expanding the stored rich text
-    and marking it safe renders the sender's formatting as they wrote it.
-    """
-
-    def format_value_for_display(self, value):
-        return mark_safe(expand_db_html(value or ''))
+from infrastructure.utils.wagtail_admin import ReadOnlyPanel, ReadOnlyRichTextPanel
 
 
 class ProjectInquiry(models.Model):

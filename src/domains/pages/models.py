@@ -9,6 +9,8 @@ from wagtail.fields import StreamField
 from wagtail.models import Page
 from wagtail.snippets.models import register_snippet
 
+from infrastructure.utils.wagtail_admin import ReadOnlyPanel
+
 from .blocks import (
     HomePageStreamBlock,
     AboutPageStreamBlock,
@@ -214,7 +216,6 @@ class ContactPage(Page):
         verbose_name = 'Contact Page'
 
 
-@register_snippet
 class Testimonial(models.Model):
     author_name = models.CharField(max_length=200)
     author_role = models.CharField(max_length=200, blank=True)
@@ -231,17 +232,23 @@ class Testimonial(models.Model):
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=pendulum.now)
 
+    # What the visitor submitted is read-only; `service` stays editable so an
+    # admin can decide which service page a testimonial belongs to, and
+    # `is_featured` is toggled through the listing's feature/unfeature actions.
     panels = [
         MultiFieldPanel([
-            FieldPanel('author_name'),
-            FieldPanel('author_role'),
+            ReadOnlyPanel('author_name'),
+            ReadOnlyPanel('author_role'),
         ], heading='Author'),
         MultiFieldPanel([
-            FieldPanel('body'),
+            ReadOnlyPanel('body'),
+            ReadOnlyPanel('created_at'),
+            ReadOnlyPanel('is_featured'),
+            ReadOnlyPanel('is_read'),
+        ], heading='Submission'),
+        MultiFieldPanel([
             FieldPanel('service'),
-            FieldPanel('is_featured'),
-            FieldPanel('is_read'),
-        ], heading='Content'),
+        ], heading='Placement'),
     ]
 
     def __str__(self):

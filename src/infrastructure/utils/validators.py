@@ -28,18 +28,48 @@ def sanitize_message_html(value):
     return str(soup)
 
 
+def html_to_text(value):
+    """Collapse HTML down to its visible text.
+
+    Used for fields that are stored and rendered as plain text but are authored
+    in a rich text editor, so the markup never reaches the page as literal tags.
+    """
+    return BeautifulSoup(value or '', 'html.parser').get_text(' ', strip=True)
+
+
 def is_message_blank(sanitized_html):
     """True if sanitized rich text HTML has no visible text (e.g. '<p><br/></p>')."""
     return not BeautifulSoup(sanitized_html or '', 'html.parser').get_text(strip=True)
 
 
-def validate_message(sanitized_html):
+def validate_message(sanitized_html, label='message'):
     """Raise ValueError with a user-facing message if sanitized_html is blank or profane."""
     if is_message_blank(sanitized_html):
-        raise ValueError('Please enter a message.')
-    text = BeautifulSoup(sanitized_html, 'html.parser').get_text(' ', strip=True)
+        raise ValueError(f'Please enter a {label}.')
+    validate_text(html_to_text(sanitized_html), label)
+
+
+def validate_text(text, label):
+    """Raise ValueError with a user-facing message if plain `text` is profane."""
     if contains_profanity(text):
-        raise ValueError('Please remove inappropriate language from your message.')
+        raise ValueError(f'Please remove inappropriate language from your {label}.')
+
+
+def validate_name(raw_name, label='name'):
+    """Return a stripped name, raising ValueError if it is blank or profane."""
+    name = (raw_name or '').strip()
+    if not name:
+        raise ValueError(f'Please enter your {label}.')
+    validate_text(name, label)
+    return name
+
+
+def validate_optional_text(raw_value, label):
+    """Return a stripped optional free-text value, raising ValueError if profane."""
+    value = (raw_value or '').strip()
+    if value:
+        validate_text(value, label)
+    return value
 
 
 def validate_phone(raw_phone, region='GH'):

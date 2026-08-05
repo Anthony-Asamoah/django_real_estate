@@ -9,7 +9,16 @@ from wagtail.models import Site
 from domains.pages.models import BrandingSettings, Testimonial
 from infrastructure.email import get_email_provider
 from infrastructure import recaptcha
-from infrastructure.utils.validators import sanitize_message_html, validate_contact_email, validate_message, validate_phone
+from infrastructure.utils.validators import (
+    html_to_text,
+    sanitize_message_html,
+    validate_contact_email,
+    validate_message,
+    validate_name,
+    validate_optional_text,
+    validate_phone,
+    validate_text,
+)
 from .models import GeneralInquiry, ProjectInquiry, EmailSettings
 
 _MODEL_MAP = None
@@ -72,14 +81,10 @@ def contact(request):
         listing_id = request.POST['listing_id']
         user_id = request.POST['user_id']
         listing = request.POST['listing']
-        name = request.POST['name'].strip()
         message = sanitize_message_html(request.POST['message'])
 
-        if not name:
-            messages.error(request, 'Please enter your name.')
-            return redirect('projects:projects')
-
         try:
+            name = validate_name(request.POST.get('name'))
             validate_message(message)
             email = validate_contact_email(request.POST['email'])
             phone = validate_phone(request.POST['phone'])
@@ -135,14 +140,14 @@ def contact(request):
 
 def general_inquiry(request):
     if request.method == 'POST':
-        name = request.POST.get('name', '').strip()
+        raw_name = request.POST.get('name', '').strip()
         raw_email = request.POST.get('email', '').strip()
         raw_phone = request.POST.get('phone', '').strip()
         service = request.POST.get('service', '')
         message = sanitize_message_html(request.POST.get('message', ''))
 
         form_data = {
-            'name': name,
+            'name': raw_name,
             'email': raw_email,
             'phone': raw_phone,
             'service': service,
@@ -157,10 +162,8 @@ def general_inquiry(request):
         if not recaptcha.verify(request.POST.get('g-recaptcha-response', ''), 'contact'):
             return fail('reCAPTCHA verification failed. Please try again.')
 
-        if not name:
-            return fail('Please enter your name.')
-
         try:
+            name = validate_name(raw_name)
             validate_message(message)
             email = validate_contact_email(raw_email)
             phone = validate_phone(raw_phone)
@@ -211,16 +214,23 @@ def testimonial_submission(request):
             messages.error(request, 'reCAPTCHA verification failed. Please try again.')
             return redirect('/projects/')
 
-        author_name = request.POST.get('author_name', '').strip()
-        body = request.POST.get('body', '').strip()
+        # `body` is authored in a rich text editor but stored and rendered as
+        # plain text, so the markup is stripped rather than sanitized.
+        body = html_to_text(request.POST.get('body', ''))
 
-        if not author_name or not body:
-            messages.error(request, 'Please provide your name and a testimonial.')
+        try:
+            author_name = validate_name(request.POST.get('author_name'))
+            author_role = validate_optional_text(request.POST.get('author_role'), 'role')
+            if not body:
+                raise ValueError('Please enter a testimonial.')
+            validate_text(body, 'testimonial')
+        except ValueError as exc:
+            messages.error(request, str(exc))
             return redirect('/projects/')
 
         Testimonial(
             author_name=author_name,
-            author_role=request.POST.get('author_role', '').strip(),
+            author_role=author_role,
             body=body,
             is_featured=False,
         ).save()
