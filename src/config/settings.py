@@ -220,6 +220,9 @@ MESSAGE_TAGS = {
 # Wagtail
 SITE_NAME = config('SITE_NAME', default='Real Estate')
 WAGTAIL_SITE_NAME = SITE_NAME
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'accounts:dashboard'
+
 WAGTAILADMIN_BASE_URL = config('WAGTAILADMIN_BASE_URL', default='http://localhost:8000')
 SITE_ID = 1
 

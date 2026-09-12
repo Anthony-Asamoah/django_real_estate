@@ -1,10 +1,11 @@
 from django.contrib import auth, messages
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from wagtail.admin.views.account import LoginView as WagtailLoginView
 
 from domains.inquiries.models import ProjectInquiry
 from infrastructure import recaptcha
-from .authentication import authenticate
+from .authentication import authenticate, post_login_url
 from .validation import validator
 
 
@@ -17,10 +18,11 @@ class CMSLoginView(WagtailLoginView):
 
 
 def login(request):
+    if request.user.is_authenticated:
+        return redirect(post_login_url(request, request.user))
     if request.method == 'POST':
         return authenticate(request)
-    else:
-        return render(request, 'accounts/login.html')
+    return render(request, 'accounts/login.html', {'next': request.GET.get('next', '')})
 
 
 def register(request):
@@ -38,6 +40,7 @@ def logout(request):
         return redirect('/')
 
 
+@login_required
 def dashboard(request):
     user_contacts = ProjectInquiry.objects.order_by('-timestamp').filter(user_id=request.user.id)
 

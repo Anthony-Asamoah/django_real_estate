@@ -138,13 +138,27 @@
     border-top: 1px solid rgba(255,255,255,0.08);
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
   }
   .ft-copy {
     font-size: 0.78rem;
     color: rgba(255,255,255,0.28);
     margin: 0;
     text-align: center;
+  }
+  .ft-staff {
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.28);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .ft-staff:hover {
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
   }
 
   /* Responsive */
@@ -278,5 +292,6 @@
 
   <div class="ft-bottom">
     <p class="ft-copy">&copy; {% now "Y" %} {{ settings.pages.BrandingSettings.site_name|default:SITE_NAME }}. All rights reserved.</p>
+    <a href="/cms/" class="ft-staff" rel="nofollow">Staff login</a>
   </div>
 </footer>

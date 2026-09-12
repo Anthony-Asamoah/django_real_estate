@@ -33,8 +33,8 @@ def validator(request):
         email=email,
         username=username,
         date_joined=timezone.now(),
-        password=password
     )
+    new_user.set_password(password)
     new_user.save()
 
     messages.success(request, 'User successfully registered')
