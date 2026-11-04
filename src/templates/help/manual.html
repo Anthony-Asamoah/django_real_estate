@@ -1,0 +1,102 @@
+{% extends "wagtailadmin/base.html" %}
+{% load wagtailadmin_tags %}
+{% block titletag %}User Manual – {{ current.title }}{% endblock %}
+{% block extra_css %}
+  {{ block.super }}
+  <style>
+    .manual { display: flex; gap: 2rem; padding: 0 1.5rem 2rem; align-items: flex-start; }
+    .manual-nav { flex: 0 0 14rem; position: sticky; top: 1rem; }
+    .manual-nav ul { list-style: none; margin: 0; padding: 0; }
+    .manual-nav a {
+      display: block; padding: .35rem .75rem; margin-bottom: .2rem;
+      border-left: 3px solid transparent; border-radius: 0 4px 4px 0;
+      transition: background-color .2s ease, border-color .2s ease, padding-left .2s ease;
+    }
+    .manual-nav a:hover { background: rgba(0, 0, 0, .05); padding-left: 1rem; }
+    .manual-nav a.is-active { font-weight: 700; border-left-color: currentColor; background: rgba(0, 0, 0, .05); }
+    .manual-article { flex: 1; max-width: 48rem; line-height: 1.6; animation: manual-in .35s ease both; }
+    .manual-article[data-dir="next"] { animation-name: manual-in-next; }
+    .manual-article[data-dir="prev"] { animation-name: manual-in-prev; }
+    .manual-article.is-leaving { opacity: 0; transform: translateY(-4px); transition: opacity .15s ease, transform .15s ease; }
+    .manual-pager { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--w-color-border-furniture, #ddd); }
+    @keyframes manual-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    @keyframes manual-in-next { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+    @keyframes manual-in-prev { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) {
+      .manual-article, .manual-article.is-leaving, .manual-nav a { animation: none; transition: none; }
+    }
+  </style>
+{% endblock %}
+{% block content %}
+  {% include "wagtailadmin/shared/header.html" with title="User Manual" icon="doc-full" %}
+  <div id="manual" class="manual" data-order="{{ current.order }}">
+    <nav class="manual-nav">
+      <ul>
+        {% for s in sections %}
+          <li>
+            <a href="{% url 'manual_section' s.slug %}" data-order="{{ s.order }}"
+               class="{% if s.slug == current.slug %}is-active{% endif %}">{{ s.title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+    <article id="manual-article" class="manual-article">
+      {{ current.html|safe }}
+      <div class="manual-pager">
+        {% if prev %}<a class="button button-secondary" data-order="{{ prev.order }}" href="{% url 'manual_section' prev.slug %}">&larr; {{ prev.title }}</a>{% else %}<span></span>{% endif %}
+        {% if next %}<a class="button" data-order="{{ next.order }}" href="{% url 'manual_section' next.slug %}">{{ next.title }} &rarr;</a>{% endif %}
+      </div>
+    </article>
+  </div>
+{% endblock %}
+{% block extra_js %}
+  {{ block.super }}
+  <script>
+    // Swap only the article instead of reloading the whole admin page.
+    // Wagtail renders extra_js before the page body, so wait for the markup to exist.
+    document.addEventListener('DOMContentLoaded', function () {
+      const root = document.getElementById('manual');
+      const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const wait = function (ms) { return new Promise(function (r) { setTimeout(r, reduceMotion ? 0 : ms); }); };
+
+      async function load(url, order, push) {
+        const old = document.getElementById('manual-article');
+        old.classList.add('is-leaving');
+        try {
+          const results = await Promise.all([fetch(url, {credentials: 'same-origin'}), wait(150)]);
+          const res = results[0];
+          if (!res.ok) throw new Error(res.status);
+          const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+          const fresh = doc.getElementById('manual-article');
+          const freshRoot = doc.getElementById('manual');
+          if (!fresh || !freshRoot) throw new Error('not a manual page');
+
+          const newOrder = Number(freshRoot.dataset.order);
+          const oldOrder = Number(root.dataset.order);
+          fresh.dataset.dir = newOrder > oldOrder ? 'next' : newOrder < oldOrder ? 'prev' : '';
+          old.replaceWith(fresh);
+          root.dataset.order = freshRoot.dataset.order;
+          root.querySelectorAll('.manual-nav a').forEach(function (a) {
+            a.classList.toggle('is-active', Number(a.dataset.order) === newOrder);
+          });
+          document.title = doc.title;
+          if (push) history.pushState(null, '', res.url);
+          const id = decodeURIComponent(new URL(url, location.href).hash.slice(1));
+          (id && document.getElementById(id) || root).scrollIntoView();
+        } catch (e) {
+          location.href = url; // fall back to a normal page load
+        }
+      }
+
+      root.addEventListener('click', function (e) {
+        const a = e.target.closest('a');
+        if (!a || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || a.target) return;
+        const u = new URL(a.href, location.href);
+        if (u.origin !== location.origin || !u.pathname.startsWith('/cms/manual/') || u.pathname === location.pathname) return;
+        e.preventDefault();
+        load(u.href, null, true);
+      });
+      window.addEventListener('popstate', function () { load(location.href, null, false); });
+    });
+  </script>
+{% endblock %}

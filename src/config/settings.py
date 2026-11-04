@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     # Domain apps
     'domains.pages',
     'domains.employees',
+    'domains.help',
     'domains.projects',
     'domains.accounts',
     'domains.inquiries',
