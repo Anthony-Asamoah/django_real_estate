@@ -5,7 +5,6 @@ import pendulum
 from django.conf import settings
 from django.db import models
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
-from wagtail.snippets.models import register_snippet
 
 
 def employee_photo_path(instance, filename):
@@ -13,7 +12,6 @@ def employee_photo_path(instance, filename):
     return f'employees/{uuid.uuid4().hex}{ext}'
 
 
-@register_snippet
 class Employee(models.Model):
     name = models.CharField(max_length=200, default='')
     role = models.CharField(max_length=100, blank=True, help_text='e.g. Project Manager, Site Engineer')

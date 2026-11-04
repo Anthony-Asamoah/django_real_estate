@@ -11,3 +11,5 @@ CLAUDE.md
 src/media/staticfiles_build/
 .venv/
 media/
+.vercel
+.env*

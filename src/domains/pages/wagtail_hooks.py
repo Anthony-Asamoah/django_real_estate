@@ -5,9 +5,12 @@ from django.utils.translation import ngettext
 from wagtail import hooks
 from wagtail.snippets.bulk_actions.snippet_bulk_action import SnippetBulkAction
 from wagtail.snippets.models import register_snippet
+from wagtail.snippets.views.snippets import SnippetViewSetGroup
 from wagtail.snippets.permissions import get_permission_name
 
 from infrastructure.utils.wagtail_admin import ReadOnlySubmissionViewSet
+from domains.employees.wagtail_hooks import EmployeeViewSet
+from domains.inquiries.wagtail_hooks import GeneralInquiryViewSet, ProjectInquiryViewSet
 from .models import Testimonial
 
 
@@ -17,7 +20,22 @@ class TestimonialViewSet(ReadOnlySubmissionViewSet):
     list_filter = ['is_featured', 'is_read']
 
 
-register_snippet(TestimonialViewSet)
+class TeamAndReviewsGroup(SnippetViewSetGroup):
+    items = [EmployeeViewSet, TestimonialViewSet]
+    menu_label = 'Team & Reviews'
+    menu_icon = 'group'
+    menu_order = 300
+
+
+class InquiriesGroup(SnippetViewSetGroup):
+    items = [ProjectInquiryViewSet, GeneralInquiryViewSet]
+    menu_label = 'Inquiries'
+    menu_icon = 'mail'
+    menu_order = 310
+
+
+register_snippet(TeamAndReviewsGroup)
+register_snippet(InquiriesGroup)
 
 
 class _FeatureBulkActionBase(SnippetBulkAction):

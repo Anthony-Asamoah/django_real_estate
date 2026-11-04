@@ -7,6 +7,7 @@ from .models import Currency, ProjectViewSet
 class CurrencyViewSet(SnippetViewSet):
     model = Currency
     icon = 'tag'
+    add_to_settings_menu = True
     list_display = ['code', 'name', 'symbol']
     search_fields = ['code', 'name']
     ordering = ['code']

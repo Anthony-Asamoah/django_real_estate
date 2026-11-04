@@ -41,6 +41,8 @@ class Currency(models.Model):
 class ProjectViewSet(SnippetViewSet):
     model = None
     icon = 'folder-open-inverse'
+    add_to_admin_menu = True
+    menu_label = 'Projects'
     list_display = ['title', 'status', 'city', 'state_or_region', 'price', 'is_published', 'project_date']
     list_filter = ['is_published', 'status', 'service', 'state_or_region', 'employee']
     search_fields = ['title', 'address', 'city']

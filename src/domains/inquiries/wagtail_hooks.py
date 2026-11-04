@@ -2,7 +2,6 @@ from django import forms
 from django.urls import path
 from django.utils.safestring import mark_safe
 from wagtail import hooks
-from wagtail.snippets.models import register_snippet
 
 from infrastructure.utils.wagtail_admin import ReadOnlySubmissionViewSet
 from .models import GeneralInquiry, ProjectInquiry
@@ -88,10 +87,6 @@ class ProjectInquiryViewSet(ReadOnlySubmissionViewSet):
 class GeneralInquiryViewSet(ReadOnlySubmissionViewSet):
     model = GeneralInquiry
     list_display = ['name', 'service', 'email', 'phone', 'timestamp', 'is_read']
-
-
-register_snippet(ProjectInquiryViewSet)
-register_snippet(GeneralInquiryViewSet)
 
 
 @hooks.register('register_admin_urls')

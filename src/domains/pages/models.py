@@ -7,7 +7,6 @@ from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
 from wagtail.fields import StreamField
 from wagtail.models import Page
-from wagtail.snippets.models import register_snippet
 
 from infrastructure.utils.wagtail_admin import ReadOnlyPanel
 
@@ -258,7 +257,6 @@ class Testimonial(models.Model):
         ordering = ['-created_at']
 
 
-@register_snippet
 class ColorPreset(models.Model):
     name = models.CharField(max_length=60)
     primary_color = models.CharField(max_length=7, default='#10284e', help_text='Hex color, e.g. #10284e')
