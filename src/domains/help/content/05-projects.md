@@ -8,7 +8,7 @@ Order: 5
 1. Go to **Projects**.
 2. Click **Add Project**, or click an existing project to edit it.
 3. Fill in the details:
-    - **Title, address, city, region, postcode**: location and identity
+    - **Title, address, city, region**: location and identity (required). **Postcode** is optional
     - **Description**: the body text shown on the project page
     - **Price and currency**: the contract value or sale price
     - **Specifications**: bedrooms, bathrooms, garage, floor area, lot size, land area (all optional)
