@@ -4,7 +4,7 @@ from django.db import models
 from django.forms import CheckboxSelectMultiple
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
-from wagtail.admin.panels import FieldPanel, MultiFieldPanel
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
 from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
 from wagtail.fields import StreamField
 from wagtail.models import Page
@@ -370,59 +370,68 @@ class BrandingSettings(BaseSiteSetting):
         help_text='Projects in these services can have a boundary and location pin drawn on one of their photos',
     )
 
-    panels = [
-        MultiFieldPanel(
-            [FieldPanel('site_name'), FieldPanel('logo')],
-            heading='Branding',
-        ),
-        MultiFieldPanel(
-            [
-                ColorPresetsPanel(),
-                FieldPanel('primary_color', widget=ColorInput),
-                FieldPanel('secondary_color', widget=ColorInput),
-                ColorSavePanel(),
-                ColorHistoryPanel(),
-            ],
-            heading='Colors',
-        ),
-        MultiFieldPanel(
-            [FieldPanel('phone'), FieldPanel('email'), FieldPanel('maps_url'), FieldPanel('maps_embed_url')],
-            heading='Contact Info',
-        ),
-        MultiFieldPanel(
-            [
-                FieldPanel('twitter_url'),
-                FieldPanel('facebook_url'),
-                FieldPanel('linkedin_url'),
-                FieldPanel('instagram_url'),
-                FieldPanel('pinterest_url'),
-                FieldPanel('tiktok_url'),
-            ],
-            heading='Social Links',
-        ),
-        MultiFieldPanel(
-            [FieldPanel('default_currency')],
-            heading='Currency',
-        ),
-        MultiFieldPanel(
-            [FieldPanel('breadcrumb_style')],
-            heading='Layout',
-        ),
-        MultiFieldPanel(
-            [
-                FieldPanel('project_show_stats_bar'),
-                FieldPanel('project_sticky_cta'),
-                FieldPanel('project_show_related'),
-                FieldPanel('project_related_count'),
-                FieldPanel('project_sold_message'),
-            ],
-            heading='Project Pages',
-        ),
-        MultiFieldPanel(
-            [FieldPanel('land_plan_services', widget=CheckboxSelectMultiple)],
-            heading='Land Plan Annotations (services)',
-        ),
-    ]
+    # One tab per topic, so each setting is easy to find.
+    edit_handler = TabbedInterface([
+        ObjectList([
+            MultiFieldPanel(
+                [FieldPanel('site_name'), FieldPanel('logo')],
+                heading='Branding',
+            ),
+            MultiFieldPanel(
+                [
+                    ColorPresetsPanel(),
+                    FieldPanel('primary_color', widget=ColorInput),
+                    FieldPanel('secondary_color', widget=ColorInput),
+                    ColorSavePanel(),
+                    ColorHistoryPanel(),
+                ],
+                heading='Colors',
+            ),
+        ], heading='Branding'),
+        ObjectList([
+            MultiFieldPanel(
+                [FieldPanel('phone'), FieldPanel('email'), FieldPanel('maps_url'), FieldPanel('maps_embed_url')],
+                heading='Contact Info',
+            ),
+            MultiFieldPanel(
+                [
+                    FieldPanel('twitter_url'),
+                    FieldPanel('facebook_url'),
+                    FieldPanel('linkedin_url'),
+                    FieldPanel('instagram_url'),
+                    FieldPanel('pinterest_url'),
+                    FieldPanel('tiktok_url'),
+                ],
+                heading='Social Links',
+            ),
+        ], heading='Contact & social'),
+        ObjectList([
+            MultiFieldPanel(
+                [FieldPanel('default_currency')],
+                heading='Currency',
+            ),
+            MultiFieldPanel(
+                [FieldPanel('breadcrumb_style')],
+                heading='Layout',
+            ),
+        ], heading='Site'),
+        ObjectList([
+            MultiFieldPanel(
+                [
+                    FieldPanel('project_show_stats_bar'),
+                    FieldPanel('project_sticky_cta'),
+                    FieldPanel('project_show_related'),
+                    FieldPanel('project_related_count'),
+                    FieldPanel('project_sold_message'),
+                ],
+                heading='Project Pages',
+            ),
+            MultiFieldPanel(
+                [FieldPanel('land_plan_services', widget=CheckboxSelectMultiple)],
+                heading='Land Plan Annotations (services)',
+            ),
+        ], heading='Projects'),
+    ])
 
     class Meta:
         verbose_name = 'Branding & Site Settings'
