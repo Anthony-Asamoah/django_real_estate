@@ -15,6 +15,7 @@
     '#6f42c1': 'Purple', '#fd7e14': 'Orange', '#ffffff': 'White', '#212529': 'Black'
   };
   var DEFAULT_BOUNDARY = '#ffc107', DEFAULT_PIN = '#dc3545';
+  var reducedMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   var PIN_MIN = 0.6, PIN_MAX = 2, PIN_STEP = 0.1;   // pin size is a scale factor; must match PIN_MIN_SIZE/PIN_MAX_SIZE in models.py
   function clampSize(v) { v = +v; return isFinite(v) ? Math.min(PIN_MAX, Math.max(PIN_MIN, Math.round(v * 100) / 100)) : 1; }
 
@@ -68,6 +69,7 @@
       history: JSON.parse(root.dataset.history || '{}')
     };
     var wrap = root.closest('.w-field') || root;
+    var wsWrap = root.closest('.w-panel__wrapper'), panel = root.closest('.w-panel__content'), host = panel && panel.parentElement, formWidth = host && host.closest('.w-form-width');
     var slotNames = cfg.slots.map(function (s) { return s[0]; });
     var csrf = (document.querySelector('input[name=csrfmiddlewaretoken]') || {}).value || '';
     var clientId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now().toString(36);
@@ -83,37 +85,55 @@
     var data = active ? all[active] : null;                           // the active photo's annotations
     var pts = [], edges = [], pins = [];
 
-    // ── Layout: photo strip, status, then the editing box ──
-    var stripWrap = el('div', 'lp-strip-wrap', root);
-    var head = el('div', 'lp-strip-head', stripWrap);
-    var stripLabel = el('p', 'lp-strip-label', head);
-    var statusEl = el('div', 'lp-status', head);
+    // ── Layout: workspace header, empty state, then the editing box ──
+    var head = el('div', 'lp-ws-head', root);
+    var titleWrap = el('div', 'lp-ws-title', head);
+    el('i', 'fas fa-draw-polygon lp-ws-icon', titleWrap).setAttribute('aria-hidden', 'true');
+    el('h4', '', titleWrap).textContent = 'Boundary & pin';
+    var subtitle = el('span', 'lp-ws-sub', titleWrap);   // which photo is open
+    var headRight = el('div', 'lp-ws-right', head);
+    var statusEl = el('div', 'lp-status', headRight);
     statusEl.setAttribute('role', 'status'); statusEl.setAttribute('aria-live', 'polite');
-    var strip = el('div', 'lp-strip', stripWrap);
-    strip.setAttribute('role', 'radiogroup'); strip.setAttribute('aria-label', 'Photo to annotate');
+    var btnClose = el('button', 'lp-btn lp-btn-quiet', headRight); btnClose.type = 'button'; btnClose.textContent = 'Close';
+    btnClose.title = 'Close this photo'; btnClose.addEventListener('click', function () { selectPhoto(''); });
+
+    var emptyState = el('div', 'lp-empty-state', root);
+    emptyState.innerHTML = '<svg class="lp-empty-art" viewBox="0 0 160 110" aria-hidden="true"><rect x="6" y="6" width="148" height="98" rx="10" class="lp-art-frame"/>'
+      + '<polygon points="34,78 52,34 108,28 128,70 80,92" class="lp-art-poly"/><circle cx="34" cy="78" r="4.5" class="lp-art-pt"/><circle cx="52" cy="34" r="4.5" class="lp-art-pt"/>'
+      + '<circle cx="108" cy="28" r="4.5" class="lp-art-pt"/><circle cx="128" cy="70" r="4.5" class="lp-art-pt"/><circle cx="80" cy="92" r="4.5" class="lp-art-pt"/>'
+      + '<g class="lp-art-pin"><path d="M82 62c-9-10-12-15-12-20a12 12 0 0124 0c0 5-3 10-12 20z"/><circle cx="82" cy="42" r="4.6"/></g></svg>'
+      + '<h5 class="lp-empty-title"></h5><p class="lp-empty-text"></p>';
+    var emptyTitle = emptyState.querySelector('.lp-empty-title'), emptyText = emptyState.querySelector('.lp-empty-text');
+
     var box = el('div', 'lp-box', root);
     var bar = el('div', 'lp-toolbar', box);
-    var btnU = el('button', 'lp-btn', bar); btnU.type = 'button'; btnU.textContent = '↶ Undo';
+    var gHist = el('div', 'lp-group', bar);
+    var btnU = el('button', 'lp-btn', gHist); btnU.type = 'button'; btnU.textContent = '↶ Undo';
     btnU.title = 'Undo (Ctrl/Cmd+Z)'; btnU.setAttribute('aria-label', 'Undo');
-    var btnR = el('button', 'lp-btn', bar); btnR.type = 'button'; btnR.textContent = '↷ Redo';
+    var btnR = el('button', 'lp-btn', gHist); btnR.type = 'button'; btnR.textContent = '↷ Redo';
     btnR.title = 'Redo (Ctrl/Cmd+Shift+Z or Ctrl+Y)'; btnR.setAttribute('aria-label', 'Redo');
-    var btnC = el('button', 'lp-btn', bar); btnC.type = 'button'; btnC.textContent = 'Clear boundary';
-    var btnX = el('button', 'lp-btn', bar); btnX.type = 'button'; btnX.textContent = 'Remove from photo';
+    var gEdit = el('div', 'lp-group', bar);
+    var btnC = el('button', 'lp-btn', gEdit); btnC.type = 'button'; btnC.textContent = 'Clear boundary';
+    var btnX = el('button', 'lp-btn lp-btn-danger', gEdit); btnX.type = 'button'; btnX.textContent = 'Remove from photo';
     btnX.title = 'Remove all annotations from this photo';
-    var boundarySw = swatchGroup(bar, 'Boundary colour', function () { return data ? data.color : DEFAULT_BOUNDARY; }, function (c) {
+    var gColor = el('div', 'lp-group lp-group-color', bar);
+    el('span', 'lp-group-label', gColor).textContent = 'Boundary';
+    var boundarySw = swatchGroup(gColor, 'Boundary colour', function () { return data ? data.color : DEFAULT_BOUNDARY; }, function (c) {
       if (!data) return;
       data.color = c; stage.style.setProperty('--lp-boundary', c); save(); commit();
     });
-    var hint = el('span', 'lp-hint', bar);
-    hint.textContent = 'Click the image to add boundary corners. Drag corners and the pin to move them; right-click a corner to remove it, or the pin to change its colour and size (or press + / − on the focused pin).';
 
     var stage = el('div', 'lp-stage lp-editing', box);
     var img = el('img', '', stage); img.draggable = false; img.alt = '';
+    // The photo is sized to fit the screen height (see CSS), which needs its aspect ratio.
+    img.addEventListener('load', function () { if (img.naturalHeight) box.style.setProperty('--lp-aspect', img.naturalWidth / img.naturalHeight); });
     var svg = document.createElementNS(NS, 'svg');
     svg.setAttribute('class', 'lp-svg'); svg.setAttribute('viewBox', '0 0 1 1'); svg.setAttribute('preserveAspectRatio', 'none');
     var poly = document.createElementNS(NS, 'polygon'); poly.setAttribute('class', 'lp-poly');
     svg.appendChild(poly); stage.appendChild(svg);
     var layer = el('div', '', stage);
+    var hint = el('p', 'lp-hint', box);
+    hint.innerHTML = '<i class="fas fa-circle-info" aria-hidden="true"></i> Click the photo to add corners. Drag corners and the pin to move them. Right-click (or tap) a corner to remove it, or the pin to change its colour and size. Type a dimension on each edge.';
 
     // ── Serialisation ──
     function payload() {   // canonical snapshot of every annotated photo, in slot order
@@ -160,7 +180,7 @@
       data = active ? all[active] : null;
       closeMenu(false);
       current = payload(); input.value = current;
-      applyPhoto(); refreshStrip(); render(); updateHistoryButtons(); markDirty(0);
+      applyPhoto(); refreshSlots(); render(); updateHistoryButtons(); markDirty(0);
     }
     function undo() {
       commit();   // capture any pending edit first
@@ -281,7 +301,7 @@
       active = all[h.active] ? h.active : ''; data = active ? all[active] : null;
       sync.rev = c.rev; sync.paused = false; sync.conflict = null; sync.dirty = false;
       closeMenu(false); current = payload(); input.value = current;
-      applyPhoto(); refreshStrip(); render(); updateHistoryButtons(); setStatus('saved', 'Loaded the latest version');
+      applyPhoto(); refreshSlots(); render(); updateHistoryButtons(); setStatus('saved', 'Loaded the latest version');
     }
 
     window.addEventListener('online', function () { sync.attempt = 0; clearTimeout(sync.retryTimer); sync.retryTimer = 0; flush(); });
@@ -324,12 +344,14 @@
         var rect = stage.getBoundingClientRect();
         // Keep the grab point under the pointer so the item does not jump on pick-up.
         var offX = item.x - (e.clientX - rect.left) / rect.width, offY = item.y - (e.clientY - rect.top) / rect.height;
+        var startX = e.clientX, startY = e.clientY, moved = false;
         function move(ev) {
+          if (Math.abs(ev.clientX - startX) + Math.abs(ev.clientY - startY) > 6) moved = true;
           item.x = Math.min(1, Math.max(0, (ev.clientX - rect.left) / rect.width + offX));
           item.y = Math.min(1, Math.max(0, (ev.clientY - rect.top) / rect.height + offY));
           if (!raf) raf = requestAnimationFrame(function () { raf = 0; layout(); });
         }
-        function up() {
+        function up(ev) {
           handle.removeEventListener('pointermove', move);
           handle.removeEventListener('pointerup', up);
           handle.removeEventListener('pointercancel', up);
@@ -337,6 +359,11 @@
           host.classList.add('lp-drop');   // little settle animation on drop
           host.addEventListener('animationend', function end(a) { if (a.target === host || host.contains(a.target)) { host.classList.remove('lp-drop'); host.removeEventListener('animationend', end); } });
           save(); commit();
+          // A tap (not a drag) on a touch screen opens the same menu a right-click does.
+          if (ev && ev.type === 'pointerup' && ev.pointerType === 'touch' && !moved) {
+            var sr = stage.getBoundingClientRect();
+            openMenu(ev.clientX - sr.left, ev.clientY - sr.top, handle, isPin, item, remove);
+          }
         }
         handle.addEventListener('pointermove', move);
         handle.addEventListener('pointerup', up);
@@ -418,6 +445,7 @@
     document.addEventListener('pointerdown', function (e) { if (menu && !menu.contains(e.target)) closeMenu(false); });
     document.addEventListener('keydown', function (e) { if (menu && e.key === 'Escape') { e.preventDefault(); closeMenu(true); } });
     window.addEventListener('scroll', function () { closeMenu(false); }, true);
+    window.addEventListener('resize', function () { closeMenu(false); });
 
     function textInput(cls, max, value, ph, onChange, label) {
       var i = el('input', cls); i.setAttribute('aria-label', label); i.type = 'text'; i.maxLength = max; i.value = value; i.placeholder = ph;
@@ -481,7 +509,7 @@
       if (!active) return;
       if (!confirm('Remove all annotations from this photo? You can undo this.')) return;
       delete all[active]; active = ''; data = null;
-      save(); commit(); applyPhoto(); refreshStrip(); render();
+      save(); commit(); applyPhoto(); refreshSlots(); render();
     };
 
     // ── Photo strip, live image lookup and land-only gating ──
@@ -495,13 +523,17 @@
       fetch(cfg.endpoint.replace(/0\/$/, id + '/'), { credentials: 'same-origin' })
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (j) {
-          if (j && String(j.id) === slotId(s)) { cfg.images[s] = j; refreshStrip(); if (active === s) applyPhoto(); }
+          if (j && String(j.id) === slotId(s)) { cfg.images[s] = j; refreshSlots(); if (active === s) applyPhoto(); }
         })
         .catch(function () { pending[s] = ''; });   // a later change/refresh can retry
     }
     function applyPhoto() {
-      var c = active && info(active);
-      box.hidden = !c || !data;
+      var c = active && info(active), showing = !!(c && data);
+      box.hidden = !showing;
+      emptyState.hidden = showing;
+      btnClose.hidden = !active;
+      subtitle.hidden = !showing;
+      subtitle.textContent = showing ? (cfg.slots.filter(function (sl) { return sl[0] === active; })[0] || ['', ''])[1] : '';
       if (c && img.getAttribute('src') !== c.url) img.src = c.url;
       if (data) stage.style.setProperty('--lp-boundary', data.color);
       boundarySw.repaint();
@@ -514,44 +546,56 @@
         all[s] = normEntry(null); fresh.add(all[s].pins[0]);
         data = all[s]; save(); commit();
       } else { data = s ? all[s] : null; markDirty(300); }   // remember which photo was open
-      applyPhoto(); refreshStrip(); render();
+      applyPhoto(); refreshSlots(); render();
+      if (s) root.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'nearest' });   // matters when the workspace sits below the cards
     }
-    function refreshStrip() {
-      strip.innerHTML = '';
-      var none = el('button', 'lp-thumb lp-thumb-none', strip); none.type = 'button'; none.textContent = 'None';
-      none.setAttribute('role', 'radio'); none.setAttribute('aria-checked', !active);
-      none.addEventListener('click', function () { selectPhoto(''); });
+    // Each photo card gets its own Annotate button; the card being edited is highlighted, annotated ones are ticked.
+    var slotUI = {};
+    cfg.slots.forEach(function (sl) {
+      var inp = document.getElementById('id_' + sl[0]), card = inp && inp.closest('.w-panel__wrapper');
+      if (!card) return;
+      card.classList.add('lp-slot');
+      var actions = el('div', 'lp-slot-actions', card);
+      var b = el('button', 'lp-annotate', actions); b.type = 'button';
+      b.addEventListener('click', function () { selectPhoto(active === sl[0] ? '' : sl[0]); });
+      slotUI[sl[0]] = { card: card, btn: b, actions: actions };
+    });
+    function refreshSlots() {
       var any = false;
       cfg.slots.forEach(function (sl) {
-        if (!slotId(sl[0])) return;
-        var c = info(sl[0]);
-        if (!c) { fetchInfo(sl[0]); return; }
-        any = true;
-        var b = el('button', 'lp-thumb' + (all[sl[0]] ? ' is-annotated' : ''), strip); b.type = 'button';
-        b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', active === sl[0]);
-        b.setAttribute('aria-label', sl[1] + (c.title ? ': ' + c.title : '') + (all[sl[0]] ? ' (annotated)' : ''));
-        var t = el('img', '', b); t.src = c.thumb; t.alt = '';
-        el('span', '', b).textContent = sl[1];
-        if (all[sl[0]]) el('i', 'lp-badge', b).textContent = '✓';
-        b.addEventListener('click', function () { selectPhoto(sl[0]); });
+        var ui = slotUI[sl[0]], has = !!slotId(sl[0]);
+        if (has) { any = true; if (!info(sl[0])) fetchInfo(sl[0]); }
+        if (!ui) return;
+        var isActive = active === sl[0], done = !!all[sl[0]];
+        ui.card.classList.toggle('is-annotating', isActive);
+        ui.card.classList.toggle('is-annotated', done);
+        ui.btn.hidden = !has; ui.actions.hidden = !has;   // no photo, no button (and no empty gap)
+        ui.btn.setAttribute('aria-pressed', isActive);
+        ui.btn.textContent = isActive ? 'Editing — click to close' : (done ? '✓ Annotated · Edit' : '＋ Annotate this photo');
+        ui.btn.setAttribute('aria-label', (isActive ? 'Close annotations for ' : 'Annotate ') + sl[1] + (done ? ' (already annotated)' : ''));
       });
-      stripLabel.textContent = any
-        ? 'Choose a photo to draw its boundary and pin. Annotated photos (✓) replace the plain photo on the public page.'
-        : 'Choose a photo above first, then pick it here to draw on it.';
+      var loading = active && !info(active);
+      emptyState.classList.toggle('is-loading', !!loading);
+      if (loading) { emptyTitle.textContent = 'Loading photo…'; emptyText.textContent = ''; }
+      else if (any) { emptyTitle.textContent = 'Pick a photo to annotate'; emptyText.textContent = 'Press “Annotate” on a photo to draw its plot boundary, dimensions and a location pin. Customers see the drawing on the project page.'; }
+      else { emptyTitle.textContent = 'Add a photo first'; emptyText.textContent = 'Choose a photo on the left, then annotate it here.'; }
       if (active && !slotId(active)) { active = ''; data = null; applyPhoto(); render(); markDirty(300); }   // the open photo was removed from its slot
     }
     function applyGate() {
-      var sid = (document.getElementById('id_service') || {}).value;
-      wrap.style.display = cfg.land.indexOf(String(sid)) >= 0 ? '' : 'none';
+      var sid = (document.getElementById('id_service') || {}).value, on = cfg.land.indexOf(String(sid)) >= 0;
+      wrap.style.display = on ? '' : 'none';
+      // The photos panel becomes a two-column workspace only for services with annotations enabled.
+      if (host) { host.classList.toggle('lp-photos-host', on); if (panel) panel.classList.toggle('lp-photos-grid', on); if (formWidth) formWidth.classList.toggle('lp-wide', on); }
+      if (wsWrap) wsWrap.classList.toggle('lp-workspace', on);
     }
     document.addEventListener('change', function (e) {   // photo/service choosers fire change on their hidden inputs
       var id = e.target && e.target.id;
       if (id === 'id_service') applyGate();
-      else if (/^id_photo_(main|[1-6])$/.test(id)) { refreshStrip(); applyPhoto(); }
+      else if (/^id_photo_(main|[1-6])$/.test(id)) { refreshSlots(); applyPhoto(); }
     });
 
     updateHistoryButtons();
-    refreshStrip(); applyPhoto(); applyGate(); render();
+    refreshSlots(); applyPhoto(); applyGate(); render();
   }
 
   function boot() { document.querySelectorAll('.lp-editor').forEach(init); }

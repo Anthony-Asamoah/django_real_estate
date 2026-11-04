@@ -36,3 +36,7 @@ The menu down the left-hand side is how you move around. Here is what each part 
 | Change the wording of automatic emails to customers | **Settings → Email settings** |
 
 Not sure where something is? The **Help** item in the left-hand menu brings you back to this manual at any time.
+
+## When a save doesn't go through {#save-errors}
+
+If you press **Save** and something needs fixing, a red message at the top says the item "could not be saved due to errors". Nothing is lost. The page takes you straight to the first problem: it opens the right tab or section, scrolls to the field, and puts the cursor in it with a short explanation above it, such as *This field is required*. Fix it and press **Save** again. If there is more than one problem, a number on the tab or in the section's side marker shows how many are left.

@@ -71,5 +71,6 @@
     }, { threshold: steps });
     [].forEach.call(stages, function (s) { io.observe(s); });
   }
+  window.LandPlanView = { play: play };   // the gallery lightbox plays the same animation for annotated photos
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();

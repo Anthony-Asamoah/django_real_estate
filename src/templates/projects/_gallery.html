@@ -1,0 +1,29 @@
+{% load wagtailimages_tags %}{# Gallery thumbnails. Annotated photos carry a small static overlay; both kinds open in the lightbox. #}
+{% if project.gallery_items %}
+<h6 class="text-uppercase text-muted fw-semibold mb-2" style="font-size:.7rem;letter-spacing:.1em;">Photos</h6>
+<div class="row mb-5 thumbs g-2">
+  {% for item in project.gallery_items %}
+    {% image item.image width-1600 as full %}
+    <div class="col-6 col-md-3 col-lg-2">
+      {% if item.overlay %}
+        {% image item.image width-600 as cover %}
+        <a href="{{ full.url }}" class="pg-thumb" data-lb data-lb-alt="{{ project.title }} — {{ item.label }}" data-lb-overlay="{{ item.overlay_json }}"
+           aria-label="{{ item.label }}, with the plot boundary drawn on it. Open larger.">
+          <img src="{{ cover.url }}" alt="">
+          <div class="lp-stage lp-card" aria-hidden="true"
+               style="--lp-boundary:{{ item.overlay.color }};left:{{ item.layer.left }}%;top:{{ item.layer.top }}%;width:{{ item.layer.width }}%;height:{{ item.layer.height }}%">
+            <svg class="lp-svg" viewBox="0 0 1 1" preserveAspectRatio="none">{% if item.overlay.points %}<polygon class="lp-poly" points="{{ item.overlay.points }}"/>{% endif %}</svg>
+            {% for v in item.overlay.vertices %}<div class="lp-pt" style="left:{{ v.x|floatformat:3 }}%;top:{{ v.y|floatformat:3 }}%"></div>{% endfor %}
+            {% for p in item.overlay.pins %}<div class="lp-pin" style="{% if p.color %}--lp-pin:{{ p.color }};{% endif %}--lp-pin-size:{{ p.size }};left:{{ p.x|floatformat:3 }}%;top:{{ p.y|floatformat:3 }}%"><i class="fas fa-map-marker-alt lp-pin-icon"></i></div>{% endfor %}
+          </div>
+        </a>
+      {% else %}
+        {% image item.image fill-300x200 as thumb %}
+        <a href="{{ full.url }}" class="pg-thumb" data-lb data-lb-alt="{{ project.title }} — {{ item.label }}" aria-label="{{ item.label }}. Open larger.">
+          <img src="{{ thumb.url }}" alt="">
+        </a>
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>
+{% endif %}

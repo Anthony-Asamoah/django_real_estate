@@ -77,7 +77,7 @@ class Project(models.Model):
     address = models.CharField(max_length=200, default='')
     city = models.CharField(max_length=200, default='')
     state_or_region = models.CharField(max_length=200, default='')
-    zipcode = models.CharField(max_length=11, default='')
+    zipcode = models.CharField(max_length=11, blank=True, default='')   # optional: most addresses here have no postcode
     description = models.TextField(blank=True)
     price = models.IntegerField(default=0, help_text='Contract value or sale price')
     currency = models.ForeignKey(
@@ -186,7 +186,7 @@ class Project(models.Model):
         ),
         MultiFieldPanel(
             [
-                FieldPanel('photo_main'),
+                FieldPanel('photo_main', heading='Main photo'),
                 FieldPanel('photo_1'),
                 FieldPanel('photo_2'),
                 FieldPanel('photo_3'),
@@ -246,20 +246,26 @@ class Project(models.Model):
         that the full uncropped photo occupies; the overlay is drawn inside it and lines up with the crop.
         """
         overlays = self.land_plan_overlays
-        if not overlays:
-            return None
-        first, image = overlays[0], overlays[0]['image']
-        ratio, box = image.width / image.height, 16 / 9
-        if ratio > box:
-            w = ratio / box * 100
-            layer = {'left': -(w - 100) / 2, 'top': 0, 'width': w, 'height': 100}
-        else:
-            h = box / ratio * 100
-            layer = {'left': 0, 'top': -(h - 100) / 2, 'width': 100, 'height': h}
-        # Hover zoom scales the photo about the box centre; the overlay must pivot on the same point.
-        layer['origin_x'] = (50 - layer['left']) / layer['width'] * 100
-        layer['origin_y'] = (50 - layer['top']) / layer['height'] * 100
-        return dict(first, layer={k: round(v, 3) for k, v in layer.items()})
+        return dict(overlays[0], layer=_layer(overlays[0]['image'], 16 / 9)) if overlays else None
+
+    def _photo_item(self, slot, box=None):
+        """A photo for the project page: its image plus, when annotated, the overlay (and, for cropped thumbnails, the layer)."""
+        photos = (self.land_plan_annotations or {}).get('photos', {})
+        item = {'slot': slot, 'label': PHOTO_LABELS[slot], 'image': getattr(self, slot), 'overlay': None, 'overlay_json': '', 'layer': None}
+        if slot in self.land_annotated_slots:
+            overlay = _overlay(photos[slot])
+            item.update(overlay=overlay, layer=_layer(item['image'], box) if box else None,
+                        overlay_json=json.dumps({k: overlay[k] for k in ('color', 'points', 'vertices', 'edges', 'pins')}))
+        return item
+
+    @cached_property
+    def main_item(self):
+        return self._photo_item('photo_main') if self.photo_main_id else None
+
+    @cached_property
+    def gallery_items(self):
+        """Gallery photos in slot order, annotated ones included. Thumbnails are 3:2 crops, hence the box ratio."""
+        return [self._photo_item(s, box=3 / 2) for s in PHOTO_SLOTS[1:] if getattr(self, f'{s}_id')]
 
     @property
     def effective_currency(self):
@@ -387,6 +393,21 @@ def _clean_history(history):
     active = history.get('active')
     return {'undo': entries(history.get('undo')), 'redo': entries(history.get('redo')),
             'active': active if active in PHOTO_SLOTS else ''}
+
+
+def _layer(image, box):
+    """Where the full, uncropped photo sits (in % of its box) when shown with object-fit: cover in a box of aspect `box`."""
+    ratio = image.width / image.height
+    if ratio > box:
+        w = ratio / box * 100
+        layer = {'left': -(w - 100) / 2, 'top': 0, 'width': w, 'height': 100}
+    else:
+        h = box / ratio * 100
+        layer = {'left': 0, 'top': -(h - 100) / 2, 'width': 100, 'height': h}
+    # Hover zoom scales the photo about the box centre; the overlay must pivot on the same point.
+    layer['origin_x'] = (50 - layer['left']) / layer['width'] * 100
+    layer['origin_y'] = (50 - layer['top']) / layer['height'] * 100
+    return {k: round(v, 3) for k, v in layer.items()}
 
 
 def _overlay(entry):

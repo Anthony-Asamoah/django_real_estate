@@ -147,10 +147,8 @@ def index(request):
 
 def project(request, project_id):
     obj = get_object_or_404(Project, pk=project_id)
-    # Annotated photos are shown (with their overlay) in the Land Plan blocks instead of the plain gallery.
-    annotated = obj.land_annotated_slots
-    photos = [getattr(obj, s) for s in ('photo_1', 'photo_2', 'photo_3', 'photo_4', 'photo_5', 'photo_6')
-              if s not in annotated and getattr(obj, f'{s}_id')]
+    # Hero slideshow only; the gallery and its lightbox read project.gallery_items.
+    photos = [getattr(obj, s) for s in ('photo_1', 'photo_2', 'photo_3', 'photo_4', 'photo_5', 'photo_6') if getattr(obj, f'{s}_id')]
 
     from wagtail.models import Site
     site = Site.find_for_request(request)

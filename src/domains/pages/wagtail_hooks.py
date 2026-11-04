@@ -134,6 +134,11 @@ def notifications_admin_js():
 
 
 @hooks.register('insert_global_admin_js')
+def jump_to_error_admin_js():
+    return format_html('<script src="{}"></script>', static('js/admin_jump_to_error.js'))
+
+
+@hooks.register('insert_global_admin_js')
 def desktop_only_admin_js():
     return format_html('<script src="{}"></script>', static('js/admin_desktop_only.js'))
 

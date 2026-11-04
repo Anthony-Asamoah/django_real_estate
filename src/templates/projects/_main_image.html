@@ -1,0 +1,37 @@
+{% load wagtailimages_tags %}{# The project's main image. Annotated: shown whole with its overlay, which animates when it scrolls into view. Click opens the lightbox. #}
+{% with item=project.main_item %}
+  {% if item %}
+    {% image item.image width-1600 as full %}
+    {% if item.overlay %}
+      {% with overlay=item.overlay %}
+      <div class="pg-main mb-2" data-lb data-lb-src="{{ full.url }}" data-lb-alt="{{ project.title }} — {{ item.label }}" data-lb-overlay="{{ item.overlay_json }}">
+        <div class="lp-stage lp-view" style="--lp-boundary:{{ overlay.color }}">
+          <script>document.currentScript.parentNode.classList.add("lp-armed")</script>
+          {% image item.image width-1200 as plan %}
+          <img src="{{ plan.url }}" alt="{{ project.title }} — {{ item.label }}, with the plot boundary drawn on it">
+          <svg class="lp-svg" viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true">
+            {% if overlay.points %}<polygon class="lp-poly" points="{{ overlay.points }}"/>{% endif %}
+          </svg>
+          {% for v in overlay.vertices %}<div class="lp-pt lp-in" style="left:{{ v.x|floatformat:3 }}%;top:{{ v.y|floatformat:3 }}%;--i:{{ forloop.counter0 }}"></div>{% endfor %}
+          {% for e in overlay.edges %}<div class="lp-dim lp-in" style="left:{{ e.x|floatformat:3 }}%;top:{{ e.y|floatformat:3 }}%;--i:{{ forloop.counter0 }}">{{ e.dim }}</div>{% endfor %}
+          {% for p in overlay.pins %}
+            <div class="lp-pin lp-in" style="{% if p.color %}--lp-pin:{{ p.color }};{% endif %}--lp-pin-size:{{ p.size }};left:{{ p.x|floatformat:3 }}%;top:{{ p.y|floatformat:3 }}%;--i:{{ forloop.counter0 }}">
+              {% if p.label %}<span class="lp-pin-label">{{ p.label }}</span>{% endif %}
+              <i class="fas fa-map-marker-alt lp-pin-icon" aria-hidden="true"></i>
+            </div>
+          {% endfor %}
+          <button type="button" class="pg-expand" aria-label="View this photo larger"><i class="fas fa-expand" aria-hidden="true"></i></button>
+        </div>
+      </div>
+      {% endwith %}
+      <p class="text-muted small mb-4"><i class="fas fa-info-circle"></i> Indicative only. Confirm exact boundaries and dimensions before purchase.</p>
+    {% else %}
+      {% image item.image fill-1000x480 as hero_img %}
+      <a href="{{ full.url }}" class="pg-main-link d-block mb-3" data-lb data-lb-alt="{{ project.title }} — {{ item.label }}">
+        <div style="max-height:480px;overflow:hidden;border-radius:8px;">
+          <img src="{{ hero_img.url }}" alt="{{ project.title }}" style="width:100%;height:480px;object-fit:cover;display:block;">
+        </div>
+      </a>
+    {% endif %}
+  {% endif %}
+{% endwith %}

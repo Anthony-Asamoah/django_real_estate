@@ -37,12 +37,12 @@ The three projects shown are chosen automatically: the three most recent publish
 This is available for projects in a service that is switched on under [Land plan annotations](/cms/manual/settings/#land-plan-services). Customers see the drawing on the photo, so they can picture the plot and its size.
 
 1. Edit the project and add its photos. **Save the project once** (new projects only), because the drawing tools need a saved project.
-2. Under **Photos**, scroll to **Annotate a photo (land only)**. Click the photo you want to draw on.
-3. **Draw the boundary.** Click the photo to add corners. Drag a corner to move it. Right-click a corner and choose **Remove corner** to delete it.
+2. In the **Photos** section, every photo you've added has an **Annotate this photo** button. Click it. The drawing workspace opens beside the photos, and it stays in view as you scroll. On a narrower screen, such as a tablet held upright, the workspace opens below the photos and the page scrolls to it.
+3. **Draw the boundary.** Click the photo to add corners. Drag a corner to move it. Right-click a corner and choose **Remove corner** to delete it. On a touch screen, tap the corner instead of right-clicking.
 4. **Add dimensions.** Type a length such as *45 m* into the box on each edge (up to 20 characters).
 5. **Place the pin.** The pin is already on the photo. Drag it to the spot you want and type a label, such as *Main gate* (up to 50 characters).
-6. **Change colours and size.** Pick the boundary colour from the colour dots above the photo. Right-click the pin to change its colour and size. The size can't go below 60% or above 200%. You can also click the pin and press **+** or **−**.
-7. To draw on another photo, click it in the photo list. Each photo keeps its own drawing, and photos with a drawing show a ✓.
+6. **Change colours and size.** Pick the boundary colour from the colour dots above the photo. Right-click the pin (or tap it on a touch screen) to change its colour and size. The size can't go below 60% or above 200%. You can also click the pin and press **+** or **−**.
+7. To draw on another photo, click **Annotate** on that photo's card. Each photo keeps its own drawing, and cards that have one show **✓ Annotated**. The card you're working on is highlighted. Click **Close** (or the card's button again) to put the workspace away.
 8. To take a drawing off a photo, open it and click **Remove from photo**. The plain photo is shown again.
 
 **Undo and redo.** Use the **Undo** and **Redo** buttons, or the keyboard: **Ctrl/Cmd + Z** to undo, **Ctrl/Cmd + Shift + Z** or **Ctrl + Y** to redo. The last 50 steps are remembered, even if you close the page and come back.
@@ -55,6 +55,11 @@ This is available for projects in a service that is switched on under [Land plan
 - *Not saved: …*: something in the drawing was rejected, for example a label that is too long. Fix it and the page tries again.
 - *A newly chosen photo isn't saved yet*: press **Save** once so the drawing on that photo is kept.
 
-**What customers see.** The photo with the drawing replaces the plain photo on the project page. When the whole photo is on screen, the outline draws itself, then the pin drops in. It plays again each time they scroll back to it. On project cards in lists, a simpler still version is shown, without labels or animation. A note under the photo says the drawing is **indicative only**.
+**What customers see.**
+
+- **Main photo.** If the main photo has a drawing, the project page shows it whole, with the drawing on it. When the whole photo is on screen, the outline draws itself and then the pin drops in. It plays again each time they scroll back to it.
+- **Other photos.** They appear in the photo gallery under the main photo as thumbnails. A photo with a drawing shows a small still version of it. Clicking any thumbnail (or the main photo) opens it in a viewer with left and right arrows, and a photo with a drawing animates as it opens.
+- **Project cards in lists** show a simple still version of the first photo that has a drawing, without labels or animation.
+- A note says the drawing is **indicative only**.
 
 > The boundary and dimensions are what you draw and type. They aren't measured, so always check them against the real survey.
