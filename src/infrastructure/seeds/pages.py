@@ -508,6 +508,9 @@ def seed_pages():
         if ghs:
             branding.default_currency = ghs
         branding.save()
+        land = ServiceDetailPage.objects.filter(slug='land').first()
+        if land:
+            branding.land_plan_services.add(land)   # pilot: land plan annotations on for the land service
         print('  Updated BrandingSettings.')
 
     # Color Presets

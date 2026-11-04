@@ -1,6 +1,7 @@
 import pendulum
 from django.conf import settings as django_settings
 from django.db import models
+from django.forms import CheckboxSelectMultiple
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
@@ -362,6 +363,12 @@ class BrandingSettings(BaseSiteSetting):
         default='This project is complete.',
         help_text='Heading shown when a project has been sold',
     )
+    land_plan_services = models.ManyToManyField(
+        'pages.ServiceDetailPage',
+        blank=True,
+        related_name='+',
+        help_text='Projects in these services can have a boundary and location pin drawn on one of their photos',
+    )
 
     panels = [
         MultiFieldPanel(
@@ -410,6 +417,10 @@ class BrandingSettings(BaseSiteSetting):
                 FieldPanel('project_sold_message'),
             ],
             heading='Project Pages',
+        ),
+        MultiFieldPanel(
+            [FieldPanel('land_plan_services', widget=CheckboxSelectMultiple)],
+            heading='Land Plan Annotations (services)',
         ),
     ]
 

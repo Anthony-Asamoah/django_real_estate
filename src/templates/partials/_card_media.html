@@ -1,0 +1,20 @@
+{% load wagtailimages_tags %}{# Photo for a listing card. Annotated land projects show their overlay (static, no animation). Needs: `project`. #}
+{% with card=project.card_overlay %}
+  {% if card %}
+    {% image card.image width-700 as card_img %}
+    <img src="{{ card_img.url }}" alt="{{ project.title }}">
+    <div class="lp-stage lp-card" aria-hidden="true"
+         style="--lp-boundary:{{ card.color }};left:{{ card.layer.left }}%;top:{{ card.layer.top }}%;width:{{ card.layer.width }}%;height:{{ card.layer.height }}%;transform-origin:{{ card.layer.origin_x }}% {{ card.layer.origin_y }}%">
+      <svg class="lp-svg" viewBox="0 0 1 1" preserveAspectRatio="none">{% if card.points %}<polygon class="lp-poly" points="{{ card.points }}"/>{% endif %}</svg>
+      {% for v in card.vertices %}<div class="lp-pt" style="left:{{ v.x|floatformat:3 }}%;top:{{ v.y|floatformat:3 }}%"></div>{% endfor %}
+      {% for p in card.pins %}<div class="lp-pin" style="{% if p.color %}--lp-pin:{{ p.color }};{% endif %}--lp-pin-size:{{ p.size }};left:{{ p.x|floatformat:3 }}%;top:{{ p.y|floatformat:3 }}%"><i class="fas fa-map-marker-alt lp-pin-icon"></i></div>{% endfor %}
+    </div>
+  {% elif project.photo_main %}
+    {% image project.photo_main fill-600x440 as card_img %}
+    <img src="{{ card_img.url }}" alt="{{ project.title }}">
+  {% else %}
+    <div class="project-card-placeholder d-flex align-items-center justify-content-center">
+      <i class="fas fa-hard-hat fa-3x" style="color:rgba(255,255,255,.5);"></i>
+    </div>
+  {% endif %}
+{% endwith %}

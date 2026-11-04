@@ -1,5 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.models import User as user
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
 from django.utils import timezone
 
@@ -26,7 +28,6 @@ def validator(request):
         messages.error(request, 'email is already registered')
         return redirect('accounts:register')
 
-    # save details
     new_user = user(
         first_name=first_name,
         last_name=last_name,
@@ -34,6 +35,16 @@ def validator(request):
         username=username,
         date_joined=timezone.now(),
     )
+
+    # FR-6.6: run AUTH_PASSWORD_VALIDATORS (user passed so similarity check works)
+    try:
+        validate_password(password, new_user)
+    except ValidationError as e:
+        for msg in e.messages:
+            messages.error(request, msg)
+        return redirect('accounts:register')
+
+    # save details
     new_user.set_password(password)
     new_user.save()
 

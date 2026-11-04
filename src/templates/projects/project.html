@@ -50,7 +50,7 @@
         <!-- ── Main content ──────────────────────────────────────────────── -->
         <div class="col-md-9">
 
-          {% if project.photo_main %}
+          {% if project.photo_main and "photo_main" not in project.land_annotated_slots %}
             {% image project.photo_main fill-1000x480 as hero_img %}
             <div style="max-height:480px;overflow:hidden;border-radius:8px;" class="mb-3">
               <img src="{{ hero_img.url }}" alt="{{ project.title }}"
@@ -107,6 +107,8 @@
             {% endfor %}
           </div>
           {% endif %}
+
+          {% include "projects/_land_plan.html" %}
 
           <!-- Secondary details -->
           <div class="row mb-5 fields">
@@ -225,14 +227,7 @@
         <div class="col-md-6 col-lg-4">
           <div class="card h-100 project-card shadow-sm border-0">
             <div class="project-card-img-wrapper">
-              {% if rp.photo_main %}
-                {% image rp.photo_main fill-600x440 as rp_img %}
-                <img src="{{ rp_img.url }}" alt="{{ rp.title }}">
-              {% else %}
-                <div class="project-card-placeholder d-flex align-items-center justify-content-center">
-                  <i class="fas fa-hard-hat fa-3x text-white opacity-50"></i>
-                </div>
-              {% endif %}
+              {% include 'partials/_card_media.html' with project=rp %}
               {% if rp.status == 'available' %}
                 <span class="badge bg-success position-absolute top-0 end-0 m-2">Available</span>
               {% elif rp.status == 'in_progress' %}
@@ -323,6 +318,7 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'js/land_plan_view.js' %}" defer></script>
 <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 {% if RECAPTCHA_SITE_KEY %}
 <script src="https://www.google.com/recaptcha/api.js?render={{ RECAPTCHA_SITE_KEY }}"></script>

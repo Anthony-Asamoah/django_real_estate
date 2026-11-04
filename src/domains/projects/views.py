@@ -147,7 +147,10 @@ def index(request):
 
 def project(request, project_id):
     obj = get_object_or_404(Project, pk=project_id)
-    photos = [p for p in [obj.photo_1, obj.photo_2, obj.photo_3, obj.photo_4, obj.photo_5, obj.photo_6] if p]
+    # Annotated photos are shown (with their overlay) in the Land Plan blocks instead of the plain gallery.
+    annotated = obj.land_annotated_slots
+    photos = [getattr(obj, s) for s in ('photo_1', 'photo_2', 'photo_3', 'photo_4', 'photo_5', 'photo_6')
+              if s not in annotated and getattr(obj, f'{s}_id')]
 
     from wagtail.models import Site
     site = Site.find_for_request(request)

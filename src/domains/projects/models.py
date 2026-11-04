@@ -1,7 +1,16 @@
+import json
+
 import pendulum
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.functional import cached_property
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.snippets.views.snippets import SnippetViewSet
+
+from infrastructure.utils.profanity import contains_profanity
+from .admin_views import ProjectCreateView, ProjectEditView
+from .forms import ProjectForm
+from .widgets import LandPlanWidget
 
 STATUS_AVAILABLE = 'available'
 STATUS_IN_PROGRESS = 'in_progress'
@@ -47,6 +56,8 @@ class ProjectViewSet(SnippetViewSet):
     list_filter = ['is_published', 'status', 'service', 'state_or_region', 'employee']
     search_fields = ['title', 'address', 'city']
     ordering = ['-project_date']
+    edit_view_class = ProjectEditView
+    add_view_class = ProjectCreateView
 
 
 class Project(models.Model):
@@ -132,6 +143,13 @@ class Project(models.Model):
         'wagtailimages.Image', null=True, blank=True,
         on_delete=models.SET_NULL, related_name='+',
     )
+    # Boundary + pin drawn over ONE of the photo slots above (land services only). Shape: see _clean_annotations.
+    land_plan_annotations = models.JSONField(default=dict, blank=True)
+    # Autosave bookkeeping (never shown in forms): undo/redo history, and a revision for optimistic concurrency.
+    land_plan_history = models.JSONField(default=dict, blank=True, editable=False)
+    land_plan_rev = models.PositiveIntegerField(default=0, editable=False)
+
+    base_form_class = ProjectForm
 
     panels = [
         MultiFieldPanel(
@@ -177,10 +195,73 @@ class Project(models.Model):
                 FieldPanel('photo_4'),
                 FieldPanel('photo_5'),
                 FieldPanel('photo_6'),
+                FieldPanel(
+                    'land_plan_annotations', widget=LandPlanWidget,
+                    heading='Annotate a photo (land only)',
+                ),
             ],
             heading='Photos',
         ),
     ]
+
+    @cached_property
+    def is_land(self):
+        return bool(self.service_id) and self.service_id in land_plan_service_ids()
+
+    @cached_property
+    def land_annotated_slots(self):
+        """Photo slots that carry annotations and should be shown with their overlay (land only, photo still set)."""
+        photos = (self.land_plan_annotations or {}).get('photos', {})
+        if not photos:
+            return []   # most projects: skip the service-settings lookup entirely
+        return [s for s in PHOTO_SLOTS if self.is_land and s in photos and getattr(self, f'{s}_id')]
+
+    def clean(self):
+        super().clean()
+        if not self.is_land:
+            self.land_plan_annotations = {}   # annotations only apply to land projects
+            return
+        available = [s for s in PHOTO_SLOTS if getattr(self, f'{s}_id')]
+        try:
+            self.land_plan_annotations = _clean_annotations(self.land_plan_annotations or {}, available)
+        except ValidationError as e:
+            raise ValidationError({'land_plan_annotations': e.messages})
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # A normal form save also changes the annotations, so bump the revision: a stale autosave from another
+        # tab then gets a conflict instead of silently overwriting. F() keeps the bump atomic.
+        type(self).objects.filter(pk=self.pk).update(land_plan_rev=models.F('land_plan_rev') + 1)
+
+    @property
+    def land_plan_overlays(self):
+        """One template-ready overlay (photo, polygon, edge labels, pin) per annotated photo, in slot order."""
+        photos = self.land_plan_annotations.get('photos', {}) if self.land_plan_annotations else {}
+        return [dict(_overlay(photos[s]), slot=s, image=getattr(self, s), label=PHOTO_LABELS[s])
+                for s in self.land_annotated_slots]
+
+    @cached_property
+    def card_overlay(self):
+        """Overlay for listing cards: the first annotated photo (the main photo when it is one), or None.
+
+        Cards show the photo with object-fit: cover in a 16:9 box, so `layer` is the rectangle (in % of the box)
+        that the full uncropped photo occupies; the overlay is drawn inside it and lines up with the crop.
+        """
+        overlays = self.land_plan_overlays
+        if not overlays:
+            return None
+        first, image = overlays[0], overlays[0]['image']
+        ratio, box = image.width / image.height, 16 / 9
+        if ratio > box:
+            w = ratio / box * 100
+            layer = {'left': -(w - 100) / 2, 'top': 0, 'width': w, 'height': 100}
+        else:
+            h = box / ratio * 100
+            layer = {'left': 0, 'top': -(h - 100) / 2, 'width': 100, 'height': h}
+        # Hover zoom scales the photo about the box centre; the overlay must pivot on the same point.
+        layer['origin_x'] = (50 - layer['left']) / layer['width'] * 100
+        layer['origin_y'] = (50 - layer['top']) / layer['height'] * 100
+        return dict(first, layer={k: round(v, 3) for k, v in layer.items()})
 
     @property
     def effective_currency(self):
@@ -203,6 +284,131 @@ class Project(models.Model):
 
     class Meta:
         pass
+
+
+MAX_POINTS, MAX_PINS, MAX_LABEL, MAX_DIM = 50, 1, 50, 20
+# Annotatable photo slots (the Project photo fields).
+PHOTO_SLOTS = ['photo_main', 'photo_1', 'photo_2', 'photo_3', 'photo_4', 'photo_5', 'photo_6']
+PHOTO_LABELS = dict(zip(PHOTO_SLOTS, ['Main photo', 'Photo 1', 'Photo 2', 'Photo 3', 'Photo 4', 'Photo 5', 'Photo 6']))
+PIN_MIN_SIZE, PIN_MAX_SIZE = 0.6, 2.0   # pin icon scale; 1.0 is the default size
+MAX_HISTORY, MAX_HISTORY_ENTRY = 50, 60_000   # autosaved undo/redo: entries kept, and max size of one entry (chars)
+
+
+def land_plan_service_ids():
+    """Ids of the services an admin enabled under Settings > Branding & Site Settings > Land Plan Annotations."""
+    from wagtail.models import Site
+    from domains.pages.models import BrandingSettings
+    site = Site.objects.filter(is_default_site=True).first()
+    branding = BrandingSettings.for_site(site) if site else None
+    return list(branding.land_plan_services.values_list('pk', flat=True)) if branding else []
+
+
+# Allowed overlay colours; the editor JS has the same list. Anything else is rejected, so the value is safe in a style attribute.
+PALETTE = {'#ffc107', '#dc3545', '#0d6efd', '#198754', '#6f42c1', '#fd7e14', '#ffffff', '#212529'}
+DEFAULT_BOUNDARY_COLOR = '#ffc107'
+
+
+def _coord(v):
+    if isinstance(v, bool) or not isinstance(v, (int, float)) or not 0 <= v <= 1:
+        raise ValidationError('Coordinates must be numbers between 0 and 1.')
+    return float(v)
+
+
+def _text(v, limit, what):
+    v = v.strip() if isinstance(v, str) else ''
+    if len(v) > limit:
+        raise ValidationError(f'{what} must be at most {limit} characters.')
+    if contains_profanity(v):
+        raise ValidationError(f'{what} contains inappropriate language.')
+    return v
+
+
+def _size(v):
+    if v in (None, ''):
+        return 1.0
+    if isinstance(v, bool) or not isinstance(v, (int, float)) or not PIN_MIN_SIZE <= v <= PIN_MAX_SIZE:
+        raise ValidationError(f'Pin size must be between {PIN_MIN_SIZE} and {PIN_MAX_SIZE}.')
+    return round(float(v), 2)
+
+
+def _color(v, default):
+    if v in (None, ''):
+        return default
+    if v not in PALETTE:
+        raise ValidationError('Unsupported colour.')
+    return v
+
+
+def _clean_one(data):
+    """Validate one photo's annotations (boundary polygon + at most one pin)."""
+    if not isinstance(data, dict):
+        raise ValidationError('Invalid annotation data.')
+    boundary, pins = data.get('boundary', []), data.get('pins', [])
+    if not isinstance(boundary, list) or not isinstance(pins, list):
+        raise ValidationError('Invalid annotation data.')
+    if len(boundary) > MAX_POINTS or len(pins) > MAX_PINS:
+        raise ValidationError(f'At most {MAX_POINTS} boundary points and {MAX_PINS} pin are allowed per photo.')
+    try:
+        return {
+            'color': _color(data.get('color'), DEFAULT_BOUNDARY_COLOR),
+            'boundary': [{'x': _coord(p['x']), 'y': _coord(p['y']), 'dim': _text(p.get('dim', ''), MAX_DIM, 'Dimension')}
+                         for p in boundary],
+            'pins': [{'x': _coord(p['x']), 'y': _coord(p['y']), 'label': _text(p.get('label', ''), MAX_LABEL, 'Pin label'),
+                      'color': _color(p.get('color'), ''), 'size': _size(p.get('size'))}
+                     for p in pins],
+        }
+    except (KeyError, TypeError, AttributeError):
+        raise ValidationError('Invalid annotation data.')
+
+
+def _clean_annotations(data, available_slots):
+    """Validate untrusted JSON `{"photos": {slot: {...}}}` from the editor and return a normalised copy.
+
+    `available_slots` are the photo slots that currently hold an image; annotations for any other slot are dropped.
+    """
+    if not isinstance(data, dict):
+        raise ValidationError('Invalid annotation data.')
+    photos = data.get('photos', {})
+    if not isinstance(photos, dict):
+        raise ValidationError('Invalid annotation data.')
+    return {'photos': {slot: _clean_one(photos[slot]) for slot in PHOTO_SLOTS if slot in photos and slot in available_slots}}
+
+
+def _clean_history(history):
+    """Undo/redo is a convenience, so bad entries are dropped rather than failing the save."""
+    def entries(v):
+        out = []
+        for e in (v if isinstance(v, list) else [])[-MAX_HISTORY:]:
+            try:
+                if isinstance(e, str) and len(e) <= MAX_HISTORY_ENTRY and isinstance(json.loads(e), dict):
+                    out.append(e)
+            except ValueError:
+                pass
+        return out
+    history = history if isinstance(history, dict) else {}
+    active = history.get('active')
+    return {'undo': entries(history.get('undo')), 'redo': entries(history.get('redo')),
+            'active': active if active in PHOTO_SLOTS else ''}
+
+
+def _overlay(entry):
+    """Polygon, edge-label positions (as %) and pin for one photo's cleaned annotations."""
+    pts, pins = entry.get('boundary', []), entry.get('pins', [])
+    n = len(pts)
+    edges = []
+    for i in range(n if n > 2 else n - 1):
+        a, b = pts[i], pts[(i + 1) % n]
+        if a['dim']:
+            # Keep the chip inside the photo even when the edge runs along its border.
+            edges.append({'x': min(max((a['x'] + b['x']) / 2 * 100, 5), 95), 'y': min(max((a['y'] + b['y']) / 2 * 100, 4), 96), 'dim': a['dim']})
+    return {
+        'color': entry.get('color', DEFAULT_BOUNDARY_COLOR),
+        'points': ' '.join(f"{p['x']:.4f},{p['y']:.4f}" for p in pts) if n > 1 else '',
+        'vertices': [{'x': p['x'] * 100, 'y': p['y'] * 100} for p in pts],
+        'edges': edges,
+        'pins': [{'x': p['x'] * 100, 'y': p['y'] * 100, 'label': p['label'], 'color': p.get('color', ''),
+                 'size': f"{p.get('size', 1.0):.2f}"} for p in pins],   # a string, so templates never localise the decimal point
+    }
 
 
 ProjectViewSet.model = Project
