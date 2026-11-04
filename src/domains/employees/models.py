@@ -4,6 +4,7 @@ import uuid
 import pendulum
 from django.conf import settings
 from django.db import models
+from infrastructure.utils.upload import validate_upload_size
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 
 
@@ -23,7 +24,7 @@ class Employee(models.Model):
         help_text='Feature on About page and team highlights',
     )
     hire_date = models.DateTimeField(default=pendulum.now, blank=True)
-    photo = models.ImageField(upload_to=employee_photo_path)
+    photo = models.ImageField(upload_to=employee_photo_path, validators=[validate_upload_size])
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         null=True,

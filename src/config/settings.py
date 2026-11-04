@@ -224,6 +224,9 @@ WAGTAIL_SITE_NAME = SITE_NAME
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'accounts:dashboard'
 
+MAX_UPLOAD_MB = config('MAX_UPLOAD_MB', default=4, cast=float)
+WAGTAILIMAGES_MAX_UPLOAD_SIZE = int(MAX_UPLOAD_MB * 1024 * 1024)
+
 WAGTAILADMIN_BASE_URL = config('WAGTAILADMIN_BASE_URL', default='http://localhost:8000')
 SITE_ID = 1
 

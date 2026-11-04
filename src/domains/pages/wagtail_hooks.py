@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.templatetags.static import static
 from django.urls import path
 from django.utils.html import format_html
@@ -131,6 +132,16 @@ def branding_admin_js():
 @hooks.register('insert_global_admin_js')
 def notifications_admin_js():
     return format_html('<script src="{}"></script>', static('js/admin_notifications.js'))
+
+
+@hooks.register('insert_global_admin_js')
+def upload_limit_admin_js():
+    # Vercel answers oversized uploads with a bare 413, so check in the browser first.
+    return format_html(
+        '<script>window.MAX_UPLOAD_MB={}</script><script src="{}"></script>',
+        settings.MAX_UPLOAD_MB,
+        static('js/admin_upload_limit.js'),
+    )
 
 
 @hooks.register('insert_global_admin_js')
