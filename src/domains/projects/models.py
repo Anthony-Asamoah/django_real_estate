@@ -7,8 +7,8 @@ from django.utils.functional import cached_property
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.snippets.views.snippets import SnippetViewSet
 
+from infrastructure.utils.list_filters import KeepListFiltersViewSetMixin
 from infrastructure.utils.profanity import contains_profanity
-from .admin_views import ProjectCreateView, ProjectEditView
 from .forms import ProjectForm
 from .widgets import LandPlanWidget
 
@@ -47,7 +47,7 @@ class Currency(models.Model):
         ordering = ['code']
 
 
-class ProjectViewSet(SnippetViewSet):
+class ProjectViewSet(KeepListFiltersViewSetMixin, SnippetViewSet):
     model = None
     icon = 'folder-open-inverse'
     add_to_admin_menu = True
@@ -56,8 +56,6 @@ class ProjectViewSet(SnippetViewSet):
     list_filter = ['is_published', 'status', 'service', 'state_or_region', 'employee']
     search_fields = ['title', 'address', 'city']
     ordering = ['-project_date']
-    edit_view_class = ProjectEditView
-    add_view_class = ProjectCreateView
 
 
 class Project(models.Model):

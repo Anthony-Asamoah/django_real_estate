@@ -8,11 +8,13 @@ from wagtail import hooks
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet
 
+from infrastructure.utils.list_filters import KeepListFiltersViewSetMixin
+
 from .forms import image_info
 from .models import Currency, ProjectViewSet
 
 
-class CurrencyViewSet(SnippetViewSet):
+class CurrencyViewSet(KeepListFiltersViewSetMixin, SnippetViewSet):
     model = Currency
     icon = 'tag'
     add_to_settings_menu = True

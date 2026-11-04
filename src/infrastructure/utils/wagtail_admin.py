@@ -11,6 +11,8 @@ from wagtail.permission_policies.base import ModelPermissionPolicy
 from wagtail.rich_text import expand_db_html
 from wagtail.snippets.views.snippets import SnippetViewSet
 
+from infrastructure.utils.list_filters import KeepListFiltersViewSetMixin
+
 
 class ReadOnlyPanel(FieldPanel):
     """A FieldPanel that is always read-only."""
@@ -60,7 +62,7 @@ class ReadOnlyPermissionPolicy(ModelPermissionPolicy):
         return super().users_with_any_permission(allowed)
 
 
-class ReadOnlySubmissionViewSet(SnippetViewSet):
+class ReadOnlySubmissionViewSet(KeepListFiltersViewSetMixin, SnippetViewSet):
     """Snippet admin that can list and view submissions, but not create them."""
 
     @property
